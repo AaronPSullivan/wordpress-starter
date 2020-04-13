@@ -1,0 +1,149 @@
+.sticky {
+	display: block;
+}
+
+
+.site {
+
+    
+    //background: $color__background-body;
+}
+.post
+{
+    margin: 0 0 2em;
+}
+
+
+.updated:not(.published) {
+	display: none;
+}
+iframe, 
+center > iframe,
+center {
+    + h1,
+    + .h1,
+    + h2,
+    + .h2,
+    + h3,
+    + .h3,
+    + h4,
+    + .h4,
+    + h5,
+    + .h5 {
+        margin-top: 1em;
+    }
+}
+iframe, 
+center > iframe {
+    + p {
+        margin-top: 1em;
+    }
+}
+.page-content,
+.entry-content,
+.entry-summary {
+	//margin: 1.5em 0 0;
+    margin: 0;
+}
+
+.page-links {
+	clear: both;
+	margin: 0 0 1.5em;
+}
+.byline {
+    display: none;
+}  
+.entry-footer {
+     .edit-link {
+        margin-left: .5em;
+    }
+}
+.entry-footer2 {
+    // used on front-page for featured articles
+    display: none;
+}
+.tags-links + .communities-links {
+    &::before {
+        content: ', ';
+    }
+}
+
+.post-thumbnail {
+    display: block;
+    
+}
+ .wp-post-image {
+    width: 100%;
+    height: auto;
+
+}
+.page {
+    .post-thumbnail {
+        margin-bottom: 2em;
+    }
+}
+
+
+.search {
+    
+}
+#search-posts-container {
+    margin: 0;
+    padding: 0;
+    > .row > div > article {
+        margin: $spacer 0;
+       /* @include make-col(12);
+        @include media-breakpoint-up(lg) {
+            @include make-col(6);
+        }*/
+        > .container-fluid {
+             margin: 0;
+            padding: 0;
+        }
+    }
+}
+.cat-links,
+.tags-links {
+   // padding-right: .5em;
+}
+
+/**************************************************
+ * SOME STYLES SHARED BETWEEN LAYOUTS
+ **************************************************/
+ .alm-reveal {
+   /*include make-container();
+    padding: 0 0;
+    display: flex;
+     align-items: center !important;
+    position: relative;
+    flex-wrap: wrap;
+    &:nth-child(n+2) {
+        // not first
+       
+    }
+   padding-top: $spacer*3;
+        margin-top: $spacer;
+        border-top: $size__border-sm solid $color__gray--lightest;
+        &::before {
+            display: block;
+            background-color: white;
+            color: $color__gray--lightest;
+            content: 'MORE';
+            position: absolute;
+            top: 0;
+            padding: 0 .5em;
+            left: 50%;
+            font-size: .8em;
+            @include translate(-50%,-55%);
+        }
+*/
+}
+
+
+ .post-thumbnail {
+    //display: block;
+    @include media-breakpoint-down(xs) {
+      //margin-bottom: $spacer;   
+    }
+}
+

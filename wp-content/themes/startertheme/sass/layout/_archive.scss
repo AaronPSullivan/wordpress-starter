@@ -1,0 +1,45 @@
+
+.archive {
+  
+   
+  
+   
+    .entry-footer {
+        font-size: 1em;
+        line-height: 1.2;
+        text-transform: uppercase;
+        font-weight: 300;
+         @include media-breakpoint-up(sm) {
+            font-size: 1.2em;
+        }
+        @include media-breakpoint-up(lg) {
+           font-size: 1em;
+        }
+        a, a:visited {
+            color: $color__main-2;
+            &:hover,
+            &:focus,
+            &:active {
+               text-decoration: underline;
+                color: $color__main-2;
+            }
+        }
+    }
+   
+    &.category {
+        
+    } 
+    
+   
+    
+}
+
+.archive #main > .main-container-fluid {
+  
+   
+}
+.archive.category #main > .main-container-fluid {
+   
+}
+
+

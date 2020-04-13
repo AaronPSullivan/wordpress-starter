@@ -1,1 +1,1 @@
-# wordpressStarter
+# wordpress-starter

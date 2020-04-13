@@ -1,0 +1,165 @@
+
+.single {
+    
+
+    
+    
+    #main { margin-bottom: 0; }
+
+    .entry-content {
+       > p:first-child {
+            border-left: $size__border solid $color__text-main;
+            padding-left: .5em;
+            font-size: 1.3em;
+            font-weight: 500;
+            font-family: $font__accent;
+        }
+    }
+    .header-thumb-container,
+    .post-content-container{
+        //margin-top: $spacer*4;
+        margin-top: $spacer*2;
+         @include media-breakpoint-up(lg) {
+             margin-top: $spacer*2;
+        }
+        @include make-container();
+        @include make-container-max-widths;
+        position:relative;
+    }
+   
+    
+    .post-content-col {
+        
+         @include make-col(12);
+         @include media-breakpoint-up(lg) {
+            @include make-col(8);
+        }
+    }
+    
+    .post-header-container {
+        @include make-col-ready();
+        @include make-col(12);
+       
+         @include media-breakpoint-up(lg) {
+             @include make-col(5);
+        }
+        .tags-links,
+        .communities-links
+        {
+            display: none;
+        }
+        .cat-links a {
+            //display: inline-block;
+
+        }
+         .entry-meta {
+            font-size: .8em;
+            text-transform: uppercase;
+              @include media-breakpoint-up(sm) {
+                 font-size: 1em;
+            }
+              @include media-breakpoint-up(lg) {
+                font-size: .8em;
+            }
+             a, a:visited {
+                color: $color__gray;
+                &:hover,
+                &:focus,
+                &:active {
+                   text-decoration: underline;
+                    color: $color__gray;
+                }
+            }
+             .sources-links {
+                         a , a:visited {
+                            color: $color__main-2;
+                            &:hover,
+                            &:focus,
+                            &:active {
+                                 color: $color__main-2;
+                                
+                            }
+                        }
+                        &::before {
+                            display: inline-block;
+                            content: '|';
+                            padding: 0 .5em;
+                        }
+                    }
+        }
+    }
+    
+    
+    .post-thumbnail-container {
+            
+        .post-thumbnail {
+            @include media-breakpoint-up(xl) {
+                 max-height: 291px;
+                overflow: hidden;
+            }
+            @include media-breakpoint-up(xl) {
+                 max-height: 350px;
+                overflow: hidden;
+            }
+        }
+        
+        @include make-col-ready();
+        @include make-col(12);
+         margin-bottom: $spacer*2;   
+         @include media-breakpoint-up(lg) {
+             @include make-col(7);
+              margin-bottom: 0;   
+        }
+       
+    }
+    
+    .entry-title {
+        font-size: 1.2em;
+        color: $color__main-1;
+        margin-top: 1em;
+        margin-bottom: 1.5em;
+        line-height: 1.4;
+         @include media-breakpoint-up(sm) {
+             font-size: 1.4em;
+        }
+        @include media-breakpoint-up(lg) {
+          font-size: 1.2em;
+        }
+        @include media-breakpoint-up(xl) {
+          font-size: 1.4em;
+        }
+        
+    }
+    
+   
+    .entry-footer {
+        font-size: 1em;
+        line-height: 1.2;
+        text-transform: uppercase;
+        font-weight: 300;
+         @include media-breakpoint-up(sm) {
+            font-size: 1.2em;
+        }
+        @include media-breakpoint-up(lg) {
+           font-size: 1em;
+        }
+        a, a:visited {
+            color: $color__main-2;
+            &:hover,
+            &:focus,
+            &:active {
+               text-decoration: underline;
+                color: $color__main-2;
+            }
+        }
+    }
+    
+    
+}
+ .entry-meta {
+
+    font-size: 0.8em;
+
+}
+
+

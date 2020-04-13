@@ -1,0 +1,180 @@
+// Rem output with px fallback
+@mixin font-size($sizeValue: 1) {
+	//font-size: ($sizeValue * 16) * 1px;
+	//font-size: $sizeValue * 1rem;
+    font-size: $sizeValue+em;
+}
+
+// Center block
+@mixin center-block {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+// Clearfix
+@mixin clearfix() {
+	content: "";
+	display: table;
+	table-layout: fixed;
+}
+
+// Clear after (not all clearfix need this also)
+@mixin clearfix-after() {
+	clear: both;
+}
+
+// Column width with margin
+@mixin column-width($numberColumns: 3) {
+	width: map-get( $columns, $numberColumns ) - ( ( $columns__margin * ( $numberColumns - 1 ) ) / $numberColumns );
+}
+
+
+@mixin force-full-width() {
+    
+    //margin-left: calc(-100vw / 2 + 100% / 2) !important;
+    //margin-right: calc(-100vw / 2 + 100% / 2) !important;
+    //max-width: 100%;
+    width: 100vw;
+    left: calc(-1 * (100vw - 100%) / 2) ;
+    
+}
+
+
+// generic transform
+@mixin transform($transforms) {
+	   -moz-transform: $transforms;
+	     -o-transform: $transforms;
+	    -ms-transform: $transforms;
+	-webkit-transform: $transforms;
+          transform: $transforms;
+}
+// scale
+@mixin scale($scale) {
+	 @include transform(scale($scale));
+} 
+@mixin scaleX($scaleX) {
+	 @include transform(scaleX($scaleX));
+} 
+// rotate
+@mixin rotate ($deg) {
+  @include transform(rotate(#{$deg}deg));
+}
+@mixin transition($transition...) {
+    -moz-transition:    $transition;
+    -o-transition:      $transition;
+    -ms-transition:      $transition;
+    -webkit-transition: $transition;
+    transition:         $transition;
+}
+@mixin translate($x, $y) {
+  -webkit-transform: translate($x, $y);
+     -moz-transform: translate($x, $y);
+      -ms-transform: translate($x, $y);
+       -o-transform: translate($x, $y);
+          transform: translate($x, $y);
+}
+@mixin translateX($x) {
+  -webkit-transform: translateX($x);
+     -moz-transform: translateX($x);
+      -ms-transform: translateX($x);
+       -o-transform: translateX($x);
+          transform: translateX($x);
+}
+@mixin translateY($y) {
+  -webkit-transform: translateY($y);
+     -moz-transform: translateY($y);
+      -ms-transform: translateY($y);
+       -o-transform: translateY($y);
+          transform: translateY($y);
+}
+
+@mixin border-radius($radius) {
+	
+    -o-border-radius: $radius;
+    -ms-border-radius: $radius;
+    -moz-border-radius: $radius;
+	-webkit-border-radius: $radius;
+	border-radius: $radius;
+}
+
+@mixin box-shadow($left, $top, $radius, $color) {
+	
+	
+	-o-box-shadow: $left $top $radius $color;
+    -ms-box-shadow: $left $top $radius $color;
+    -moz-box-shadow: $left $top $radius $color;
+    -webkit-box-shadow: $left $top $radius $color;
+    box-shadow: $left $top $radius $color;
+}
+@mixin border-radii($topleft, $topright, $bottomright, $bottomleft) {
+	
+	
+    -ms-border-radius-topleft: $topleft;
+	-ms-border-radius-topright: $topright;
+	-ms-border-radius-bottomright: $bottomright;
+	-ms-border-radius-bottomleft: $bottomleft;
+	-moz-border-radius-topleft: $topleft;
+	-moz-border-radius-topright: $topright;
+	-moz-border-radius-bottomright: $bottomright;
+	-moz-border-radius-bottomleft: $bottomleft;
+    -webkit-border-top-left-radius: $topleft;
+	-webkit-border-top-right-radius: $topright;
+	-webkit-border-bottom-right-radius: $bottomright;
+	-webkit-border-bottom-left-radius: $bottomleft;
+    border-top-left-radius: $topleft;
+	border-top-right-radius: $topright;
+	border-bottom-right-radius: $bottomright;
+	border-bottom-left-radius: $bottomleft;
+}
+
+@mixin gradient($direction, $color1, $color2) {
+    
+	background-image: -moz-linear-gradient($direction, $color1, $color2);
+	background-image: -ms-linear-gradient($direction, $color1, $color2);
+    background-image: -o-linear-gradient($direction, $color1, $color2);
+    background-image: -webkit-linear-gradient($direction, $color1, $color2);
+    background-image: linear-gradient($direction,  $color1,  $color2);
+}
+
+
+
+@mixin animation($animate...) {
+    $max: length($animate);
+    $animations: '';
+
+    @for $i from 1 through $max {
+        $animations: #{$animations + nth($animate, $i)};
+        
+
+        @if $i < $max {
+            $animations: #{$animations + ", "};
+        }
+    }
+    -webkit-animation: $animations;
+    -moz-animation:    $animations;
+    -o-animation:      $animations;
+    animation:         $animations;
+}
+
+@mixin keyframes($animationName) {
+    @-webkit-keyframes #{$animationName} {
+        @content;
+    }
+    @-moz-keyframes #{$animationName} {
+        @content;
+    }
+    @-o-keyframes #{$animationName} {
+        @content;
+    }
+    @keyframes #{$animationName} {
+        @content;
+    }
+}
+// Transform Origin
+@mixin transform-origin ($origin) {
+    	-webkit-transform-origin: $origin;
+    	-moz-transform-origin: $origin;
+	-ms-transform-origin: $origin;
+	transform-origin: $origin;
+}

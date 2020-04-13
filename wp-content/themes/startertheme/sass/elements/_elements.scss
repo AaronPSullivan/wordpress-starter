@@ -1,0 +1,61 @@
+html {
+	box-sizing: border-box;
+    overflow-x: hidden; // remove x overflow to prevent scrollbars on @include force-full-width()
+}
+
+*,
+*:before,
+*:after { /* Inherit box-sizing to make it easier to change the property for components that leverage other behavior; see https://css-tricks.com/inheriting-box-sizing-probably-slightly-better-best-practice/ */
+	box-sizing: inherit;
+}
+
+body {
+	background: /*$color__background-footer;//*/$color__background-body; /* Fallback for when there is no custom background color defined. */
+}
+
+
+hr {
+	background-color: $color__background-hr;
+	border: 0;
+	height: 1px;
+	margin-bottom: 1.5em;
+}
+
+@import "lists";
+
+img {
+	height: auto; /* Make sure images are scaled correctly. */
+	max-width: 100%; /* Adhere to container width. */
+}
+
+figure {
+	margin: 1em 0; /* Extra wide images within figure tags don't overflow the content area. */
+}
+
+@import "tables";
+
+blockquote.wp-block-quote {
+    //border-left: $size__border solid $color__text-blockquote;
+    //padding-left: add-unit($space-half, 'em');
+    padding-left: .5em;
+    padding-right: .5em;
+    font-weight: 500;
+    font-family: $font__accent;
+    color: $color__text-blockquote;
+}
+
+blockquote.wp-block-quote cite {
+    display: block;
+    font-weight: 300;
+    font-style: italic;
+    
+    color: $color__text-main;
+    
+    font-family: $font__main;
+    //margin: add-unit($space-quarter, 'em') 0 0;
+    margin: -.5em 0 1.5em ;
+    &::before {
+            content: '~ ';
+            display: inline-block;
+        }
+}
