@@ -66,13 +66,37 @@ get_header();
 			endwhile;
 
 			//the_posts_navigation();
-            $default_posts_per_page = get_option( 'posts_per_page' );
-            $short_c  = '[ajax_load_more post_type="post" posts_per_page="'.$default_posts_per_page.'" offset="'.$default_posts_per_page.'" ]';
+             $default_posts_per_page = get_option( 'posts_per_page' );
+    
+               $short_c  = '[ajax_load_more post_type="post, mec-events, driven-podcasts, driven-news" posts_per_page="'.$default_posts_per_page.'" offset="'.$default_posts_per_page.'" ';
+
+               //
+
+
+                if (is_tax()) {
+                    $q = get_queried_object();                   
+                    //print_r ($tax);
+                    $slug = $q->slug;
+                    $taxonomy = $q->taxonomy;
+                    $short_c .= ' taxonomy="'.$taxonomy.'" taxonomy_operator="IN" taxonomy_terms="'.$slug.'" ';
+
+                } 
+                if (is_tag()) {
+
+                     $slug = get_queried_object();
+                    $slug = $slug->slug;
+                    $short_c .= ' tag="'.$slug.'" ';
+
+
+                }
 
 
 
-            echo do_shortcode($short_c);
+                $short_c .= ']';
 
+
+
+                echo do_shortcode($short_c);
 		else :
 
 			get_template_part( 'template-parts/content', 'none' );
