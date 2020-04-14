@@ -65,10 +65,10 @@
 
 		ul {
 			 
-            //display: block;
+            display: block;
             color: white;
             height: auto;
-            display: none;
+            //display: none;
             @include media-breakpoint-up(md) {
                 box-shadow: 0 3px 3px rgba(0, 0, 0, 0.2);
 			     float: left;
