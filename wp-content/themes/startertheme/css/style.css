@@ -5754,11 +5754,8 @@ a:hover, a:active {
   .main-navigation ul {
     flex-direction: row;
     justify-content: space-between;
-    margin-bottom: 1.2rem;
     display: flex;
     width: auto;
-    border-bottom: 1px solid #262626;
-    height: 2.5rem;
   }
 }
 .main-navigation ul ul {
