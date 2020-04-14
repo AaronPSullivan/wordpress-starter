@@ -5522,6 +5522,7 @@ html {
 body {
   background: #fff;
   /* Fallback for when there is no custom background color defined. */
+  font-size: 1rem;
 }
 
 hr {
