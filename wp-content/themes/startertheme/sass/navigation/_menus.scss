@@ -179,7 +179,7 @@
         font-weight: bold;
          @include media-breakpoint-up(md) {
              display: inline-block;
-             padding: 0;
+              padding: 1em .5em;
               margin-left: 1em;
              font-weight: normal;
         }
