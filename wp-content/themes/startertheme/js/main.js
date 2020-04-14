@@ -91,20 +91,6 @@
     
     
    
-    /**
-	 * Bold first word in middle menu
-	 */
-      
-        $('#middle-navigation a').html(function(){
-          var text= $(this).text().trim().split(" ");
-          var first = text.shift();
-            
-            //console.log(text);
-             
-          return /* (text.length > 0 ? */"<b>"+ first + "</b> "/* : first)*/ + text.join(" ");
-            
-        });
-    
     
     
 })( jQuery );
