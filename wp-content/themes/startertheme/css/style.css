@@ -7219,9 +7219,6 @@ object {
   display: block;
   margin: auto;
 }
-.wp-block-image img {
-  border-top: 1px solid #68b735;
-}
 .wp-block-image figcaption {
   font-size: 0.8em;
   text-align: left;
