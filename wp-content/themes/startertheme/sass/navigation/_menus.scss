@@ -53,13 +53,13 @@
         @include media-breakpoint-up(md) {
             flex-direction: row;
             justify-content:space-between;
-             margin-bottom: 1.2rem;
+           //  margin-bottom: 1.2rem;
              display: flex;
             width: auto;
             
             
-            border-bottom: $size__border-sm solid $color__gray;
-            height: 2.5rem; // forces border bottom to align.
+            //border-bottom: $size__border-sm solid $color__gray;
+            //height: 2.5rem; // forces border bottom to align.
          }
 
 
