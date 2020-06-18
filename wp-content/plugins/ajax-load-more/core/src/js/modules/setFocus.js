@@ -11,7 +11,19 @@
  
 let setFocus = (alm, element = null, total = 0, is_filtering = false) => {
 	
-	// If has total
+	if(!alm_localize.a11y_focus){
+		return false;
+	}
+	
+	
+	// WooCommerce Add-on
+	if(alm.addons.woocommerce){
+		moveFocus(false, false, element, false, alm.isSafari);
+		return;
+	}
+	
+	
+	// Has Total
 	if(alm.transition_container && total > 0){
 		if(alm.addons.paging){
 			// Paging
@@ -25,9 +37,9 @@ let setFocus = (alm, element = null, total = 0, is_filtering = false) => {
          // Standard ALM
    	   moveFocus(alm.init, alm.addons.preloaded, element, is_filtering, alm.isSafari);                  
       }
-	} else if(!alm.transition_container && alm.container_type === 'table'){
-		
-		// Table Layout
+      
+	} else if(!alm.transition_container){
+		// Table Layout, no transition container 
    	moveFocus(alm.init, alm.addons.preloaded, element[0], is_filtering, alm.isSafari);
 	}
 }
@@ -61,9 +73,10 @@ let moveFocus = (init = true, preloaded = 'false', element, is_filtering = false
    element = (is_array) ? element[0] : element;
    */   
    
-   // Set tabIndex on `.alm-reveal`
+   // Set tabIndex and style on element
 	element.setAttribute('tabIndex', '-1');
    element.style.outline = 'none';
+   
    
    // Get Parent container
    // If `.alm-listing` set parent to element
@@ -76,24 +89,33 @@ let moveFocus = (init = true, preloaded = 'false', element, is_filtering = false
 	if(scrollContainer){				
 		let container = document.querySelector(scrollContainer);
 		if(container){
-			let left = container.scrollLeft;
-			let top = container.scrollTop;
-			element.focus();
-			container.scrollLeft = left;
-			container.scrollTop = top;			
+			//let left = container.scrollLeft;
+			//let top = container.scrollTop;
+			//element.focus();
+			//container.scrollLeft = left;
+			//container.scrollTop = top;	
+			setTimeout(function(){	
+				element.focus({ preventScroll: true });
+			}, 50);		
 		}		
 	} 
 	
 	// Move window
 	else {   
-		let x = window.scrollX;
-		let y = window.scrollY;
+		
+		setTimeout(function(){	
+			element.focus({ preventScroll: true });
+		}, 50);
+		
+		//let x = window.scrollX;
+		//let y = window.scrollY;
+		
 		// Safari fix for window movement if Y = 0
-		if(isSafari){
-			window.scrollTo(x, y);
-			y = (y === 0) ? 1 : y;
-		}
-		element.focus();
-		window.scrollTo(x, y);
+		//if(isSafari){
+			//window.scrollTo(x, y);
+			//y = (y === 0) ? 1 : y;
+		//}
+		//element.focus();
+		//window.scrollTo(x, y);
 	}
 } 

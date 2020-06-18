@@ -69,6 +69,12 @@ class MEC_skin_countdown extends MEC_skins
         
         // The style
         $this->style = isset($this->skin_options['style']) ? $this->skin_options['style'] : 'style1';
+
+        // reason_for_cancellation
+        $this->reason_for_cancellation = isset($this->skin_options['reason_for_cancellation']) ? $this->skin_options['reason_for_cancellation'] : false;
+
+        // display_label
+        $this->display_label = isset($this->skin_options['display_label']) ? $this->skin_options['display_label'] : false;
         
         // Override the style if the style forced by us in a widget etc
         if(isset($this->atts['style']) and trim($this->atts['style']) != '') $this->style = $this->atts['style'];
@@ -99,8 +105,7 @@ class MEC_skin_countdown extends MEC_skins
         // Get next upcoming event ID
         if($this->event_id == '-1')
         {
-            $event = $this->main->get_next_upcoming_event();
-            $events[] = $event;
+            $events[] = $this->main->get_next_upcoming_event();
         }
         else
         {
@@ -112,7 +117,7 @@ class MEC_skin_countdown extends MEC_skins
             $data->dates = $this->render->dates($this->event_id, $rendered, $this->maximum_dates);
             $data->date = isset($data->dates[0]) ? $data->dates[0] : array();
 
-            $events[] = $data;
+            $events[] = $this->render->after_render($data);
         }
         
         return $events;

@@ -184,18 +184,13 @@ let almSetFilters = function(speed = 250, data, el, type){
    
    switch (type){	   
 	   
-      /*
 	   case 'filter' : 
-		   // Filters Complete            
+		   // Filters Complete (not the add-on)           
 		   if (typeof almFilterComplete === 'function') { // Standard Filtering
 		      almFilterComplete();
 		   }
-		   // Filter Add-on Complete
-		   if (typeof almFiltersAddonComplete === "function") { // Filters Add-on
-		      almFiltersAddonComplete(el);
-		   }
 		break;
-      */
+      
 		
 		case 'tab' :
 			// Tabs Complete            

@@ -50,6 +50,7 @@ function mec_get_tickets_availability'.$uniqueid.'(event_id, date)
         dataType: "JSON",
         success: function(data)
         {
+            console.log(data);
             // Remove the loading Class to the ticket list
             jQuery("#mec_booking'.$uniqueid.' .mec-event-tickets-list").removeClass("loading");
             jQuery("#mec_booking'.$uniqueid.' .mec-event-tickets-list input").prop("disabled", false);
@@ -148,10 +149,13 @@ function mec_toggle_first_for_all'.$uniqueid.'(context)
 function mec_label_first_for_all'.$uniqueid.'(context)
 {
     var input = jQuery("#mec_book_first_for_all'.$uniqueid.'");
-    if (!input.is(":checked")) {
+    if(!input.is(":checked"))
+    {
         input.prop("checked", true);
         mec_toggle_first_for_all'.$uniqueid.'(context);
-    } else {
+    }
+    else
+    {
         input.prop("checked", false);
         mec_toggle_first_for_all'.$uniqueid.'(context);
     }
@@ -292,7 +296,8 @@ function mec_book_form_submit'.$uniqueid.'()
     var fileToUpload = false;
 
     var data = jQuery("#mec_book_form'.$uniqueid.'").serialize();
-    jQuery.ajax({
+    jQuery.ajax(
+    {
         type: "POST",
         url: "'.admin_url('admin-ajax.php', NULL).'",
         data: new FormData(jQuery("#mec_book_form'.$uniqueid.'")[0]),
@@ -321,9 +326,15 @@ function mec_book_form_submit'.$uniqueid.'()
                 {
                     setTimeout(function(){window.location.href = data.data.redirect_to;}, 2000);
                 }
+                
                 jQuery("html,body").animate({
                     scrollTop: jQuery(".mec-events-meta-group-booking").offset().top - 100
                 }, "slow");
+
+                if(jQuery(".mec-single-fluent-wrap").length>0 && typeof jQuery.fn.niceSelect !== "undefined")
+                {
+                    jQuery(".mec-single-fluent-wrap").find("select").niceSelect();
+                }
             }
             else
             {
@@ -367,8 +378,8 @@ function mec_book_apply_coupon'.$uniqueid.'()
 
                 jQuery("#mec_booking'.$uniqueid.' .mec-book-form-coupon .mec-coupon-message").addClass("mec-success").html(data.message).show();
 
-                jQuery("#mec_booking'.$uniqueid.' .mec-book-price-details .mec-book-price-detail-typediscount").remove();
-                jQuery("#mec_booking'.$uniqueid.' .mec-book-price-details").append(data.data.price_details);
+                jQuery("#mec_booking'.$uniqueid.' .mec-book-price-details li").remove();
+                jQuery("#mec_booking'.$uniqueid.' .mec-book-price-details").html(data.data.price_details);
 
                 jQuery("#mec_booking'.$uniqueid.' .mec-book-price-total").html(data.data.price);
                 jQuery("#mec_booking'.$uniqueid.' #mec_do_transaction_paypal_express_form"+data.data.transaction_id+" input[name=amount]").val(data.data.price_raw);
@@ -445,12 +456,22 @@ function mec_check_variation_min_max'.$uniqueid.'(variation)
     if(value > max) jQuery(variation).val(max);
     if(value < min) jQuery(variation).val(min);
 }
+
+'.((defined('DOING_AJAX') and DOING_AJAX) ? 'jQuery(document).ready(function()
+{
+    mec_get_tickets_availability'.$uniqueid.'('.$event->ID.', jQuery("#mec_book_form_date'.$uniqueid.'").val());
+});' : '').'
 </script>';
 
-$javascript = apply_filters('mec-javascript-code-of-booking-module', $javascript , $uniqueid);
+$javascript = apply_filters('mec-javascript-code-of-booking-module', $javascript, $uniqueid);
+
 // Include javascript code into the footer
 if($this->is_ajax()) echo $javascript;
-else $factory->params('footer', $javascript);
+else
+{
+    $factory = $this->getFactory();
+    $factory->params('footer', $javascript);
+}
 ?>
 <div class="mec-booking" id="mec_booking<?php echo $uniqueid; ?>">
     <?php

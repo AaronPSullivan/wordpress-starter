@@ -100,7 +100,7 @@ class MEC_book extends MEC_base
                 elseif($fee['type'] == 'amount') $fee_amount += ($total_tickets_count*$fee['amount']);
                 elseif($fee['type'] == 'amount_per_booking') $fee_amount += $fee['amount'];
 
-                $details[] = array('amount'=>$fee_amount, 'description'=>__($fee['title'], 'modern-events-calendar-lite'), 'type'=>'fee');
+                $details[] = array('amount'=>$fee_amount, 'description'=>__($fee['title'], 'modern-events-calendar-lite'), 'type'=>'fee', 'fee_type'=>$fee['type'], 'fee_amount'=>$fee['amount']);
 
                 $total_fee_amount += $fee_amount;
             }
@@ -138,7 +138,7 @@ class MEC_book extends MEC_base
     public function temporary($data = array())
     {
         $transaction_id = $this->get_transaction_id();
-        update_option($transaction_id, $data);
+        update_option($transaction_id, $data, false);
 
         return $transaction_id;
     }
@@ -178,7 +178,7 @@ class MEC_book extends MEC_base
      */
     public function update_transaction($transaction_id, $data)
     {
-        update_option($transaction_id, $data);
+        update_option($transaction_id, $data, false);
     }
 
     /**
@@ -207,8 +207,11 @@ class MEC_book extends MEC_base
         $transaction = $this->get_transaction($transaction_id);
         $event_id = $transaction['event_id'];
 
+        $attention_date = isset($transaction['date']) ? $transaction['date'] : '';
+        $attention_times = explode(':', $attention_date);
+
         // Default values
-        if(!isset($values['post_date'])) $values['post_date'] = $transaction['date'];
+        if(!isset($values['post_date'])) $values['post_date'] = date('Y-m-d H:i:s', trim($attention_times[0]));
         if(!isset($values['post_status'])) $values['post_status'] = 'publish';
 
         $book_id = wp_insert_post($values);
@@ -230,12 +233,26 @@ class MEC_book extends MEC_base
         update_post_meta($book_id, 'mec_ticket_id', $ticket_ids);
         update_post_meta($book_id, 'mec_booking_time', current_time('Y-m-d H:i:s'));
 
+        update_post_meta($book_id, 'mec_attention_time', $attention_date);
+        update_post_meta($book_id, 'mec_attention_time_start', $attention_times[0]);
+        update_post_meta($book_id, 'mec_attention_time_end', $attention_times[1]);
+
         // For Badget Bubble Notification Alert Count From It.
         update_post_meta($book_id, 'mec_book_date_submit', date('YmdHis', current_time('timestamp', 0)));
 
         $location_id = get_post_meta($event_id, 'mec_location_id', true);
         if(!empty($location_id)) update_post_meta($book_id, 'mec_booking_location', $location_id);
-        if(isset($values['mec_attendees'])) update_post_meta($book_id, 'mec_attendees', $values['mec_attendees']);
+
+        if(isset($values['mec_attendees']))
+        {
+            foreach($values['mec_attendees'] as $k => $mec_attendee)
+            {
+                if(!is_numeric($k)) continue;
+                $values['mec_attendees'][$k]['buyerip'] = $this->main->get_client_ip();
+            }
+
+            update_post_meta($book_id, 'mec_attendees', $values['mec_attendees']);
+        }
 
         $price = isset($transaction['price']) ? $transaction['price'] : (isset($transaction['total']) ? $transaction['total'] : 0);
         update_post_meta($book_id, 'mec_price', $price);
@@ -387,20 +404,19 @@ class MEC_book extends MEC_base
      * Returns ticket availabilities of an event for a certain date
      * @author Webnus <info@webnus.biz>
      * @param int $event_id
-     * @param string $date
+     * @param int $timestamp
      * @param string $mode
      * @return array|integer
      */
-    public function get_tickets_availability($event_id, $date, $mode = 'availability')
+    public function get_tickets_availability($event_id, $timestamp, $mode = 'availability')
     {
+        if(!is_numeric($timestamp)) $timestamp = strtotime($timestamp);
+
         $availability = array();
         $tickets = get_post_meta($event_id, 'mec_tickets', true);
 
         // Ticket Selling Stop
-        $start_time_hour = sprintf('%02d', get_post_meta($event_id, 'mec_start_time_hour', true));
-        $start_time_minute = sprintf('%02d', get_post_meta($event_id, 'mec_start_time_minutes', true));
-        $start_time_ampm = get_post_meta($event_id, 'mec_start_time_ampm', true);
-        $event_date = "{$date} {$start_time_hour}:{$start_time_minute}{$start_time_ampm}";
+        $event_date = date('Y-m-d h:i a', $timestamp);
         
         // No Ticket Found!
         if(!is_array($tickets) or (is_array($tickets) and !count($tickets)))
@@ -414,35 +430,52 @@ class MEC_book extends MEC_base
 
         $total_bookings_limit = (isset($booking_options['bookings_limit']) and trim($booking_options['bookings_limit'])) ? $booking_options['bookings_limit'] : 100;
         $bookings_limit_unlimited = isset($booking_options['bookings_limit_unlimited']) ? $booking_options['bookings_limit_unlimited'] : 0;
+        $book_all_occurrences = isset($booking_options['bookings_all_occurrences']) ? (int) $booking_options['bookings_all_occurrences'] : 0;
 
         if($bookings_limit_unlimited == '1') $total_bookings_limit = '-1';
 
         // Total Booking Limit
         $total_bookings_limit_original = $total_bookings_limit;
 
-        $ex = explode(':', $date);
-        $date = $ex[0];
+        $ex = explode(':', $timestamp);
+        $timestamp = (int) $ex[0];
 
-        $ex = explode('-', $date);
+        $year = date('Y', $timestamp);
+        $month = date('m', $timestamp);
+        $day = date('d', $timestamp);
+        $hour = date('H', $timestamp);
+        $minutes = date('i', $timestamp);
 
-        $year = isset($ex[0]) ? $ex[0] : NULL;
-        $month = isset($ex[1]) ? $ex[1] : NULL;
-        $day = isset($ex[2]) ? $ex[2] : NULL;
+        if(!$book_all_occurrences)
+        {
+            $date_query = array(
+                array(
+                    'year'=>$year,
+                    'monthnum'=>$month,
+                    'day'=>$day,
+                    'hour'=>$hour,
+                    'minute'=>$minutes,
+                ),
+            );
+        }
+        else
+        {
+            $date_query = array(
+                'before' => date('Y-m-d', $timestamp).' 23:59:59',
+            );
+        }
 
         $booked = 0;
         foreach($tickets as $ticket_id=>$ticket)
         {
             $limit = (isset($ticket['limit']) and trim($ticket['limit']) != '') ? $ticket['limit'] : -1;
 
-            $query = new WP_Query(array
-            (
-                'post_type'=>$this->PT,
-                'posts_per_page'=>-1,
-                'post_status'=>array('publish', 'pending', 'draft', 'future', 'private'),
-                'year'=>$year,
-                'monthnum'=>$month,
-                'day'=>$day,
-                'meta_query'=>array
+            $query = new WP_Query(array(
+                'post_type' => $this->PT,
+                'posts_per_page' => -1,
+                'post_status' => array('publish', 'pending', 'draft', 'future', 'private'),
+                'date_query'=> $date_query,
+                'meta_query' => array
                 (
                     array('key'=>'mec_event_id', 'value'=>$event_id, 'compare'=>'='),
                     array('key'=>'mec_ticket_id', 'value'=>','.$ticket_id.',', 'compare'=>'LIKE'),
@@ -462,7 +495,7 @@ class MEC_book extends MEC_base
                     $ticket_ids_string = trim(get_post_meta(get_the_ID(), 'mec_ticket_id', true), ', ');
                     $ticket_ids_count = array_count_values(explode(',', $ticket_ids_string));
 
-                    $bookings += isset($ticket_ids_count[$ticket_id]) ? $ticket_ids_count[$ticket_id] : 0;
+                    $bookings += (isset($ticket_ids_count[$ticket_id]) and is_numeric($ticket_ids_count[$ticket_id])) ? $ticket_ids_count[$ticket_id] : 0;
                 }
             }
 
@@ -476,7 +509,7 @@ class MEC_book extends MEC_base
             $stop_selling_value = isset($ticket['stop_selling_value']) ? trim($ticket['stop_selling_value']) : 0;
             $stop_selling_type = isset($ticket['stop_selling_type']) ? trim($ticket['stop_selling_type']) : 'day';
             
-            if($stop_selling_value > 0 and $this->main->check_date_time_validation('Y-m-d h:ia', strtolower($event_date)))
+            if($stop_selling_value > 0 and $this->main->check_date_time_validation('Y-m-d h:i a', strtolower($event_date)))
             {
                 if(strtotime("-{$stop_selling_value}{$stop_selling_type}", strtotime($event_date)) <= current_time('timestamp', 0))
                 {
@@ -541,9 +574,10 @@ class MEC_book extends MEC_base
      * @author Webnus <info@webnus.biz>
      * @param string $coupon
      * @param int $event_id
+     * @param array $transaction
      * @return int
      */
-    public function coupon_check_validity($coupon, $event_id)
+    public function coupon_check_validity($coupon, $event_id, $transaction)
     {
         $term = get_term_by('name', $coupon, 'mec_coupon');
         $coupon_id = isset($term->term_id) ? $term->term_id : 0;
@@ -575,6 +609,37 @@ class MEC_book extends MEC_base
             }
         }
 
+        // Minimum Tickets
+        if($status === 1)
+        {
+            $ticket_minimum = get_term_meta($coupon_id, 'ticket_minimum', true);
+            if(!trim($ticket_minimum)) $ticket_minimum = 1;
+
+            $tickets = isset($transaction['tickets']) ? $transaction['tickets'] : array();
+            if(isset($tickets['attachments'])) unset($tickets['attachments']);
+
+            if(count($tickets) < $ticket_minimum)
+            {
+                $status = -4;
+            }
+        }
+
+        // Maximum Tickets
+        if($status === 1)
+        {
+            $ticket_maximum = get_term_meta($coupon_id, 'ticket_maximum', true);
+            if(trim($ticket_maximum))
+            {
+                $tickets = isset($transaction['tickets']) ? $transaction['tickets'] : array();
+                if(isset($tickets['attachments'])) unset($tickets['attachments']);
+
+                if(count($tickets) > $ticket_maximum)
+                {
+                    $status = -5;
+                }
+            }
+        }
+
         return $status;
     }
 
@@ -591,7 +656,7 @@ class MEC_book extends MEC_base
         $event_id = isset($transaction['event_id']) ? $transaction['event_id'] : NULL;
 
         // Verify validity of coupon
-        if($this->coupon_check_validity($coupon, $event_id) != 1) return 0;
+        if($this->coupon_check_validity($coupon, $event_id, $transaction) != 1) return 0;
 
         $total = $transaction['total'];
         $discount = $this->coupon_get_discount($coupon, $total);
@@ -599,15 +664,27 @@ class MEC_book extends MEC_base
         $after_discount = $total - $discount;
 
         $transaction['price_details']['total'] = $after_discount;
-        $transaction['price_details']['details'][] = array('amount'=>$discount, 'description'=>__('Discount', 'modern-events-calendar-lite'), 'type'=>'discount');
 
+        $price_details = $transaction['price_details']['details'];
+        foreach($price_details as $i => $price_detail)
+        {
+            if(isset($price_detail['type']) and $price_detail['type'] == 'discount' and isset($price_detail['coupon'])) unset($price_details[$i]);
+        }
+
+        $price_details[] = array('amount'=>$discount, 'description'=>__('Discount', 'modern-events-calendar-lite'), 'type'=>'discount', 'coupon'=>$coupon);
+
+        $transaction['price_details']['details'] = $price_details;
         $transaction['discount'] = $discount;
         $transaction['price'] = $after_discount;
         $transaction['coupon'] = $coupon;
 
+        // Re-caclculate
+        $transaction = $this->recalculate($transaction);
+
+        // Update Transaction
         $this->update_transaction($transaction_id, $transaction);
 
-        return $discount;
+        return (isset($transaction['discount']) ? $transaction['discount'] : $discount);
     }
 
     /**
@@ -628,7 +705,13 @@ class MEC_book extends MEC_base
         $discount_type = get_term_meta($coupon_id, 'discount_type', true);
         $discount = get_term_meta($coupon_id, 'discount', true);
 
-        if($discount_type == 'percent') $discount_amount = ($total*$discount)/100;
+        if($discount_type == 'percent')
+        {
+            $discount_amount = ($total*$discount)/100;
+
+            $discount_max = get_term_meta($coupon_id, 'maximum_discount', true);
+            if(trim($discount_max) and is_numeric($discount_max)) $discount_amount = min($discount_amount, $discount_max);
+        }
         else $discount_amount = min($discount, $total);
 
         return $discount_amount;
@@ -643,9 +726,68 @@ class MEC_book extends MEC_base
     public function coupon_get_id($coupon)
     {
         $term = get_term_by('name', $coupon, 'mec_coupon');
-        $coupon_id = isset($term->term_id) ? $term->term_id : 0;
+        return isset($term->term_id) ? $term->term_id : 0;
+    }
 
-        return $coupon_id;
+    public function recalculate($transaction)
+    {
+        $price_details = $transaction['price_details']['details'];
+        $total_tickets_count = count($transaction['tickets']);
+
+        $total_fee_amount = 0;
+        $taxable = 0;
+        $total_discount = 0;
+        $fees_to_apply = array();
+        $discounts_to_apply = array();
+
+        foreach($price_details as $i => $item)
+        {
+            $type = isset($item['type']) ? $item['type'] : '';
+            $amount = isset($item['amount']) ? $item['amount'] : 0;
+
+            if($type == 'fee') $fees_to_apply[] = $item;
+            elseif($type == 'discount') $discounts_to_apply[] = $item;
+            else $taxable += $amount;
+
+            // Remove Fee and Discount Items
+            if(in_array($type, array('fee', 'discount'))) unset($price_details[$i]);
+        }
+
+        $total = $taxable;
+
+        // Apply Discounts
+        foreach($discounts_to_apply as $discount_item)
+        {
+            $discount = $this->coupon_get_discount($discount_item['coupon'], $taxable);
+            $taxable = max(0, ($taxable - $discount));
+            $total_discount += $discount;
+
+            $price_details[] = array('amount'=>$discount, 'description'=>__('Discount', 'modern-events-calendar-lite'), 'type'=>'discount', 'coupon'=>$discount_item['coupon']);
+        }
+
+        // Apply Fees
+        foreach($fees_to_apply as $fee_item)
+        {
+            $fee_amount = 0;
+
+            if($fee_item['fee_type'] == 'percent') $fee_amount += ($taxable*$fee_item['fee_amount'])/100;
+            elseif($fee_item['fee_type'] == 'amount') $fee_amount += ($total_tickets_count*$fee_item['fee_amount']);
+            elseif($fee_item['fee_type'] == 'amount_per_booking') $fee_amount += $fee_item['fee_amount'];
+
+            $total_fee_amount += $fee_amount;
+            $price_details[] = array('amount'=>$fee_amount, 'description'=>__($fee_item['description'], 'modern-events-calendar-lite'), 'type'=>'fee', 'fee_type'=>$fee_item['fee_type'], 'fee_amount'=>$fee_item['fee_amount']);
+        }
+
+        $total += $total_fee_amount;
+        $payable = ($taxable + $total_fee_amount);
+
+        $transaction['price_details']['total'] = $payable;
+        $transaction['price_details']['details'] = $price_details;
+        $transaction['discount'] = $total_discount;
+        $transaction['price'] = $payable;
+        $transaction['total'] = $total;
+
+        return $transaction;
     }
 
     /**
@@ -771,5 +913,47 @@ class MEC_book extends MEC_base
 
         foreach($tickets as $ticket_id=>$ticket) $prices[$ticket_id] = $this->get_ticket_price_key($ticket, $date, $key);
         return $prices;
+    }
+
+    public function get_user_booking_limit($event_id)
+    {
+        $unlimited = false;
+        $limit = 12;
+        $mec_settings = $this->main->get_settings();
+        $booking_options = get_post_meta($event_id, 'mec_booking', true);
+
+        // Total user booking limited
+        if(isset($booking_options['bookings_user_limit_unlimited']) and !trim($booking_options['bookings_user_limit_unlimited']))
+        {
+            $limit = (isset($booking_options['bookings_user_limit']) and trim($booking_options['bookings_user_limit'])) ? trim($booking_options['bookings_user_limit']) : $limit;
+        }
+        else
+        {
+            // If Inherit from global options activate
+            if(!isset($mec_settings['booking_limit']) or (isset($mec_settings['booking_limit']) and !trim($mec_settings['booking_limit']))) $unlimited = true;
+            else $limit = trim($mec_settings['booking_limit']);
+        }
+
+        return array($limit, $unlimited);
+    }
+
+    public function timestamp($start, $end)
+    {
+        // Timestamp is already available
+        if(isset($start['timestamp']) and isset($end['timestamp']))
+        {
+            return $start['timestamp'].':'.$end['timestamp'];
+        }
+
+        $s_hour = $start['hour'];
+        if(strtoupper($start['ampm']) == 'AM' and $s_hour == '0') $s_hour = 12;
+
+        $e_hour = $end['hour'];
+        if(strtoupper($end['ampm']) == 'AM' and $e_hour == '0') $e_hour = 12;
+
+        $start_time = $start['date'].' '.sprintf("%02d", $s_hour).':'.sprintf("%02d", $start['minutes']).' '.$start['ampm'];
+        $end_time = $end['date'].' '.sprintf("%02d", $e_hour).':'.sprintf("%02d", $end['minutes']).' '.$end['ampm'];
+
+        return strtotime($start_time).':'.strtotime($end_time);
     }
 }

@@ -98,14 +98,21 @@ class MEC_feature_locations extends MEC_base
         $address = get_metadata('term', $term->term_id, 'address', true);
         $latitude = get_metadata('term', $term->term_id, 'latitude', true);
         $longitude = get_metadata('term', $term->term_id, 'longitude', true);
+        $url = get_metadata('term', $term->term_id, 'url', true);
         $thumbnail = get_metadata('term', $term->term_id, 'thumbnail', true);
+
+        // Map Options
+        $status = isset($this->settings['google_maps_status']) ? $this->settings['google_maps_status'] : 1;
+        $api_key = isset($this->settings['google_maps_api_key']) ? $this->settings['google_maps_api_key'] : '';
     ?>
         <tr class="form-field">
-            <th scope="row" valign="top">
+            <th scope="row">
                 <label for="mec_address"><?php _e('Address', 'modern-events-calendar-lite'); ?></label>
             </th>
             <td>
                 <input class="mec-has-tip" type="text" placeholder="<?php esc_attr_e('Enter the location address', 'modern-events-calendar-lite'); ?>" name="address" id="mec_address" value="<?php echo $address; ?>" />
+
+                <?php if($status and trim($api_key)): ?>
                 <script type="text/javascript">
                 jQuery(document).ready(function()
                 {
@@ -115,10 +122,11 @@ class MEC_feature_locations extends MEC_base
                     }
                 });
                 </script>
+                <?php endif; ?>
             </td>
         </tr>
         <tr class="form-field">
-            <th scope="row" valign="top">
+            <th scope="row">
                 <label for="mec_latitude"><?php _e('Latitude', 'modern-events-calendar-lite'); ?></label>
             </th>
             <td>
@@ -126,16 +134,24 @@ class MEC_feature_locations extends MEC_base
             </td>
         </tr>
         <tr class="form-field">
-            <th scope="row" valign="top">
+            <th scope="row">
                 <label for="mec_longitude"><?php _e('Longitude', 'modern-events-calendar-lite'); ?></label>
             </th>
             <td>
                 <input class="mec-has-tip" type="text" placeholder="<?php esc_attr_e('Geo longitude (Optional)', 'modern-events-calendar-lite'); ?>" name="longitude" id="mec_longitude" value="<?php echo $longitude; ?>" />
             </td>
         </tr>
-        <?php do_action('mec_location_after_edit_form',$term); ?>
         <tr class="form-field">
-            <th scope="row" valign="top">
+            <th scope="row">
+                <label for="mec_url"><?php _e('Location Website', 'modern-events-calendar-lite'); ?></label>
+            </th>
+            <td>
+                <input type="url" placeholder="<?php esc_attr_e('Location Website (Optional)', 'modern-events-calendar-lite'); ?>" name="url" id="mec_url" value="<?php echo $url; ?>" />
+            </td>
+        </tr>
+        <?php do_action('mec_location_after_edit_form', $term); ?>
+        <tr class="form-field">
+            <th scope="row">
                 <label for="mec_thumbnail_button"><?php _e('Thumbnail', 'modern-events-calendar-lite'); ?></label>
             </th>
             <td>
@@ -155,10 +171,16 @@ class MEC_feature_locations extends MEC_base
     public function add_form()
     {
         $this->main->load_map_assets();
+
+        // Map Options
+        $status = isset($this->settings['google_maps_status']) ? $this->settings['google_maps_status'] : 1;
+        $api_key = isset($this->settings['google_maps_api_key']) ? $this->settings['google_maps_api_key'] : '';
     ?>
         <div class="form-field">
             <label for="mec_address"><?php _e('Address', 'modern-events-calendar-lite'); ?></label>
             <input type="text" name="address"  placeholder="<?php esc_attr_e('Enter the location address', 'modern-events-calendar-lite'); ?>" id="mec_address" value="" />
+
+            <?php if($status and trim($api_key)): ?>
             <script type="text/javascript">
             jQuery(document).ready(function()
             {
@@ -168,6 +190,7 @@ class MEC_feature_locations extends MEC_base
                 }
             });
             </script>
+            <?php endif; ?>
         </div>
         <div class="form-field">
             <label for="mec_latitude"><?php _e('Latitude', 'modern-events-calendar-lite'); ?></label>
@@ -176,6 +199,10 @@ class MEC_feature_locations extends MEC_base
         <div class="form-field">
             <label for="mec_longitude"><?php _e('Longitude', 'modern-events-calendar-lite'); ?></label>
             <input type="text" name="longitude"  placeholder="<?php esc_attr_e('Geo longitude (Optional)', 'modern-events-calendar-lite'); ?>" id="mec_longitude" value="" />
+        </div>
+        <div class="form-field">
+            <label for="mec_url"><?php _e('Location Website', 'modern-events-calendar-lite'); ?></label>
+            <input type="url" name="url"  placeholder="<?php esc_attr_e('Location Website (Optional)', 'modern-events-calendar-lite'); ?>" id="mec_url" value="" />
         </div>
         <?php do_action('mec_location_after_add_form'); ?>
         <div class="form-field">
@@ -198,6 +225,7 @@ class MEC_feature_locations extends MEC_base
         $address = isset($_POST['address']) ? sanitize_text_field($_POST['address']) : '';
         $latitude = isset($_POST['latitude']) ? sanitize_text_field($_POST['latitude']) : '0';
         $longitude = isset($_POST['longitude']) ? sanitize_text_field($_POST['longitude']) : '0';
+        $url = (isset($_POST['url']) and trim($_POST['url'])) ? esc_url($_POST['url']) : '';
         $thumbnail = isset($_POST['thumbnail']) ? sanitize_text_field($_POST['thumbnail']) : '';
 
         // Geo Point is Empty or Address Changed
@@ -212,6 +240,7 @@ class MEC_feature_locations extends MEC_base
         update_term_meta($term_id, 'address', $address);
         update_term_meta($term_id, 'latitude', $latitude);
         update_term_meta($term_id, 'longitude', $longitude);
+        update_term_meta($term_id, 'url', $url);
         update_term_meta($term_id, 'thumbnail', $thumbnail);
     }
     
@@ -284,6 +313,10 @@ class MEC_feature_locations extends MEC_base
         if(!is_array($location_ids)) $location_ids = array();
 
         $additional_locations_status = (!isset($this->settings['additional_locations']) or (isset($this->settings['additional_locations']) and $this->settings['additional_locations'])) ? true : false;
+
+        // Map Options
+        $status = isset($this->settings['google_maps_status']) ? $this->settings['google_maps_status'] : 1;
+        $api_key = isset($this->settings['google_maps_api_key']) ? $this->settings['google_maps_api_key'] : '';
     ?>
         <div class="mec-meta-box-fields mec-event-tab-content" id="mec-location">
             <h4><?php echo sprintf(__('Event %s', 'modern-events-calendar-lite'), $this->main->m('taxonomy_location', __('Location', 'modern-events-calendar-lite'))); ?></h4>
@@ -311,7 +344,8 @@ class MEC_feature_locations extends MEC_base
 				<div class="mec-form-row">
 					<input type="text" name="mec[location][address]" id="mec_location_address" value="" placeholder="<?php _e('Event Location', 'modern-events-calendar-lite'); ?>" />
 					<p class="description"><?php _e('eg. City hall, Manhattan, New York', 'modern-events-calendar-lite'); ?></p>
-                    <?php if(isset($settings['google_maps_api_key']) and trim($settings['google_maps_api_key'])): ?>
+
+                    <?php if($status and trim($api_key)): ?>
                     <script type="text/javascript">
                     jQuery(document).ready(function()
                     {
@@ -333,6 +367,9 @@ class MEC_feature_locations extends MEC_base
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
                     </span>	                     
+                </div>
+                <div class="mec-form-row">
+                    <input type="url" name="mec[location][url]" id="mec_location_url" value="" placeholder="<?php _e('Location Website', 'modern-events-calendar-lite'); ?>" />
                 </div>
                 <?php do_action( 'mec_location_after_new_form' ); ?>
                 <?php /* Don't show this section in FES */ if(is_admin()): ?>
@@ -437,6 +474,7 @@ class MEC_feature_locations extends MEC_base
         
         $latitude = (isset($_mec['location']['latitude']) and trim($_mec['location']['latitude'])) ? sanitize_text_field($_mec['location']['latitude']) : 0;
         $longitude = (isset($_mec['location']['longitude']) and trim($_mec['location']['longitude'])) ? sanitize_text_field($_mec['location']['longitude']) : 0;
+        $url = (isset($_mec['location']['url']) and trim($_mec['location']['url'])) ? esc_url($_mec['location']['url']) : '';
         $thumbnail = (isset($_mec['location']['thumbnail']) and trim($_mec['location']['thumbnail'])) ? sanitize_text_field($_mec['location']['thumbnail']) : '';
         
         if((!trim($latitude) or !trim($longitude)) and trim($address))
@@ -450,6 +488,7 @@ class MEC_feature_locations extends MEC_base
         update_term_meta($location_id, 'address', $address);
         update_term_meta($location_id, 'latitude', $latitude);
         update_term_meta($location_id, 'longitude', $longitude);
+        update_term_meta($location_id, 'url', $url);
         update_term_meta($location_id, 'thumbnail', $thumbnail);
 
         return true;

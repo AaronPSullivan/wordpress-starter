@@ -77,6 +77,9 @@ class MEC_factory extends MEC_base
 
         // MEC Booking Invoice
         $this->action('init', array($this->main, 'booking_invoice'), 9999);
+
+        // MEC Print Feature
+        $this->action('init', array($this->main, 'print_calendar'), 9999);
         
         // Redirect to MEC Dashboard
         $this->action('admin_init', array($this->main, 'mec_redirect_after_activate'));
@@ -95,9 +98,6 @@ class MEC_factory extends MEC_base
         $this->action('wp_ajax_mec_save_styling', array($this->main, 'save_options'));
         $this->action('wp_ajax_mec_save_notifications', array($this->main, 'save_notifications'));
         $this->action('wp_ajax_mec_save_messages', array($this->main, 'save_options'));
-
-        // Dashborad Metabox
-        add_action( 'wp_dashboard_setup', array($this, 'mec_widget_news_features') );
     }
     
     /**
@@ -234,80 +234,78 @@ class MEC_factory extends MEC_base
      */
     public function load_backend_assets()
     {
-        // Include WordPress jQuery
-        wp_enqueue_script('jquery');
 
-        // Include WordPress color picker JavaScript file
-        wp_enqueue_script('wp-color-picker');
+        if($this->should_include_assets('backend'))
+        {
+            // Get Current Screen
+            global $current_screen;
+            if(!isset($current_screen)) $current_screen = get_current_screen();
 
-        // Include MEC typekit script file
-        wp_enqueue_script('mec-typekit-script', $this->main->asset('js/jquery.typewatch.js'));
-        
-        //Include the nice-select
-        wp_enqueue_script('mec-niceselect-script', $this->main->asset('js/jquery.nice-select.min.js'));
+            // Include MEC typekit script file
+            wp_enqueue_script('mec-typekit-script', $this->main->asset('js/jquery.typewatch.js'));
 
-        //Include Select2
-        wp_enqueue_script('mec-select2-script', $this->main->asset('packages/select2/select2.full.min.js'));
-        wp_enqueue_style('mec-select2-style', $this->main->asset('packages/select2/select2.min.css'));
+            //Include the nice-select
+            wp_enqueue_script('mec-niceselect-script', $this->main->asset('js/jquery.nice-select.min.js'));
 
-        // Include Lity Lightbox
-        wp_enqueue_script('mec-lity-script', $this->main->asset('packages/lity/lity.min.js'));
+            //Include Select2
+            wp_enqueue_script('mec-select2-script', $this->main->asset('packages/select2/select2.full.min.js'));
+            wp_enqueue_style('mec-select2-style', $this->main->asset('packages/select2/select2.min.css'));
 
-        // Include Nicescroll
-        wp_enqueue_script('mec-nice-scroll', $this->main->asset('js/jquery.nicescroll.min.js'));
+            // Include Lity Lightbox
+            wp_enqueue_script('mec-lity-script', $this->main->asset('packages/lity/lity.min.js'));
 
-        wp_enqueue_style('mec-featherlight-style', $this->main->asset('packages/featherlight/featherlight.css'));
-        wp_enqueue_script('mec-featherlight-script', $this->main->asset('packages/featherlight/featherlight.js'));
+            // Include Nicescroll
+            wp_enqueue_script('mec-nice-scroll', $this->main->asset('js/jquery.nicescroll.min.js'));
 
-        // Include MEC Carousel JS libraries
-        wp_enqueue_script('mec-owl-carousel-script', $this->main->asset('packages/owl-carousel/owl.carousel.min.js'));
+            wp_enqueue_style('mec-featherlight-style', $this->main->asset('packages/featherlight/featherlight.css'));
+            wp_enqueue_script('mec-featherlight-script', $this->main->asset('packages/featherlight/featherlight.js'));
 
-        // Backend Dependencies
-        $dependencies = array('wp-color-picker', 'jquery-ui-datepicker');
+            // Include MEC Carousel JS libraries
+            wp_enqueue_script('mec-owl-carousel-script', $this->main->asset('packages/owl-carousel/owl.carousel.min.js'));
 
-        // Get Current Screen
-        global $current_screen;
-        if(!isset($current_screen)) $current_screen = get_current_screen();
+            // Backend Dependencies
+            $dependencies = array('jquery', 'wp-color-picker', 'jquery-ui-datepicker');
 
-        // Add WP Blocks to the dependencies only when needed!
-        if(method_exists($current_screen, 'is_block_editor') and $current_screen->is_block_editor()) $dependencies[] = 'wp-blocks';
+            // Add WP Blocks to the dependencies only when needed!
+            if(method_exists($current_screen, 'is_block_editor') and $current_screen->is_block_editor()) $dependencies[] = 'wp-blocks';
 
-        // Include MEC backend script file
-        wp_enqueue_script('mec-backend-script', $this->main->asset('js/backend.js'), $dependencies, $this->main->get_version());
+            // Register New Block Editor
+            if(function_exists('register_block_type')) register_block_type('mec/blockeditor', array('editor_script' => 'block.editor'));
 
-        // Register New Block Editor 
-        if(function_exists('register_block_type')) register_block_type('mec/blockeditor', array('editor_script' => 'block.editor'));
+            // Include MEC backend script file
+            wp_enqueue_script('mec-backend-script', $this->main->asset('js/backend.js'), $dependencies, $this->main->get_version());
 
-        // Settings
-        $settings = $this->main->get_settings();
+            // Settings
+            $settings = $this->main->get_settings();
 
-        wp_localize_script( 'mec-backend-script', 'mec_admin_localize', array(
-            'ajax_url' => admin_url( 'admin-ajax.php' ),
-            'ajax_nonce' => wp_create_nonce('mec_settings_nonce'),
-            'mce_items' => $this->main->mce_get_shortcode_list(),
-            'datepicker_format' => (isset($settings['datepicker_format']) and trim($settings['datepicker_format'])) ? trim($settings['datepicker_format']) : 'yy-mm-dd',
-        ));
+            wp_localize_script('mec-backend-script', 'mec_admin_localize', array(
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'ajax_nonce' => wp_create_nonce('mec_settings_nonce'),
+                'mce_items' => $this->main->mce_get_shortcode_list(),
+                'datepicker_format' => (isset($settings['datepicker_format']) and trim($settings['datepicker_format'])) ? trim($settings['datepicker_format']) : 'yy-mm-dd',
+            ));
 
-        wp_enqueue_script('mec-events-script', $this->main->asset('js/events.js'), array(), $this->main->get_version());
+            wp_enqueue_script('mec-events-script', $this->main->asset('js/events.js'), array(), $this->main->get_version());
 
-        // Thickbox
-        wp_enqueue_media();
+            // Thickbox
+            wp_enqueue_media();
 
-        // Editor
-        wp_enqueue_editor();
-    
-        // Include WordPress color picker CSS file
-        wp_enqueue_style('wp-color-picker');
-        
-        // Include MEC backend CSS files
-        wp_enqueue_style('mec-font-icon', $this->main->asset('css/iconfonts.css'));
-        wp_enqueue_style('mec-backend-style', $this->main->asset('css/backend.min.css'), array(), $this->main->get_version());
-        
-        // Include "Right to Left" CSS file
-        if(is_rtl()) wp_enqueue_style('mec-backend-rtl-style', $this->main->asset('css/mecrtl.min.css'));
+            // WP Editor
+            wp_enqueue_editor();
 
-        // Include Lity CSS file
-        wp_enqueue_style('mec-lity-style', $this->main->asset('packages/lity/lity.min.css'));
+            // MEC Icons
+            wp_enqueue_style('mec-font-icon', $this->main->asset('css/iconfonts.css'));
+
+            // Include "Right to Left" CSS file
+            if(is_rtl()) wp_enqueue_style('mec-backend-rtl-style', $this->main->asset('css/mecrtl.min.css'));
+
+            // Include Lity CSS file
+            wp_enqueue_style('mec-lity-style', $this->main->asset('packages/lity/lity.min.css'));
+        }
+
+        // Include MEC backend CSS
+        wp_enqueue_style('mec-backend-style', $this->main->asset('css/backend.min.css'), array('wp-color-picker'), $this->main->get_version());
+
     }
     
     /**
@@ -340,7 +338,7 @@ class MEC_factory extends MEC_base
         wp_enqueue_script('mec-typekit-script', $this->main->asset('js/jquery.typewatch.js'));
         wp_enqueue_script('mec-featherlight-script', $this->main->asset('packages/featherlight/featherlight.js'));
 
-        //Include Select2
+        // Include Select2
         wp_enqueue_script('mec-select2-script', $this->main->asset('packages/select2/select2.full.min.js'));
         wp_enqueue_style('mec-select2-style', $this->main->asset('packages/select2/select2.min.css'));
 
@@ -362,13 +360,12 @@ class MEC_factory extends MEC_base
         if(did_action('elementor/loaded')) $elementor_edit_mode = (\Elementor\Plugin::$instance->editor->is_edit_mode() == false) ? 'no' : 'yes';
         else $elementor_edit_mode = 'no';
         
-         // Settings
-         $settings = $this->main->get_settings();
-         $grecaptcha_key = isset($settings['google_recaptcha_sitekey']) ? trim($settings['google_recaptcha_sitekey']) : '';
+        // Settings
+        $settings = $this->main->get_settings();
+        $grecaptcha_key = isset($settings['google_recaptcha_sitekey']) ? trim($settings['google_recaptcha_sitekey']) : '';
 
         // Localize Some Strings
-        wp_localize_script('mec-frontend-script', 'mecdata', array
-        (
+        $mecdata = apply_filters('mec_locolize_data', array(
             'day'=>__('day', 'modern-events-calendar-lite'),
             'days'=>__('days', 'modern-events-calendar-lite'),
             'hour'=>__('hour', 'modern-events-calendar-lite'),
@@ -384,6 +381,9 @@ class MEC_factory extends MEC_base
             'current_year' => date('Y', current_time('timestamp', 0)),
             'datepicker_format' => (isset($settings['datepicker_format']) and trim($settings['datepicker_format'])) ? trim($settings['datepicker_format']) : 'yy-mm-dd',
         ));
+        
+        // Localize Some Strings
+        wp_localize_script('mec-frontend-script', 'mecdata', $mecdata);
         
         // Include Google Recaptcha Javascript API
         $grecaptcha_include = apply_filters('mec_grecaptcha_include', true);
@@ -517,6 +517,11 @@ class MEC_factory extends MEC_base
         $this->import('app.addons.divi');
         $MEC_addon_divi = new MEC_addon_divi();
         $MEC_addon_divi->init();
+
+        // Import MEC Beaver Builder addon Class
+        $this->import('app.addons.beaver');
+        $MEC_addon_beaver = new MEC_addon_beaver();
+        $MEC_addon_beaver->init();
     }
     
     /**
@@ -757,6 +762,7 @@ class MEC_factory extends MEC_base
                 'sn'=>array('googlecal'=>1, 'ical'=>1, 'facebook'=>1, 'gplus'=>1, 'twitter'=>1, 'linkedin'=>1, 'email'=>1),
                 'countdown_status'=>1,
                 'social_network_status'=>1,
+                'default_skin_archive'=>'full_calendar',
             ),
             'styles'=>array('CSS'=>''),
             'gateways'=>array(1=>array('status'=>1)),
@@ -931,122 +937,6 @@ class MEC_factory extends MEC_base
         update_option('mec_version', $this->main->get_version());
     }
 
-        /**
-     * Add MEC metabox in WordPress dashboard
-     * @author Webnus <info@webnus.biz>
-     */
-    public function mec_widget_news_features()
-    {
-        add_meta_box( 'mec_widget_news_features',
-            __('Modern Events Calendar', 'modern-events-calendar-lite'),
-            array($this, 'mec_render_meta_box'),
-            'dashboard',
-            'normal',
-            'high');
-    }
-
-    /**
-     * MEC render metabox in WordPress dashboard
-     * @author Webnus <info@webnus.biz>
-     */
-    public function mec_render_meta_box()
-    {
-        // Head Section
-        echo '
-        <div class="mec-metabox-head-wrap">
-            <div class="mec-metabox-head-version">
-                <img src="'.plugin_dir_url(__FILE__ ) . '../../assets/img/ico-mec-vc.png'.'" />
-                <p>'.($this->getPRO() ? __('Modern Events Calendar', 'modern-events-calendar-lite') : __('Modern Events Calendar (Lite)', 'modern-events-calendar-lite')).'</p>
-                <a href="'.esc_html__(admin_url( 'post-new.php?post_type=mec-events' )).'" class="button"><span aria-hidden="true" class="dashicons dashicons-plus"></span> Create New Event</a>
-            </div>
-            <div class="mec-metabox-head-button"></div>
-            <div style="clear:both"></div>
-        </div>
-        ';
-
-        // Upcoming Events
-        $upcoming_events = $this->main->get_upcoming_events(3);
-        echo '<div class="mec-metabox-upcoming-wrap"><h3 class="mec-metabox-feed-head">'.esc_html__('Upcoming Events' , 'modern-events-calendar-lite').'</h3><ul>';
-        foreach ($upcoming_events as $date => $content) {
-            $event_date = $date;
-            foreach ($content as $array_id => $array_content) {
-             
-                $location_id = $array_content->data->meta['mec_location_id'];
-                $event_title = $array_content->data->title;
-                $event_link  = $array_content->data->permalink;
-                $event_date  = $this->main->date_i18n(get_option('date_format'), $array_content->date['start']['date']);
-                $location = get_term($location_id, 'mec_location');
-                $locationName = '';
-                if (isset($location->name)) {
-                    $locationName = $location->name;
-                }
-                echo '
-                <li>
-                    <span aria-hidden="true" class="dashicons dashicons-calendar-alt"></span>
-                    <div class="mec-metabox-upcoming-event">
-                        <a href="'.$event_link.'" target="">'.$event_title.'</a>
-                        <div class="mec-metabox-upcoming-event-location">'.$locationName.'</div>
-                    </div>
-                    <div class="mec-metabox-upcoming-event-date">'.$event_date.'</div>
-                    <div style="clear:both"></div>
-                </li>
-                ';
-               
-            }
-        }
-        echo '</ul></div>';
-
-        $data_url = 'https://webnus.net/wp-json/wninfo/v1/posts';  
-        if( function_exists('file_get_contents') && ini_get('allow_url_fopen') )
-        {
-            $ctx = stream_context_create(array('http'=>
-                array(
-                    'timeout' => 20,
-                )
-            ));
-            $get_data = file_get_contents($data_url, false, $ctx);
-            if ( $get_data !== false AND !empty($get_data) )
-            {
-                $obj = json_decode($get_data);
-                $i = count((array)$obj);
-            }
-        }
-        elseif ( function_exists('curl_version') )
-        {
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0); 
-            curl_setopt($ch, CURLOPT_TIMEOUT, 20); //timeout in seconds
-            curl_setopt($ch, CURLOPT_URL, $data_url);
-            $result = curl_exec($ch);
-            curl_close($ch);
-            $obj = json_decode($result);
-            $i = count((array)$obj);
-        } else {
-            $obj = '';
-        }
-
-        // News
-        echo '<h3 class="mec-metabox-feed-head">'.esc_html__('News & Updates' , 'modern-events-calendar-lite').'</h3><div class="mec-metabox-feed-content"><ul>';
-        foreach ($obj as $key => $value) {
-            echo '
-            <li>
-                <a href="'.$value->link.'" target="_blank">'.$value->title.'</a>
-                <p>'.$value->content.'</p>
-            </li>
-            ';
-        }
-        echo '</ul></div>';
-
-        // Links
-        echo'
-        <div class="mec-metabox-footer"><a href="https://webnus.net/blog/" target="_blank">'.esc_html__('Blog', 'modern-events-calendar-lite').'<span aria-hidden="true" class="dashicons dashicons-external"></span></a><a href="https://webnus.net/dox/modern-events-calendar/" target="_blank">'.esc_html__('Help', 'modern-events-calendar-lite').'<span aria-hidden="true" class="dashicons dashicons-external"></span></a>';
-        if ($this->getPRO()) echo '<a href="https://webnus.net/mec-purchase" target="_blank">'.esc_html__('Go Pro', 'modern-events-calendar-lite').'<span aria-hidden="true" class="dashicons dashicons-external"></span></a>';
-        echo '</div>';
-    }
-    
-
     /**
      * Add cron jobs
      * @author Webnus <info@webnus.biz>
@@ -1106,7 +996,7 @@ class MEC_factory extends MEC_base
             }
 
             // Removing all MEC taxonomy terms
-            $terms = $db->select("SELECT #__term_taxonomy.`term_id`, #__term_taxonomy.`taxonomy` FROM `#__terms` INNER JOIN `#__term_taxonomy` ON #__terms.`term_id` = #__term_taxonomy.`term_id` WHERE #__term_taxonomy.`taxonomy` = 'mec_category' OR #__term_taxonomy.`taxonomy` = 'mec_label' OR #__term_taxonomy.`taxonomy` = 'mec_location' OR #__term_taxonomy.`taxonomy` = 'mec_organizer'", 'loadAssocList');
+            $terms = $db->select("SELECT #__term_taxonomy.`term_id`, #__term_taxonomy.`taxonomy` FROM `#__terms` INNER JOIN `#__term_taxonomy` ON #__terms.`term_id` = #__term_taxonomy.`term_id` WHERE #__term_taxonomy.`taxonomy` = 'mec_category' OR #__term_taxonomy.`taxonomy` = 'mec_label' OR #__term_taxonomy.`taxonomy` = 'mec_location' OR #__term_taxonomy.`taxonomy` = 'mec_organizer' OR #__term_taxonomy.`taxonomy` = 'mec_speaker' OR #__term_taxonomy.`taxonomy` = 'mec_coupon'", 'loadAssocList');
             foreach($terms as $term)
             {
                 if(isset($term['term_id']) and isset($term['taxonomy']))
@@ -1119,50 +1009,85 @@ class MEC_factory extends MEC_base
             delete_option('mec_installed');
             delete_option('mec_options');
             delete_option('mec_version');
+            delete_option('widget_mec_mec_widget');
+            delete_option('widget_mec_single_widget');
+            delete_option('mec_gfont');
+            delete_option('mec_dyncss');
+            delete_option('mec_custom_msg_display_option');
+            delete_option('mec_custom_msg_close_option');
+            delete_option('mec_category_children');
         }
     }
 
     /**
      * Remove MEC from a blog
-     * @author Webnus <info@webnus.biz>
+     * @param $dark
      * @return int $dark
-     */    
-    function mec_body_class( $dark )
+     * @author Webnus <info@webnus.biz>
+     */
+    public function mec_body_class($dark)
     {
-
-        global $post;
         $styling = $this->main->get_styling();
 
-        $dark_mode = ( isset($styling['dark_mode']) ) ? $styling['dark_mode'] : '';
+        $dark_mode = isset($styling['dark_mode']) ? $styling['dark_mode'] : '';
+        if($dark_mode == 1) $dark[] = 'mec-dark-mode';
 
-        if ( $dark_mode == 1 )
-        {
-            $dark[] = 'mec-dark-mode';
-        }
         return $dark;
-
     }
 
     /**
      * Remove MEC from a blog
-     * @author Webnus <info@webnus.biz>
+     * @param $darkadmin
      * @return int $darkadmin
-     */ 
-    function mec_admin_body_class( $darkadmin)
+     * @author Webnus <info@webnus.biz>
+     */
+    public function mec_admin_body_class($darkadmin)
     {
-
-        global $post;
         $styling = $this->main->get_styling();
 
-        $darkadmin_mode = ( isset($styling['dark_mode']) ) ? $styling['dark_mode'] : '';
-
-        if ( $darkadmin_mode == 1 )
-        {
-            $darkadmin = 'mec-admin-dark-mode';
-        }
+        $darkadmin_mode = isset($styling['dark_mode']) ? $styling['dark_mode'] : '';
+        if($darkadmin_mode == 1) $darkadmin = 'mec-admin-dark-mode';
 
         return $darkadmin;
-
     }
 
+    public function should_include_assets($client = 'frontend')
+    {
+        if($client == 'frontend') return true;
+        else
+        {
+            // Current Screen
+            $screen = get_current_screen();
+
+            $base = $screen->base;
+            $post_type = $screen->post_type;
+            $taxonomy = $screen->taxonomy;
+
+            // It's one of MEC taxonomy pages
+            if(trim($taxonomy) and in_array($taxonomy, array(
+                'post_tag', 'mec_category', 'mec_label', 'mec_location', 'mec_organizer', 'mec_speaker', 'mec_coupon'
+            ))) return true;
+
+            // It's one of MEC post type pages
+            if(trim($post_type) and in_array($post_type, array(
+                'mec-events', 'mec_calendars', 'mec-books'
+            ))) return true;
+
+            // It's Block Editor
+            if(method_exists($screen, 'is_block_editor') and $screen->is_block_editor()) return true;
+
+            // It's one of MEC pages or the pages that MEC should work fine
+            if(trim($base) and in_array($base, array(
+                'toplevel_page_mec-intro',
+                'm-e-calendar_page_MEC-settings',
+                'm-e-calendar_page_MEC-addons',
+                'm-e-calendar_page_MEC-report',
+                'm-e-calendar_page_MEC-ix',
+                'm-e-calendar_page_MEC-support',
+                'widgets',
+            ))) return true;
+
+            return apply_filters('mec_include_backend_assets', false);
+        }
+    }
 }

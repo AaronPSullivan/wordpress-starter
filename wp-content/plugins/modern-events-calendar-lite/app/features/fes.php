@@ -192,7 +192,7 @@ class MEC_feature_fes extends MEC_base
         // Trash the event
         wp_delete_post($post_id);
         
-        $this->main->response(array('success'=>1, 'message'=>__('The event removed!', 'modern-events-calendar-lite')));
+        $this->main->response(array('success'=>1, 'message'=>__('Event removed!', 'modern-events-calendar-lite')));
     }
     
     public function mec_fes_csv_export()
@@ -342,7 +342,7 @@ class MEC_feature_fes extends MEC_base
         $uploaded_file = isset($_FILES['file']) ? $_FILES['file'] : NULL;
         
         // No file
-        if(!$uploaded_file) $this->main->response(array('success'=>0, 'code'=>'NO_FILE'));
+        if(!$uploaded_file) $this->main->response(array('success'=>0, 'code'=>'NO_FILE', 'message'=>esc_html__('Please upload an image.', 'modern-events-calendar-lite')));
         
         $allowed = array('gif', 'jpeg', 'jpg', 'png');
         
@@ -350,7 +350,13 @@ class MEC_feature_fes extends MEC_base
         $extension = end($ex);
         
         // Invalid Extension
-        if(!in_array($extension, $allowed)) $this->main->response(array('success'=>0, 'code'=>'INVALID_EXTENSION'));
+        if(!in_array($extension, $allowed)) $this->main->response(array('success'=>0, 'code'=>'INVALID_EXTENSION', 'message'=>sprintf(esc_html__('image extension is invalid. You can upload %s images.', 'modern-events-calendar-lite'), implode(', ', $allowed))));
+
+        // Maximum File Size
+        $max_file_size = isset($this->settings['fes_max_file_size']) ? (int) ($this->settings['fes_max_file_size'] * 1000) : (5000 * 1000);
+
+        // Invalid Size
+        if($uploaded_file['size'] > $max_file_size) $this->main->response(array('success'=>0, 'code'=>'IMAGE_IS_TOO_BIG', 'message'=>sprintf(esc_html__('Image is too big. Maximum size is %s KB.', 'modern-events-calendar-lite'), ($max_file_size / 1000))));
         
         $movefile = wp_handle_upload($uploaded_file, array('test_form'=>false));
         
@@ -360,7 +366,7 @@ class MEC_feature_fes extends MEC_base
         if($movefile and !isset($movefile['error']))
         {
             $success = 1;
-            $message = __('The image is uploaded!', 'modern-events-calendar-lite');
+            $message = __('Image uploaded!', 'modern-events-calendar-lite');
             
             $data['url'] = $movefile['url'];
         }
@@ -386,7 +392,7 @@ class MEC_feature_fes extends MEC_base
         if($this->main->get_recaptcha_status('fes'))
         {
             $g_recaptcha_response = isset($_POST['g-recaptcha-response']) ? sanitize_text_field($_POST['g-recaptcha-response']) : NULL;
-            if(!$this->main->get_recaptcha_response($g_recaptcha_response)) $this->main->response(array('success'=>0, 'message'=>__('Captcha is invalid! Please try again.', 'modern-events-calendar-lite'), 'code'=>'CAPTCHA_IS_INVALID'));
+            if(!$this->main->get_recaptcha_response($g_recaptcha_response)) $this->main->response(array('success'=>0, 'message'=>__('Invalid Captcha! Please try again.', 'modern-events-calendar-lite'), 'code'=>'CAPTCHA_IS_INVALID'));
         }
 
         $post_id = isset($mec['post_id']) ? sanitize_text_field($mec['post_id']) : -1;
@@ -398,6 +404,9 @@ class MEC_feature_fes extends MEC_base
         if(!is_array($event)) $event = array();
 
         $booking_date_update = false;
+        $past_start_date = '';
+        $past_end_date = '';
+
         if(count($event))
         {
             $past_start_date = (isset($event['start']) and trim($event['start'])) ? $event['start'] : '';
@@ -408,6 +417,7 @@ class MEC_feature_fes extends MEC_base
 
         $post_title = isset($mec['title']) ? sanitize_text_field($mec['title']) : '';
         $post_content = isset($mec['content']) ? $mec['content'] : '';
+        $post_excerpt = isset($mec['excerpt']) ? $mec['excerpt'] : '';
         $post_tags = isset($mec['tags']) ? sanitize_text_field($mec['tags']) : '';
         $post_categories = isset($mec['categories']) ? $mec['categories'] : array();
         $post_speakers = isset($mec['speakers']) ? $mec['speakers'] : array();
@@ -425,13 +435,13 @@ class MEC_feature_fes extends MEC_base
         // Create new event
         if($post_id == -1)
         {
-            $post = array('post_title'=>$post_title, 'post_content'=>$post_content, 'post_type'=>$this->PT, 'post_status'=>$status);
+            $post = array('post_title'=>$post_title, 'post_content'=>$post_content, 'post_excerpt'=>$post_excerpt, 'post_type'=>$this->PT, 'post_status'=>$status);
             $post_id = wp_insert_post($post);
             
             $method = 'added';
         }
         
-        wp_update_post(array('ID'=>$post_id, 'post_title'=>$post_title, 'post_content'=>$post_content));
+        wp_update_post(array('ID'=>$post_id, 'post_title'=>$post_title, 'post_content'=>$post_content, 'post_excerpt'=>$post_excerpt,));
         
         // Categories
         $categories = array();
@@ -521,6 +531,7 @@ class MEC_feature_fes extends MEC_base
 
                     $latitude = (isset($mec['location']['latitude']) and trim($mec['location']['latitude'])) ? sanitize_text_field($mec['location']['latitude']) : 0;
                     $longitude = (isset($mec['location']['longitude']) and trim($mec['location']['longitude'])) ? sanitize_text_field($mec['location']['longitude']) : 0;
+                    $url = (isset($mec['location']['url']) and trim($mec['location']['url'])) ? esc_url($mec['location']['url']) : '';
                     $thumbnail = (isset($mec['location']['thumbnail']) and trim($mec['location']['thumbnail'])) ? sanitize_text_field($mec['location']['thumbnail']) : '';
 
                     if(!trim($latitude) or !trim($longitude))
@@ -534,6 +545,7 @@ class MEC_feature_fes extends MEC_base
                     update_term_meta($location_id, 'address', $address);
                     update_term_meta($location_id, 'latitude', $latitude);
                     update_term_meta($location_id, 'longitude', $longitude);
+                    update_term_meta($location_id, 'url', $url);
                     update_term_meta($location_id, 'thumbnail', $thumbnail);
                 }
                 else $location_id = 1;
@@ -860,29 +872,140 @@ class MEC_feature_fes extends MEC_base
         $not_in_days_arr = (isset($mec['not_in_days']) and is_array($mec['not_in_days']) and count($mec['not_in_days'])) ? array_unique($mec['not_in_days']) : array();
 
         $in_days = '';
-        if ( count( $in_days_arr ) ) {
-            $in_days_arr = array_map( function( $value ) {
-                return $this->main->standardize_format( explode( ':', $value )[0] ) . ':' . $this->main->standardize_format( explode( ':', $value )[1] );
-            }, $in_days_arr );
+        if(count($in_days_arr))
+        {
+            if(isset($in_days_arr[':i:'])) unset($in_days_arr[':i:']);
+
+            $in_days_arr = array_map(function($value)
+            {
+                $ex = explode(':', $value);
+
+                $in_days_times = '';
+                if(isset($ex[2]) and isset($ex[3]))
+                {
+                    $in_days_start_time = $ex[2];
+                    $in_days_end_time = $ex[3];
+
+                    // If 24 hours format is enabled then convert it back to 12 hours
+                    if(isset($this->settings['time_format']) and $this->settings['time_format'] == 24)
+                    {
+                        $ex_start_time = explode('-', $in_days_start_time);
+                        $ex_end_time = explode('-', $in_days_end_time);
+
+                        $in_days_start_hour = $ex_start_time[0];
+                        $in_days_start_minutes = $ex_start_time[1];
+                        $in_days_start_ampm = $ex_start_time[2];
+
+                        $in_days_end_hour = $ex_end_time[0];
+                        $in_days_end_minutes = $ex_end_time[1];
+                        $in_days_end_ampm = $ex_end_time[2];
+
+                        if(trim($in_days_start_ampm) == '')
+                        {
+                            if($in_days_start_hour < 12) $in_days_start_ampm = 'AM';
+                            elseif($in_days_start_hour == 12) $in_days_start_ampm = 'PM';
+                            elseif($in_days_start_hour > 12)
+                            {
+                                $in_days_start_hour -= 12;
+                                $in_days_start_ampm = 'PM';
+                            }
+                            elseif($in_days_start_hour == 0)
+                            {
+                                $in_days_start_hour = 12;
+                                $in_days_start_ampm = 'AM';
+                            }
+                        }
+
+                        if(trim($in_days_end_ampm) == '')
+                        {
+                            if($in_days_end_hour < 12) $in_days_end_ampm = 'AM';
+                            elseif($in_days_end_hour == 12) $in_days_end_ampm = 'PM';
+                            elseif($in_days_end_hour > 12)
+                            {
+                                $in_days_end_hour -= 12;
+                                $in_days_end_ampm = 'PM';
+                            }
+                            elseif($in_days_end_hour == 0)
+                            {
+                                $in_days_end_hour = 12;
+                                $in_days_end_ampm = 'AM';
+                            }
+                        }
+
+                        if(strlen($in_days_start_hour) == 1) $in_days_start_hour = '0'.$in_days_start_hour;
+                        if(strlen($in_days_start_minutes) == 1) $in_days_start_minutes = '0'.$in_days_start_minutes;
+
+                        if(strlen($in_days_end_hour) == 1) $in_days_end_hour = '0'.$in_days_end_hour;
+                        if(strlen($in_days_end_minutes) == 1) $in_days_end_minutes = '0'.$in_days_end_minutes;
+
+                        $in_days_start_time = $in_days_start_hour.'-'.$in_days_start_minutes.'-'.$in_days_start_ampm;
+                        $in_days_end_time = $in_days_end_hour.'-'.$in_days_end_minutes.'-'.$in_days_end_ampm;
+                    }
+
+                    $in_days_times = ':'.$in_days_start_time.':'.$in_days_end_time;
+                }
+
+                return $this->main->standardize_format($ex[0]) . ':' . $this->main->standardize_format($ex[1]).$in_days_times;
+            }, $in_days_arr);
 
             usort($in_days_arr, function($a, $b)
             {
-                return strtotime(explode(':', $a)[0]) - strtotime(explode(':', $b)[0]);
+                $ex_a = explode(':', $a);
+                $ex_b = explode(':', $b);
+
+                $date_a = $ex_a[0];
+                $date_b = $ex_b[0];
+
+                $in_day_a_time_label = '';
+                if(isset($ex_a[2]))
+                {
+                    $in_day_a_time = $ex_a[2];
+                    $pos = strpos($in_day_a_time, '-');
+                    if($pos !== false) $in_day_a_time_label = substr_replace($in_day_a_time, ':', $pos, 1);
+
+                    $in_day_a_time_label = str_replace('-', ' ', $in_day_a_time_label);
+                }
+
+                $in_day_b_time_label = '';
+                if(isset($ex_b[2]))
+                {
+                    $in_day_b_time = $ex_b[2];
+                    $pos = strpos($in_day_b_time, '-');
+                    if($pos !== false) $in_day_b_time_label = substr_replace($in_day_b_time, ':', $pos, 1);
+
+                    $in_day_b_time_label = str_replace('-', ' ', $in_day_b_time_label);
+                }
+
+                return strtotime(trim($date_a.' '.$in_day_a_time_label)) - strtotime(trim($date_b.' '.$in_day_b_time_label));
             });
 
-            foreach ( $in_days_arr as $key => $in_day_arr ) {
-                if ( is_numeric( $key ) ) {
-                    $in_days .= $in_day_arr . ',';
+            // Don't allow multiple occurrences per day in Lite version
+            if(!$this->getPRO())
+            {
+                $in_days_unique = array();
+                foreach($in_days_arr as $key => $in_day_arr)
+                {
+                    $ex = explode(':', $in_day_arr);
+                    $in_days_unique_key = $ex[0].'-'.$ex[1];
+
+                    if(isset($in_days_unique[$in_days_unique_key])) unset($in_days_arr[$key]);
+                    $in_days_unique[$in_days_unique_key] = 1;
                 }
+            }
+
+            if(!isset($in_days_arr[':i:'])) $in_days_arr[':i:'] = ':val:';
+            foreach($in_days_arr as $key => $in_day_arr)
+            {
+                if(is_numeric($key)) $in_days .= $in_day_arr . ',';
             }
         }
 
         $not_in_days = '';
-        if ( count( $not_in_days_arr ) ) {
-            foreach ( $not_in_days_arr as $key => $not_in_day_arr ) {
-                if ( is_numeric( $key ) ) {
-                    $not_in_days .= $this->main->standardize_format( $not_in_day_arr ) . ',';
-                }
+        if(count($not_in_days_arr))
+        {
+            foreach($not_in_days_arr as $key => $not_in_day_arr)
+            {
+                if(is_numeric($key)) $not_in_days .= $this->main->standardize_format($not_in_day_arr) . ',';
             }
         }
 
@@ -1046,6 +1169,9 @@ class MEC_feature_fes extends MEC_base
         $moved_online_link = (isset($mec['moved_online_link']) and filter_var($mec['moved_online_link'], FILTER_VALIDATE_URL)) ? esc_url($mec['moved_online_link']) : '';
         update_post_meta($post_id, 'mec_moved_online_link', $moved_online_link);
 
+        $cancelled_reason = (isset($mec['cancelled_reason']) and filter_var($mec['cancelled_reason'], FILTER_VALIDATE_URL)) ? esc_url($mec['cancelled_reason']) : '';
+        update_post_meta($post_id, 'mec_cancelled_reason', $cancelled_reason);
+
         do_action('save_fes_meta_action' , $post_id , $mec);
 
         if($booking_date_update)
@@ -1102,10 +1228,12 @@ class MEC_feature_fes extends MEC_base
         }
 
         // For Event Notification Badge.
-        update_post_meta($post_id, 'mec_event_date_submit', date('YmdHis', current_time('timestamp', 0)));
+        if(isset($_REQUEST['mec']['post_id']) and trim($_REQUEST['mec']['post_id']) == '-1') {
+            update_post_meta($post_id, 'mec_event_date_submit', date('YmdHis', current_time('timestamp', 0)));
+        }
 
         $message = '';
-        if($status == 'pending') $message = __('The event submitted. It will publish as soon as possible.', 'modern-events-calendar-lite');
+        if($status == 'pending') $message = __('Event submitted. It will publish as soon as possible.', 'modern-events-calendar-lite');
         elseif($status == 'publish') $message = __('The event published.', 'modern-events-calendar-lite');
         
         // Trigger Event

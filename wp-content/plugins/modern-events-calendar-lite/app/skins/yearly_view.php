@@ -64,6 +64,12 @@ class MEC_skin_yearly_view extends MEC_skins
         
         // The style
         $this->style = isset($this->skin_options['style']) ? $this->skin_options['style'] : 'modern';
+
+        // reason_for_cancellation
+        $this->reason_for_cancellation = isset($this->skin_options['reason_for_cancellation']) ? $this->skin_options['reason_for_cancellation'] : false;
+
+        // display_label
+        $this->display_label = isset($this->skin_options['display_label']) ? $this->skin_options['display_label'] : false;
         
         // Next/Previous Month
         $this->next_previous_button = isset($this->skin_options['next_previous_button']) ? $this->skin_options['next_previous_button'] : true;
@@ -173,31 +179,45 @@ class MEC_skin_yearly_view extends MEC_skins
             // Include Available Events
             $this->args['post__in'] = $IDs;
 
+            // Count of events per day
+            $IDs_count = array_count_values($IDs);
+
             // The Query
             $query = new WP_Query($this->args);
             if($query->have_posts())
             {
                 if(!isset($events[$date])) $events[$date] = array();
 
+                // Day Events
+                $d = array();
+
                 // The Loop
                 while($query->have_posts())
                 {
                     $query->the_post();
+                    $ID = get_the_ID();
 
-                    $rendered = $this->render->data(get_the_ID());
+                    $ID_count = isset($IDs_count[$ID]) ? $IDs_count[$ID] : 1;
+                    for($i = 1; $i <= $ID_count; $i++)
+                    {
+                        $rendered = $this->render->data($ID);
 
-                    $data = new stdClass();
-                    $data->ID = get_the_ID();
-                    $data->data = $rendered;
+                        $data = new stdClass();
+                        $data->ID = $ID;
+                        $data->data = $rendered;
 
-                    $data->date = array
-                    (
-                        'start'=>array('date'=>$date),
-                        'end'=>array('date'=>$this->main->get_end_date($date, $rendered))
-                    );
+                        $data->date = array
+                        (
+                            'start'=>array('date'=>$date),
+                            'end'=>array('date'=>$this->main->get_end_date($date, $rendered))
+                        );
 
-                    $events[$date][] = $data;
+                        $d[] = $this->render->after_render($data, $i);
+                    }
                 }
+
+                usort($d, array($this, 'sort_day_events'));
+                $events[$date] = $d;
             }
 
             // Restore original Post Data

@@ -6,7 +6,10 @@ $current_month_divider = $this->request->getVar('current_month_divider', 0);
 $settings = $this->main->get_settings();
 $styling = $this->main->get_styling();
 $this->localtime = isset($this->skin_options['include_local_time']) ? $this->skin_options['include_local_time'] : false;
+$display_label = isset($this->skin_options['display_label']) ? $this->skin_options['display_label'] : false;
+$reason_for_cancellation = isset($this->skin_options['reason_for_cancellation']) ? $this->skin_options['reason_for_cancellation'] : false;
 $event_colorskin = (isset($styling['mec_colorskin']) || isset($styling['color'])) ? 'colorskin-custom' : '';
+
 ?>
 <div class="mec-events-timeline-wrap mec-wrap <?php echo $event_colorskin; ?>">
 <?php foreach($this->events as $date=>$events): ?>
@@ -55,16 +58,17 @@ $event_colorskin = (isset($styling['mec_colorskin']) || isset($styling['color'])
                     <div class="mec-timeline-event-content">
                         <div class="clearfix">
                             <div class="mec-timeline-right-content">
-                                <div class="mec-timeline-event-image"><a data-event-id="<?php echo $event->data->ID; ?>" href="<?php echo $this->main->get_event_date_permalink($event->data->permalink, $event->date['start']['date']); ?>"><?php echo $event->data->thumbnails['thumblist']; ?></a></div>
+                                <div class="mec-timeline-event-image"><a data-event-id="<?php echo $event->data->ID; ?>" href="<?php echo $this->main->get_event_date_permalink($event, $event->date['start']['date']); ?>"><?php echo $event->data->thumbnails['thumblist']; ?></a></div>
                             </div>
                             <div class="mec-timeline-left-content">
                                 <div class="mec-timeline-main-content">
-                                    <?php $soldout = $this->main->get_flags($event->data->ID, $event_start_date); ?>
-                                    <h4 class="mec-event-title"><a data-event-id="<?php echo $event->data->ID; ?>" href="<?php echo $this->main->get_event_date_permalink($event->data->permalink, $event->date['start']['date']); ?>" class="mec-color-hover"><?php echo $event->data->title; ?></a><?php echo $soldout.$event_color; if (!empty($label_style)) echo '<span class="mec-fc-style">'.$label_style.'</span>'; ?></h4>
+                                    <?php $soldout = $this->main->get_flags($event); ?>
+                                    <h4 class="mec-event-title"><a data-event-id="<?php echo $event->data->ID; ?>" href="<?php echo $this->main->get_event_date_permalink($event, $event->date['start']['date']); ?>" class="mec-color-hover"><?php echo $event->data->title; ?></a><?php echo $soldout.$event_color; if (!empty($label_style)) echo '<span class="mec-fc-style">'.$label_style.'</span>'; ?></h4>
+                                    <?php echo $this->main->get_normal_labels($event, $display_label).$this->main->display_cancellation_reason($event->data->ID, $reason_for_cancellation); ?>
                                     <p><?php echo $excerpt.(trim($excerpt) ? ' ...' : ''); ?></p>
                                     <div class="mec-timeline-event-details">
                                         <div class="mec-timeline-event-time mec-color">
-                                            <i class="mec-sl-clock"></i><?php echo $this->main->mec_include_time_labels($start_time, $end_time); ?>
+                                            <i class="mec-sl-clock"></i><?php echo $this->main->display_time($start_time, $end_time); ?>
                                         </div>
                                     </div>
                                     <?php if(!empty($location['address'])): ?>
@@ -87,7 +91,7 @@ $event_colorskin = (isset($styling['mec_colorskin']) || isset($styling['color'])
                                 </div>
                             </div>
                         </div>
-                        <a class="mec-booking-button mec-timeline-readmore mec-bg-color" data-event-id="<?php echo $event->data->ID; ?>" href="<?php echo $this->main->get_event_date_permalink($event->data->permalink, $event->date['start']['date']); ?>"><?php echo (is_array($event->data->tickets) and count($event->data->tickets) and !strpos($soldout, '%%soldout%%')) ? $this->main->m('register_button', __('Register for event', 'modern-events-calendar-lite')) : $this->main->m('view_detail', __('View Details', 'modern-events-calendar-lite')); ?><i class="mec-sl-arrow-right"></i></a>
+                        <a class="mec-booking-button mec-timeline-readmore mec-bg-color" data-event-id="<?php echo $event->data->ID; ?>" href="<?php echo $this->main->get_event_date_permalink($event, $event->date['start']['date']); ?>"><?php echo (is_array($event->data->tickets) and count($event->data->tickets) and !strpos($soldout, '%%soldout%%')) ? $this->main->m('register_button', __('Register for event', 'modern-events-calendar-lite')) : $this->main->m('view_detail', __('View Details', 'modern-events-calendar-lite')); ?><i class="mec-sl-arrow-right"></i></a>
                     </div>
                 </div>
                 

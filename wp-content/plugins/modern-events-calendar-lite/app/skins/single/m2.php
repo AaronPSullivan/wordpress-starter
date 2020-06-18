@@ -4,6 +4,7 @@ defined('MECEXEC') or die();
 
 $booking_options = get_post_meta($event->data->ID, 'mec_booking', true);
 if(!is_array($booking_options)) $booking_options = array();
+$display_reason = get_post_meta($event->data->ID, 'mec_display_cancellation_reason_in_single_page', true);
 ?>
 <div class="mec-wrap <?php echo $event_colorskin; ?> clearfix <?php echo $this->html_class; ?> mec-modal-wrap" id="mec_skin_<?php echo $this->uniqueid; ?>" data-unique-id="<?php echo $this->uniqueid; ?>">
     <article class="mec-single-event mec-single-modern mec-single-modal">
@@ -65,8 +66,7 @@ if(!is_array($booking_options)) $booking_options = array();
                 <?php if($this->main->can_show_booking_module($event)): ?>
                     <a class="mec-booking-button mec-bg-color" href="#mec-events-meta-group-booking-<?php echo $this->uniqueid; ?>"><?php echo esc_html($this->main->m('register_button', __('REGISTER', 'modern-events-calendar-lite'))); ?></a>
                 <?php elseif(isset($event->data->meta['mec_more_info']) and trim($event->data->meta['mec_more_info']) and $event->data->meta['mec_more_info'] != 'http://'): ?>
-                    <a class="mec-booking-button mec-bg-color" target="<?php echo (isset($event->data->meta['mec_more_info_target']) ? $event->data->meta['mec_more_info_target'] : '_self'); ?>" href="<?php echo $event->data->meta['mec_more_info']; ?>"><?php if(isset($event->data->meta['mec_more_info_title']) and trim($event->data->meta['mec_more_info_title'])) echo esc_html(trim($event->data->meta['mec_more_info_title']), 'modern-events-calendar-lite'); else echo esc_html($this->main->m('register_button', __('REGISTER', 'modern-events-calendar-lite')));
-                     ?></a>
+                    <a class="mec-booking-button mec-bg-color" target="<?php echo (isset($event->data->meta['mec_more_info_target']) ? $event->data->meta['mec_more_info_target'] : '_self'); ?>" href="<?php echo $event->data->meta['mec_more_info']; ?>"><?php if(isset($event->data->meta['mec_more_info_title']) and trim($event->data->meta['mec_more_info_title'])) echo esc_html__(trim($event->data->meta['mec_more_info_title']), 'modern-events-calendar-lite'); else echo esc_html($this->main->m('register_button', __('REGISTER', 'modern-events-calendar-lite'))); ?></a>
                 <?php endif; ?>
             </div>
 
@@ -95,6 +95,14 @@ if(!is_array($booking_options)) $booking_options = array();
                         <h3 class="mec-events-single-section-title mec-location"><?php echo $this->main->m('taxonomy_location', __('Location', 'modern-events-calendar-lite')); ?></h3>
                         <dd class="author fn org"><?php echo (isset($location['name']) ? $location['name'] : ''); ?></dd>
                         <dd class="location"><address class="mec-events-address"><span class="mec-address"><?php echo (isset($location['address']) ? $location['address'] : ''); ?></span></address></dd>
+
+                        <?php if(isset($location['url']) and trim($location['url'])): ?>
+                        <dd class="mec-location-url">
+                            <i class="mec-sl-sitemap"></i>
+                            <h6><?php _e('Website', 'modern-events-calendar-lite'); ?></h6>
+                            <span><a href="<?php echo (strpos($location['url'], 'http') === false ? 'http://'.$location['url'] : $location['url']); ?>" class="mec-color-hover" target="_blank"><?php echo $location['url']; ?></a></span>
+                        </dd>
+                        <?php endif; ?>
                     </div>
                     <?php
                 }
@@ -160,7 +168,10 @@ if(!is_array($booking_options)) $booking_options = array();
         <div class="col-md-8">
 
             <div class="mec-event-content">
-                <div class="mec-single-event-description mec-events-content"><?php echo $this->main->get_post_content($event->data->ID); ?></div>
+                <div class="mec-single-event-description mec-events-content">
+                    <?php echo $this->main->get_post_content($event->data->ID); ?>
+                    <?php do_action('mec_accordion_skin_after_content' , $event); ?>
+                </div>
             </div>
 
             <!-- Links Module -->

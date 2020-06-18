@@ -5,7 +5,7 @@
  * Description: Fix the Gutenberg editor width to full size
  * Author: Anibal Ardid
  * Author URI: https://ardid.com.ar
- * Version: 1.0.2
+ * Version: 1.0.4
  * Text Domain: editorfullwidthgutenberg
  * License: GPL2+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
@@ -25,6 +25,12 @@ function editor_full_width_gutenberg() {
 	}
     .block-editor__container .wp-block {
         max-width: none !important;
+    }
+    /*code editor*/
+    .edit-post-text-editor__body {
+    	max-width: none !important;	
+    	margin-left: 2%;
+    	margin-right: 2%;
     }
   </style>';
 }

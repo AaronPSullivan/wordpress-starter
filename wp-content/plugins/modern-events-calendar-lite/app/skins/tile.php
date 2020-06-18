@@ -14,6 +14,8 @@ class MEC_skin_tile extends MEC_skins
     public $skin = 'tile';
     public $load_method = 'month';
 
+    public $reason_for_cancellation;
+    public $display_label;
     public $date_format_clean_1;
     public $date_format_clean_2;
     
@@ -56,6 +58,12 @@ class MEC_skin_tile extends MEC_skins
         
         // Search Form Options
         $this->sf_options = (isset($this->atts['sf-options']) and isset($this->atts['sf-options'][$this->skin])) ? $this->atts['sf-options'][$this->skin] : array();
+
+        // reason_for_cancellation
+        $this->reason_for_cancellation = isset($this->skin_options['reason_for_cancellation']) ? $this->skin_options['reason_for_cancellation'] : false;
+
+        // display_label
+        $this->display_label = isset($this->skin_options['display_label']) ? $this->skin_options['display_label'] : false;
         
         // Search Form Status
         $this->sf_status = isset($this->atts['sf_status']) ? $this->atts['sf_status'] : true;
@@ -93,6 +101,9 @@ class MEC_skin_tile extends MEC_skins
         
         // From Widget
         $this->widget = (isset($this->atts['widget']) and trim($this->atts['widget'])) ? true : false;
+
+        // Display Price
+        $this->display_price = (isset($this->skin_options['display_price']) and trim($this->skin_options['display_price'])) ? true : false;
 
         // The count in row
         $this->count = isset($this->skin_options['count']) ? $this->skin_options['count'] : '3';
@@ -189,6 +200,9 @@ class MEC_skin_tile extends MEC_skins
             // Include Available Events
             $this->args['post__in'] = $IDs;
 
+            // Count of events per day
+            $IDs_count = array_count_values($IDs);
+
             // Extending the end date
             $this->end_date = $date;
 
@@ -207,25 +221,33 @@ class MEC_skin_tile extends MEC_skins
             {
                 if(!isset($events[$date])) $events[$date] = array();
 
+                // Day Events
+                $d = array();
+
                 // The Loop
                 while($query->have_posts())
                 {
                     $query->the_post();
+                    $ID = get_the_ID();
 
-                    $rendered = $this->render->data(get_the_ID());
+                    $ID_count = isset($IDs_count[$ID]) ? $IDs_count[$ID] : 1;
+                    for($i = 1; $i <= $ID_count; $i++)
+                    {
+                        $rendered = $this->render->data($ID);
 
-                    $data = new stdClass();
-                    $data->ID = get_the_ID();
-                    $data->data = $rendered;
+                        $data = new stdClass();
+                        $data->ID = $ID;
+                        $data->data = $rendered;
 
-                    $data->date = array
-                    (
-                        'start'=>array('date'=>$date),
-                        'end'=>array('date'=>$this->main->get_end_date($date, $rendered))
-                    );
+                        $data->date = array
+                        (
+                            'start'=>array('date'=>$date),
+                            'end'=>array('date'=>$this->main->get_end_date($date, $rendered))
+                        );
 
-                    $events[$date][] = $data;
-                    $found++;
+                        $d[] = $this->render->after_render($data, $i);
+                        $found++;
+                    }
 
                     if($this->load_method === 'list' and $found >= $this->limit)
                     {
@@ -238,6 +260,9 @@ class MEC_skin_tile extends MEC_skins
                         break 2;
                     }
                 }
+
+                usort($d, array($this, 'sort_day_events'));
+                $events[$date] = $d;
             }
 
             // Restore original Post Data

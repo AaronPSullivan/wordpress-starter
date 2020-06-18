@@ -62,6 +62,7 @@ class MEC_feature_update extends MEC_base
         if(version_compare($version, '4.6.1', '<')) $this->version461();
         if(version_compare($version, '4.9.0', '<')) $this->version490();
         if(version_compare($version, '5.0.5', '<')) $this->version505();
+        if(version_compare($version, '5.5.1', '<')) $this->version551();
 
         // Update to latest version to prevent running the code twice
         update_option('mec_version', $this->main->get_version());
@@ -180,7 +181,7 @@ class MEC_feature_update extends MEC_base
           `dstart` date NOT NULL,
           `dend` date NOT NULL,
           `type` enum('include','exclude') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'include'
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
+        ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
 
         $this->db->q("ALTER TABLE `#__mec_dates` ADD PRIMARY KEY (`id`), ADD KEY `post_id` (`post_id`), ADD KEY `type` (`type`);");
         $this->db->q("ALTER TABLE `#__mec_dates` MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;");
@@ -303,19 +304,63 @@ class MEC_feature_update extends MEC_base
     public function version490()
     {
         // Get Booking Posts
-        $args = array(
+        $bookings = get_posts(array(
             'post_type'  => 'mec-books',
-        );
-        $bookings = get_posts($args);
-        foreach ($bookings as $id => $booking) {
+            'numberposts'  => '-1',
+        ));
+
+        foreach($bookings as $id => $booking)
+        {
             $event_id = get_post_meta($booking->ID, 'mec_event_id', true);
             $location_id = get_post_meta($event_id, 'mec_location_id', true);
-            if ( !empty( $location_id )) update_post_meta($booking->ID, 'mec_booking_location', $location_id);
+
+            if(!empty($location_id)) update_post_meta($booking->ID, 'mec_booking_location', $location_id);
         }
     }
 
     public function version505()
     {
         if(!wp_next_scheduled('mec_syncScheduler')) wp_schedule_event(time(), 'daily', 'mec_syncScheduler');
+    }
+
+    public function version551()
+    {
+        // Get Booking Posts
+        $bookings = get_posts(array(
+            'post_type'  => 'mec-books',
+            'numberposts'  => '-1',
+        ));
+
+        foreach($bookings as $id => $booking)
+        {
+            $event_id = get_post_meta($booking->ID, 'mec_event_id', true);
+
+            $start_time_int = (int) get_post_meta($event_id, 'mec_start_day_seconds', true);
+            $end_time_int = (int) get_post_meta($event_id, 'mec_end_day_seconds', true);
+
+            $start_time = $this->main->get_time($start_time_int);
+            $end_time = $this->main->get_time($end_time_int);
+
+            $mec_date = get_post_meta($booking->ID, 'mec_date', true);
+            list($start_date, $end_date) = explode(':', $mec_date);
+
+            if(is_numeric($start_date) or is_numeric($end_date)) continue;
+
+            $start_datetime = $start_date.' '.$start_time;
+            $end_datetime = $end_date.' '.$end_time;
+
+            // Update MEC Date
+            update_post_meta($booking->ID, 'mec_date', strtotime($start_datetime).':'.strtotime($end_datetime));
+
+            $post_date = date('Y-m-d H:i:s', strtotime($start_datetime));
+            $gmt_date = get_gmt_from_date($post_date);
+
+            // Update Booking Date
+            wp_update_post(array(
+                'ID' => $booking->ID,
+                'post_date' => $post_date,
+                'post_date_gmt' => $gmt_date,
+            ));
+        }
     }
 }

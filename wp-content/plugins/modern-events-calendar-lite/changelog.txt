@@ -1,5 +1,175 @@
-﻿v 5.2.3 – 31 March 2020
-- Added: SEO Schema section to specify event status
+﻿v 5.6.1 – 16 June 2020
+- Improved: Backend speed by refactoring the backend CSS and JS loading
+- Improved: Show errors upon featured image uploads in Frontend Event Submission if needed
+- Improved: The plugin uninstallation by removing more data
+- Improved: The related events module by hiding expired events
+- Improved: The loading of multiple day events in tile and agenda skins (pro)
+- Improved: The attendees module of BuddyPress integration (pro)
+- Updated: Whatsapp share URL
+- Optimized: Mass email sending in the reports menu (pro)
+- Fixed: Local time module that occurs in some rare conditions
+- Fixed: Location auto-suggest fields when the API key is not inserted (pro)
+- Fixed: Booking message in case of free booking (pro)
+- Fixed: Booking module regarding displaying extra elements after a successful booking (pro)
+- Fixed: Notification placeholders (pro)
+- Fixed: Ordering custom days events
+- Fixed: Google Calendar import
+- Fixed: Stripe payment (pro)
+- Fixed: Default configuration of full calendar skin
+- Fixed: Divi builder in Divi child themes
+- Fixed: Availability of “Sell all occurrences” events (pro)
+- Fixed: Some issues in profile short-code regarding date and time format (pro)
+- Fixed: Some issues related to Pro features in Lite version
+- Fixed: Monthly Calendar RTL
+- Fixed: Wizard dark mode
+- Fixed: Wizard time picker
+- Fixed: A conflict with “Admin column” plugin
+
+v 5.6.0 – 11 June 2020
+- Refactored: Booking system to be compatible with multiple occurrences in one day (pro)
+- Added: Multiple occurrences in one day
+- Added: %%ticket_name_time%% placeholder in notifications (pro)
+- Added: An option to disable booking restrictions with User IP (pro)
+- Added: An option to automatically map event locations and organizers with the translated ones in WPML duplicate (pro)
+- Added: Some filter and actions for third party developers
+- Added: Front-end event submission required form
+- Added: Active Campaign integration (pro)
+- Improved: The next event module to work with multiple occurrences in one day
+- Improved: %%ticket_name%% and %%ticket_time%% placeholders to print multiple data if available (pro)
+- Improved: The login shortcode (pro)
+- Improved: The local time module to work with multiple occurrences in one day
+- Improved: The map module in list and grid skins (pro)
+- Removed: Total bookings widget in the WordPress dashboard (lite)
+- Fixed: “Reports” page regarding showing those attendees that bought all occurrences of an event at once (pro)
+- Fixed: Available spots skin regarding showing remained spots (pro)
+- Fixed: “Stop Selling” ticket option (pro)
+- Fixed: A conflict with “Visualizer Table and Charts” plugin
+- Fixed: A conflict with “Advanced Ads” plugin
+- Fixed: A conflict with “Newsletter” plugin
+- Fixed: Showing sold-out flag (pro)
+- Fixed: Related events module
+
+v 5.5.0 – 1 June 2020
+- Added: Price display in all views of full calendar skin
+- Added: A default comment for payment gateways (pro)
+- Added: Total bookings widget in the WordPress dashboard (pro)
+- Added: Print widget in MEC dashboard and provide the ability to print events of a certain month
+- Added: A new option to set a maximum size for images uploaded from “Frontend Event Submission”
+- Added: A new feature to breadcrumb to display referred shortcode instead of archive page
+- Added: Excerpt field to the “Frontend Event Submission”
+- Added: “All day” string to the translate-able strings
+- Added: Advanced repeating string to the translate-able strings
+- Improved: The performance of booking transactions (pro)
+- Improved: Sending emails
+- Fixed: Single event page modern style when no set featured image
+- Fixed: Final message for free booking messages (pro)
+- Fixed: Google Recaptcha
+- Fixed: Stop selling tickets (pro)
+- Fixed: Tile view overlay skin
+- Fixed: Display content's images as Popup
+- Fixed: Some PHP notices
+- Fixed: Some minor issues
+
+v 5.4.6 – 17 May 2020
+- Added: <a href="https://webnus.net/modern-events-calendar/addons/fluent-view-layouts/?ref=17" target="_blank">Fluent-view</a> addon options (Free Addon)
+
+v 5.4.5 – 14 May 2020
+- Added: A holding status label next to date options in single event
+- Added: Minimum and maximum ticket options for coupons (pro)
+- Added: Maximum discount option for coupons (pro)
+- Added: Two placeholders for additional locations name and address
+- Added: Ongoing / Expired options to agenda and timeline skins
+- Improved: UX of shortcake builder
+- Improved: Reports menu to show all attendees of events (pro)
+- Improved: Booking Form to won’t show date and ticket count fields when not applicable (pro)
+- Improved: UX of date options of short-code builder
+- Fixed: “Show Booking Form Interval” option. (pro)
+- Fixed: A search issue in agenda skin (pro)
+- Fixed: An issue in full calendar when used as category archive
+- Fixed: Classic editor of WordPress
+- Fixed: Backend responsive on mobile and tablet 
+- Fixed: Reason for cancellation conditions
+- Fixed: Timeline image link on modal popup
+- Fixed: Schema
+
+v 5.4.0 – 5 May 2020
+- Added: An option to add different hours for custom days repeat type
+- Added: An option to keep status of events while importing XML file
+- Added: Compatibility with Rank Math and Schema Markup Rich Snippets
+- Added: Some new guides in filter section of shortcake builder
+- Added: Beaver Builder Shortcode
+- Improved: Booking process in case of free booking (pro)
+- Fixed: Local time on shortcodes
+- Fixed: Tile view responsive on mobile and tablet
+- Fixed: iCal export
+- Fixed: “Show only first day” option in skins
+- Fixed: Ticket availability in popup mode (pro)
+- Fixed: Disable MEC schema codes when Rank Math and Schema Markup Rich Snippets plugins are activated
+- Fixed: Search bar related to disabling the text input
+- Fixed: Reset search of WordPress created by search bar
+
+v 5.3.5 – 28 April 2020
+- Added: An option to accept one booking for all occurrences of a certain event (pro)
+- Added: Internal cache solution to cache frequently used data
+- Added: Style for taxonomies
+- Disabled: Yearly view by default in full calendar (lite)
+- Updated: French translation (Thanks to Bernard)
+- Used: A new formula for booking price calculation (pro)
+- Fixed: Price calculation after applying percentage coupons (pro)
+- Fixed: Event time form
+- Fixed: Yearly repeat
+- Fixed: Loading local time in skins
+- Fixed: Closing tag in grid skin
+- Fixed: Normal mode of search bar
+- Fixed: An issue in table creation when InnoDB module is not installed on MySQL server
+- Fixed: Display Normal label and Cancellation reason in full calendar
+- Fixed: some PHP notices
+
+v 5.3.0 – 21 April 2020
+- Added: Minimum option for coupons (pro)
+- Added: An option to display event time in grid skin
+- Added: Grid and tile skins to the full calendar skins
+- Added: Dark mode styles for wizards popup
+- Updated: The whole textual interface of the plugin for English
+- Fixed: Locked the "Enter Key" on search bar Ajax mode
+- Fixed: Wrong local-time date on shortcodes
+- Fixed: Display image content on modal popup
+- Fixed: A conflict with Seopress plugin
+- Fixed: A Conflict with Neve theme
+- Fixed: Related evens module
+- Fixed: Search bar
+- Fixed: Some minor issues
+
+v 5.2.7 – 14 April 2020
+- Fixed: An issue with full calendar
+
+v 5.2.6 – 14 April 2020
+- Added: Start and end dates in RSS feeds
+- Increased: Default date generation limit for advanced events
+- Fixed: Showing correct error on Facebook importer (pro)
+- Fixed: Loading gateway options when booking module is disabled (pro)
+- Fixed: Transaction ID in PayPal Gateway (pro)
+- Fixed: Google Maps Geo code on Safari browser (pro)
+- Fixed: The new events badge in backend
+- Fixed: Divi theme builder and the Bloom plugin (tinymc conflicts)
+- Fixed: Tile view responsive size on mobile and tablet
+- Fixed: Close button on modal popup view responsive size on mobile and tablet
+- Fixed: Hover style on the grid view skin minimal style
+
+v 5.2.5 – 8 April 2020
+- Added: Normal Label to all skins
+- Added: Cancellation reason to all skins
+- Added: Cancellation reason to single and popup single page
+- Added: Delete event feature on Google Calendar Export and Google Calendar import
+- Added: URL field for locations
+- Fixed: Carousel and slider skins
+- Fixed: User booking limit
+- Fixed: Weekly view
+- Fixed: Search when working with expired events
+- Fixed: Some minor issues
+
+v 5.2.3 – 31 March 2020
+- Added: SEO Schema section to specify event status due to COVID-19 (New properties for virtual, postponed, and canceled events — <a href="https://bit.ly/2ygWgF4" target="_blank">read more here</a>)
 - Added: A new currency (Israeli Shekel)
 - Changed: The next and back button positions on the booking form (pro)
 - Fixed: MEC sender name and email

@@ -30,9 +30,22 @@ if($this->style == 'colorful')
 
             $rcount = 1 ;
 
+            // if($this->show_only_expired_events)
+            // {
+            //     $start = $this->start_date;
+            //     $end = date('Y-m-01', strtotime('-10 Year', strtotime($start)));
+            // }
+            // else
+            // {
+            //     $start = $this->start_date;
+            //     $end = date('Y-m-t', strtotime('+10 Year', strtotime($start)));
+            // }
+
             if($this->show_only_expired_events)
             {
-                $start = $this->start_date;
+                $apply_sf_date = $this->request->getVar('apply_sf_date', 1);
+                $start = ((isset($this->sf) || $this->request->getVar('sf', array())) and $apply_sf_date) ? date('Y-m-t', strtotime($this->start_date)) : $this->start_date;
+
                 $end = date('Y-m-01', strtotime('-10 Year', strtotime($start)));
             }
             else
@@ -50,14 +63,20 @@ if($this->style == 'colorful')
             $i = 0;
             $found = 0;
             $events = array();
-
+            $current_month_divider = $this->request->getVar('current_month_divider', 0);
             foreach($dates as $date=>$IDs)
             {
-                // Include Available Events
-                $this->args['post__in'] = $IDs;
+                // No Event
+                if(!is_array($IDs) or (is_array($IDs) and !count($IDs))) continue;
 
                 // Check Finish Date
                 if(isset($this->maximum_date) and strtotime($date) > strtotime($this->maximum_date)) break;
+
+                // Include Available Events
+                $this->args['post__in'] = $IDs;
+
+                // Count of events per day
+                $IDs_count = array_count_values($IDs);
 
                 // Extending the end date
                 $this->end_date = $date;
@@ -71,52 +90,64 @@ if($this->style == 'colorful')
                     $this->args['offset'] = 0;
                 }
 
-                $month_id = date('Ym', strtotime($date));
-                if($this->count == '1' and $this->month_divider and $month_id != $current_month_divider): $current_month_divider = $month_id; ?>
-                    <div class="mec-month-divider" data-toggle-divider="mec-toggle-<?php echo date('Ym', strtotime($date)); ?>-<?php echo $this->id; ?>"><span><?php echo $this->main->date_i18n('F Y', strtotime($date)); ?></span><i class="mec-sl-arrow-down"></i></div>
-                <?php endif;
+                
 
                 // The Query
                 $query = new WP_Query($this->args);
                 if($query->have_posts())
                 {
+                    if(!isset($events[$date])) $events[$date] = array();
+
                     // The Loop
                     while($query->have_posts())
                     {
                         $query->the_post();
+                        $ID = get_the_ID();
 
-                        if(!isset($events[$date])) $events[$date] = array();
+                        $ID_count = isset($IDs_count[$ID]) ? $IDs_count[$ID] : 1;
 
-                        $rendered = $this->render->data(get_the_ID());
-
-                        $data = new stdClass();
-                        $data->ID = get_the_ID();
-                        $data->data = $rendered;
-                        $data->date = array
-                        (
-                            'start'=>array('date'=>$date),
-                            'end'=>array('date'=>$this->main->get_end_date($date, $rendered))
-                        );
-                        update_option( 'mec_sd_time_option', $data->date['start']['date'], true);
-                        update_option( 'mec_sdn_time_option', $data->date['end']['date'], true);
-                        update_option( 'mec_st_time_option', $data->data->time['start'], true);
-                        update_option( 'mec_stn_time_option', $data->data->time['end'], true);
-
-                        echo ($rcount == 1) ? '<div class="row">' : '';
-                        echo '<div class="col-md-'.$col.' col-sm-'.$col.'">';
-                        echo '<article class="mec-event-article mec-sd-event-article'. get_the_ID().' mec-clear" itemscope>';
-                        echo Plugin::instance()->frontend->get_builder_content_for_display( $this->style, true );
-                        echo '</article></div>';
-                        if($rcount == $count)
+                        for($i = 1; $i <= $ID_count; $i++)
                         {
-                            echo '</div>';
-                            $rcount = 0;
-                        }
+                            $rendered = $this->render->data($ID);
 
-                        $rcount++;
-                        $events[$date][] = $data;
-                        $map_events[] = $events[$date];
-                        $found++;
+                            $data = new stdClass();
+                            $data->ID = $ID;
+                            $data->data = $rendered;
+
+                            $data->date = array
+                            (
+                                'start'=>array('date'=>$date),
+                                'end'=>array('date'=>$this->main->get_end_date($date, $rendered))
+                            );
+
+                            $month_id = date('Ym', strtotime($date));
+                            if($this->count == '1' and $this->month_divider and $month_id != $current_month_divider): $current_month_divider = $month_id; ?>
+                                <div class="mec-month-divider" data-toggle-divider="mec-toggle-<?php echo date('Ym', strtotime($date)); ?>-<?php echo $this->id; ?>"><span><?php echo $this->main->date_i18n('F Y', strtotime($date)); ?></span><i class="mec-sl-arrow-down"></i></div>
+                            <?php endif;
+                            
+
+                            $events[$date][] = $this->render->after_render($data, $i);
+                            update_option( 'mec_sd_time_option', $data->date['start']['date'], true);
+                            update_option( 'mec_sdn_time_option', $data->date['end']['date'], true);
+                            update_option( 'mec_st_time_option', $data->data->time['start'], true);
+                            update_option( 'mec_stn_time_option', $data->data->time['end'], true);
+                            $found++;
+
+                            echo ($rcount == 1) ? '<div class="row">' : '';
+                            echo '<div class="col-md-'.$col.' col-sm-'.$col.'">';
+                            echo '<article class="mec-event-article mec-sd-event-article'. get_the_ID().' mec-clear" itemscope>';
+                            echo Plugin::instance()->frontend->get_builder_content_for_display( $this->style, true );
+                            echo '</article></div>';
+                            if($rcount == $count)
+                            {
+                                echo '</div>';
+                                $rcount = 0;
+                            }
+
+                            $rcount++;
+
+                            
+                        }
 
                         if($found >= $this->limit)
                         {
@@ -141,11 +172,14 @@ if($this->style == 'colorful')
 </div>
 
 <?php
-foreach ($map_events as $key => $value) {
-    foreach ($value as $keyy => $valuee) {
-        $map_eventss[] = $valuee;
+$map_eventss = array();
+if ( isset($map_events) && !empty($map_events)) :
+    foreach ($map_events as $key => $value) {
+        foreach ($value as $keyy => $valuee) {
+            $map_eventss[] = $valuee;
+        }
     }
-}
+endif;
 
 if ( isset($this->map_on_top) and $this->map_on_top ) :
 if(isset($map_eventss) and !empty($map_eventss))

@@ -2,14 +2,18 @@
 /** no direct access **/
 defined('MECEXEC') or die();
 
+/** @var $this MEC_skin_available_spot **/
+
 $styling = $this->main->get_styling();
 $event = $this->events[0];
 $settings = $this->main->get_settings();
 $this->localtime = isset($this->skin_options['include_local_time']) ? $this->skin_options['include_local_time'] : false;
+$display_label = isset($this->skin_options['display_label']) ? $this->skin_options['display_label'] : false;
+$reason_for_cancellation = isset($this->skin_options['reason_for_cancellation']) ? $this->skin_options['reason_for_cancellation'] : false;
 $dark_mode = isset($styling['dark_mode']) ? $styling['dark_mode'] : '';
 
 if($dark_mode == 1) $set_dark = 'mec-dark-mode';
-else $set_dark ='';
+else $set_dark = '';
 
 // Event is not valid!
 if(!isset($event->data)) return;
@@ -18,21 +22,30 @@ $event_colorskin = (isset($styling['mec_colorskin']) || isset($styling['color'])
 $event_location = isset($event->data->locations[$event->data->meta['mec_location_id']]) ? $event->data->locations[$event->data->meta['mec_location_id']] : array();
 $event_organizer = isset($event->data->organizers[$event->data->meta['mec_organizer_id']]) ? $event->data->organizers[$event->data->meta['mec_organizer_id']] : array();
 $event_date = (isset($event->date['start']) ? $event->date['start']['date'] : $event->data->meta['mec_start_date']);
-$event_link = (isset($event->data->permalink) and trim($event->data->permalink)) ? $this->main->get_event_date_permalink($event->data->permalink, $event_date) : get_permalink($event->data->ID);
+$event_link = (isset($event->data->permalink) and trim($event->data->permalink)) ? $this->main->get_event_date_permalink($event, $event_date) : get_permalink($event->data->ID);
 $event_title = $event->data->title;
 $event_thumb_url = $event->data->featured_image['large'];
 $start_date = (isset($event->date['start']) and isset($event->date['start']['date'])) ? $event->date['start']['date'] : date('Y-m-d H:i:s');
 $end_date = (isset($event->date['end']) and isset($event->date['end']['date'])) ? $event->date['end']['date'] : date('Y-m-d H:i:s');
 
 $event_time = '';
-$event_time .= sprintf("%02d", (isset($event->data->meta['mec_date']['start']['hour']) ? $event->data->meta['mec_date']['start']['hour'] : 8)).':';
-$event_time .= sprintf("%02d", (isset($event->data->meta['mec_date']['start']['minutes']) ? $event->data->meta['mec_date']['start']['minutes'] : 0));
-$event_time .= (isset($event->data->meta['mec_date']['start']['ampm']) ? $event->data->meta['mec_date']['start']['ampm'] : 'AM');
+if(isset($event->data->time['start_raw'])) $event_time = $event->data->time['start_raw'];
+else
+{
+    $event_time .= sprintf("%02d", (isset($event->data->meta['mec_date']['start']['hour']) ? $event->data->meta['mec_date']['start']['hour'] : 8)).':';
+    $event_time .= sprintf("%02d", (isset($event->data->meta['mec_date']['start']['minutes']) ? $event->data->meta['mec_date']['start']['minutes'] : 0));
+    $event_time .= (isset($event->data->meta['mec_date']['start']['ampm']) ? $event->data->meta['mec_date']['start']['ampm'] : 'AM');
+}
 
 $event_etime = '';
-$event_etime .= sprintf("%02d", (isset($event->data->meta['mec_date']['end']['hour']) ? $event->data->meta['mec_date']['end']['hour'] : 6)).':';
-$event_etime .= sprintf("%02d", (isset($event->data->meta['mec_date']['end']['minutes']) ? $event->data->meta['mec_date']['end']['minutes'] : 0));
-$event_etime .= (isset($event->data->meta['mec_date']['end']['ampm']) ? $event->data->meta['mec_date']['end']['ampm'] : 'PM');
+if(isset($event->data->time['end_raw'])) $event_etime = $event->data->time['end_raw'];
+else
+{
+    $event_etime .= sprintf("%02d", (isset($event->data->meta['mec_date']['end']['hour']) ? $event->data->meta['mec_date']['end']['hour'] : 6)).':';
+    $event_etime .= sprintf("%02d", (isset($event->data->meta['mec_date']['end']['minutes']) ? $event->data->meta['mec_date']['end']['minutes'] : 0));
+    $event_etime .= (isset($event->data->meta['mec_date']['end']['ampm']) ? $event->data->meta['mec_date']['end']['ampm'] : 'PM');
+}
+
 $event_start_date = !empty($event->date['start']['date']) ? $event->date['start']['date'] : '';
 
 $label_style = '';
@@ -82,14 +95,21 @@ jQuery(document).ready(function()
 if($this->main->is_ajax()) echo $javascript;
 else $this->factory->params('footer', $javascript);
 
+$occurrence_time = isset($event->date['start']['timestamp']) ? $event->date['start']['timestamp'] : strtotime($event->date['start']['date']);
+
 $book = $this->getBook();
-$availability = $book->get_tickets_availability($event->data->ID, $start_date);
+$availability = $book->get_tickets_availability($event->data->ID, $occurrence_time);
 $event_color = isset($event->data->meta['mec_color']) ? '<span class="event-color" style="background: #'.$event->data->meta['mec_color'].'"></span>' : '';
 
 $spots = 0;
+$total_spots = -1;
 foreach($availability as $ticket_id=>$count)
 {
-    if(!is_numeric($ticket_id)) continue;
+    if(!is_numeric($ticket_id))
+    {
+        $total_spots = $count;
+        continue;
+    }
 
     if($count != '-1') $spots += $count;
     else
@@ -98,6 +118,8 @@ foreach($availability as $ticket_id=>$count)
         break;
     }
 }
+
+if($total_spots > 0) $spots = min($spots, $total_spots);
 
 do_action('mec_start_skin' , $this->id);
 do_action('mec_available_spot_skin_head');
@@ -165,7 +187,8 @@ do_action('mec_available_spot_skin_head');
                         </div>
                     </div>
                     <div class="mec-event-content">
-                        <h4 class="mec-event-title"><a class="mec-color-hover" href="<?php echo $event_link; ?>"><?php echo $event_title; ?></a><?php echo $this->main->get_flags($event->data->ID, $event_start_date).$event_color; ?></h4>
+                        <h4 class="mec-event-title"><a class="mec-color-hover" href="<?php echo $event_link; ?>"><?php echo $event_title; ?></a><?php echo $this->main->get_flags($event).$event_color; ?></h4>
+                        <?php echo $this->main->get_normal_labels($event, $display_label).$this->main->display_cancellation_reason($event->data->ID, $reason_for_cancellation);?>
                         <?php
                             $excerpt = trim($event->data->post->post_excerpt) ? $event->data->post->post_excerpt : '';
 

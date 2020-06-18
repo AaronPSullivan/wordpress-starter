@@ -168,11 +168,16 @@ jQuery(document).ready(function($) {
       var loading_style = $('select#loading-style').val();
       var loading_style_default = $('select#loading-style').data('default');
       var loading_style_target = $('select#loading-style').parent().find('.ajax-load-more-wrap');
-      
       if(loading_style_target){
 	      var loading_style_base = loading_style_target.data('base');
 			loading_style_target.removeAttr('class');
 			loading_style_target.attr('class', loading_style_base + loading_style);
+			if(loading_style.indexOf('infinite') !== -1){
+				$('.ajax-load-more-wrap button').addClass('loading');
+			} else {
+				$('.ajax-load-more-wrap button').removeClass('loading');
+			}
+			
       }
       if(loading_style && loading_style !== loading_style_default){
          output += ' loading_style="'+loading_style+'"';
@@ -431,26 +436,37 @@ jQuery(document).ready(function($) {
       var paging_controls = $('#alm-paging input[name=paging-controls]:checked').val();
       var paging_show_at_most = $('#alm-paging input#show-at-most').val();
       var paging_classes = $('#alm-paging input#paging-classes').val();
+      var paging_scroll = $('#alm-paging select#paging-scroll').val();
+      var paging_scrolltop = $('#alm-paging input#paging-scrolltop').val();
       
       var paging_first_label = $('#alm-paging input#paging-first-label').val();
       var paging_last_label = $('#alm-paging input#paging-last-label').val();
       var paging_previous_label = $('#alm-paging input#paging-previous-label').val();
       var paging_next_label = $('#alm-paging input#paging-next-label').val();
-      
+
       if(paging !== 'false' && paging != undefined){
          output += ' paging="'+paging+'"';
-         output += ' paging_controls="'+paging_controls+'"';
-         if(paging_show_at_most !== ''){
-            output += ' paging_show_at_most="'+paging_show_at_most+'"';
-         }
+         
          if(paging_classes !== ''){
             output += ' paging_classes="'+paging_classes+'"';
          }
+         if(paging_show_at_most !== ''){
+            output += ' paging_show_at_most="'+paging_show_at_most+'"';
+         }
+         if(paging_scroll !== 'false'){
+	         $('.paging-scrolltop-wrap').show();
+	         paging_scrolltop = (paging_scrolltop) ? paging_scrolltop : 100;
+            output += ' paging_scroll="true:'+ paging_scrolltop+ '"';
+         } else {
+	         $('.paging-scrolltop-wrap').hide();
+         }
+         
          $('#nav-controls').slideDown(250, 'alm_easeInOutQuad');
+    
+         output += ' paging_controls="'+paging_controls+'"';
          
          if(paging_controls === 'true'){
             $('#paging-controls-nav').slideDown(250, 'alm_easeInOutQuad');
-            
             output += (paging_first_label !== '') ? ' paging_first_label="'+paging_first_label+'"' : '';
             output += (paging_last_label !== '') ? ' paging_last_label="'+paging_last_label+'"' : '';
             output += (paging_previous_label !== '') ? ' paging_previous_label="'+paging_previous_label+'"' : '';
@@ -1721,6 +1737,17 @@ jQuery(document).ready(function($) {
       _alm.generateUniqueID(10, el);
    });
 
+	
+	// Button loader preview.
+	$('.ajax-load-more-wrap button').on('click', function(e){
+		var button = $(this).get(0);
+		var parent = button.parentNode;
+		if(parent.classList.contains('infinite')){
+			$(this).addClass('loading');
+		} else {
+			$(this).toggleClass('loading');
+		}
+	});
 
 
 });
