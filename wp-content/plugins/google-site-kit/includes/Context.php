@@ -14,6 +14,7 @@ use AMP_Options_Manager;
 use AMP_Theme_Support;
 use Google\Site_Kit\Core\Util\Input;
 use Google\Site_Kit\Core\Util\Entity;
+use Google\Site_Kit\Core\Util\Entity_Factory;
 
 /**
  * Class representing the context in which the plugin is running.
@@ -188,37 +189,41 @@ final class Context {
 	 * @return Entity|null The current entity, or null if none could be determined.
 	 */
 	public function get_reference_entity() {
-		// If currently in WP admin, run admin-specific checks.
-		if ( is_admin() ) {
-			$post = get_post();
-			if ( $post instanceof \WP_Post ) {
-				return $this->create_entity_for_post( $post );
+		// Support specific URL stats being checked in Site Kit dashboard details view.
+		if ( is_admin() && 'googlesitekit-dashboard' === $this->input()->filter( INPUT_GET, 'page' ) ) {
+			$entity_url_query_param = $this->input()->filter( INPUT_GET, 'permaLink' );
+			if ( ! empty( $entity_url_query_param ) ) {
+				return $this->get_reference_entity_from_url( $entity_url_query_param );
 			}
-			return null;
 		}
 
-		// Otherwise, run frontend-specific checks.
-		if ( is_singular() || is_home() && ! is_front_page() ) {
-			$post = get_queried_object();
-			if ( $post instanceof \WP_Post ) {
-				return $this->create_entity_for_post( $post );
-			}
-			return null;
-		}
+		$entity = Entity_Factory::from_context();
+		return $this->filter_entity_reference_url( $entity );
+	}
 
-		// If not singular (see above) but front page, this is the blog archive.
-		if ( is_front_page() ) {
-			return new Entity(
-				user_trailingslashit( $this->get_reference_site_url() ),
-				array(
-					'type' => 'home',
-				)
-			);
-		}
+	/**
+	 * Gets the entity for the given URL, if available.
+	 *
+	 * An entity in Site Kit terminology is based on a canonical URL, i.e. every
+	 * canonical URL has an associated entity.
+	 *
+	 * An entity may also have a type, a title, and an ID.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @param string $url URL to determine the entity from.
+	 * @return Entity|null The current entity, or null if none could be determined.
+	 */
+	public function get_reference_entity_from_url( $url ) {
+		// Ensure local URL is used for lookup.
+		$url = str_replace(
+			$this->get_reference_site_url(),
+			untrailingslashit( home_url() ),
+			$url
+		);
 
-		// TODO: This is not comprehensive, but will be expanded in the future.
-		// Related: https://github.com/google/site-kit-wp/issues/174.
-		return null;
+		$entity = Entity_Factory::from_url( $url );
+		return $this->filter_entity_reference_url( $entity );
 	}
 
 	/**
@@ -226,7 +231,7 @@ final class Context {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int|\WP_Post $post  Optional. Post ID or post object. Default is the global `$post`.
+	 * @param int|WP_Post $post Optional. Post ID or post object. Default is the global `$post`.
 	 *
 	 * @return string|false The reference permalink URL or false if post does not exist.
 	 */
@@ -294,14 +299,38 @@ final class Context {
 			return false;
 		}
 
-		$exposes_support_mode = method_exists( 'AMP_Theme_Support', 'get_support_mode' )
-			&& defined( 'AMP_Theme_Support::STANDARD_MODE_SLUG' )
+		$exposes_support_mode = defined( 'AMP_Theme_Support::STANDARD_MODE_SLUG' )
 			&& defined( 'AMP_Theme_Support::TRANSITIONAL_MODE_SLUG' )
 			&& defined( 'AMP_Theme_Support::READER_MODE_SLUG' );
 
+		if ( defined( 'AMP__VERSION' ) ) {
+			$amp_plugin_version = AMP__VERSION;
+			if ( strpos( $amp_plugin_version, '-' ) !== false ) {
+				$amp_plugin_version = explode( '-', $amp_plugin_version )[0];
+			}
+
+			$amp_plugin_version_2_or_higher = version_compare( $amp_plugin_version, '2.0.0', '>=' );
+		} else {
+			$amp_plugin_version_2_or_higher = false;
+		}
+
+		if ( $amp_plugin_version_2_or_higher ) {
+			$exposes_support_mode = class_exists( 'AMP_Options_Manager' )
+				&& method_exists( 'AMP_Options_Manager', 'get_option' )
+				&& $exposes_support_mode;
+		} else {
+			$exposes_support_mode = class_exists( 'AMP_Theme_Support' )
+				&& method_exists( 'AMP_Theme_Support', 'get_support_mode' )
+				&& $exposes_support_mode;
+		}
+
 		if ( $exposes_support_mode ) {
 			// If recent version, we can properly detect the mode.
-			$mode = AMP_Theme_Support::get_support_mode();
+			if ( $amp_plugin_version_2_or_higher ) {
+				$mode = AMP_Options_Manager::get_option( 'theme_support' );
+			} else {
+				$mode = AMP_Theme_Support::get_support_mode();
+			}
 
 			if ( AMP_Theme_Support::STANDARD_MODE_SLUG === $mode ) {
 				return self::AMP_MODE_PRIMARY;
@@ -347,27 +376,25 @@ final class Context {
 	}
 
 	/**
-	 * Creates the entity for a given post object.
+	 * Filters the given entity's reference URL, effectively creating a copy of
+	 * the entity with the reference URL accounted for.
 	 *
-	 * @since 1.7.0
+	 * @since 1.15.0
 	 *
-	 * @param \WP_Post $post A WordPress post object.
-	 * @return Entity The entity for the post.
+	 * @param Entity|null $entity Entity to filter reference ID for, or null.
+	 * @return Entity|null Filtered entity or null, based on $entity.
 	 */
-	private function create_entity_for_post( \WP_Post $post ) {
-		$type = 'post';
-
-		// If this post is assigned as the home page, it is actually the blog archive.
-		if ( (int) get_option( 'page_for_posts' ) === (int) $post->ID ) {
-			$type = 'home';
+	private function filter_entity_reference_url( Entity $entity = null ) {
+		if ( ! $entity ) {
+			return null;
 		}
 
 		return new Entity(
-			$this->filter_reference_url( get_permalink( $post ) ),
+			$this->filter_reference_url( $entity->get_url() ),
 			array(
-				'type'  => $type,
-				'title' => $post->post_title,
-				'id'    => $post->ID,
+				'type'  => $entity->get_type(),
+				'title' => $entity->get_title(),
+				'id'    => $entity->get_id(),
 			)
 		);
 	}

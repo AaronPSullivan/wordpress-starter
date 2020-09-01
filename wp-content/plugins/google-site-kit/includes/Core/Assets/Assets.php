@@ -97,12 +97,18 @@ final class Assets {
 		add_action( 'admin_enqueue_scripts', $register_callback );
 		add_action( 'wp_enqueue_scripts', $register_callback );
 
+		// All other asset-related general logic should only be active when the
+		// current user can actually use Site Kit (which only is so if they can
+		// authenticate).
+		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
+			return;
+		}
+
+		$this->add_amp_dev_mode_attributes( $this->get_assets() );
+
 		add_action(
 			'admin_enqueue_scripts',
 			function() {
-				if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
-					return;
-				}
 				$this->enqueue_minimal_admin_script();
 			}
 		);
@@ -275,10 +281,8 @@ final class Assets {
 		$assets = $this->get_assets();
 
 		foreach ( $assets as $asset ) {
-			$asset->register();
+			$asset->register( $this->context );
 		}
-
-		$this->add_amp_dev_mode_attributes( $assets );
 	}
 
 	/**
@@ -348,6 +352,7 @@ final class Assets {
 			'googlesitekit-datastore-forms',
 			'googlesitekit-datastore-site',
 			'googlesitekit-datastore-user',
+			'googlesitekit-widgets',
 		);
 
 		// Register plugin scripts.
@@ -361,7 +366,7 @@ final class Assets {
 			new Script_Data(
 				'googlesitekit-commons',
 				array(
-					'global'        => 'googlesitekit',
+					'global'        => '_googlesitekitLegacyData',
 					'data_callback' => function () {
 						return $this->get_inline_data();
 					},
@@ -435,7 +440,7 @@ final class Assets {
 			new Script(
 				'googlesitekit-base',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-admin.js',
+					'src'          => $base_url . 'js/googlesitekit-base.js',
 					'dependencies' => array( 'googlesitekit-apifetch-data', 'googlesitekit-base-data' ),
 					'execution'    => 'defer',
 				)
@@ -502,6 +507,8 @@ final class Assets {
 						'googlesitekit-vendor',
 						'googlesitekit-api',
 						'googlesitekit-data',
+						'googlesitekit-datastore-site',
+						'googlesitekit-datastore-user',
 					),
 				)
 			),
@@ -516,9 +523,9 @@ final class Assets {
 			),
 			// End JSR Assets.
 			new Script(
-				'googlesitekit-ads-detect',
+				'googlesitekit-pagead2.ads',
 				array(
-					'src' => $base_url . 'js/ads.js',
+					'src' => $base_url . 'js/pagead2.ads.js',
 				)
 			),
 			new Script(
@@ -543,7 +550,7 @@ final class Assets {
 				)
 			),
 			new Script(
-				'googlesitekit-module-page',
+				'googlesitekit-module',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-module.js',
 					'dependencies' => $dependencies,
@@ -723,13 +730,6 @@ final class Assets {
 		$site_url     = $this->context->get_reference_site_url();
 		$input        = $this->context->input();
 		$page         = $input->filter( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
-		$permalink    = $input->filter( INPUT_GET, 'permaLink', FILTER_SANITIZE_STRING );
-		$permalink    = $permalink ?: $this->context->get_reference_canonical();
-		$page_title   = $input->filter( INPUT_GET, 'pageTitle', FILTER_SANITIZE_STRING );
-
-		if ( ! $page_title ) {
-			$page_title = is_home() ? get_bloginfo( 'blogname' ) : get_the_title();
-		}
 
 		$admin_data = array(
 			'siteURL'          => esc_url_raw( $site_url ),
@@ -746,16 +746,12 @@ final class Assets {
 			'currentAdminPage' => ( is_admin() && $page ) ? sanitize_key( $page ) : null,
 			'resetSession'     => $input->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN ),
 			'reAuth'           => $input->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN ),
-			'userData'         => array(
-				'id'      => $current_user->ID,
-				'email'   => $current_user->user_email,
-				'name'    => $current_user->display_name,
-				'picture' => get_avatar_url( $current_user->user_email ),
-			),
 			'ampEnabled'       => (bool) $this->context->get_amp_mode(),
 			'ampMode'          => $this->context->get_amp_mode(),
 			'homeURL'          => home_url(),
 		);
+
+		$current_entity = $this->context->get_reference_entity();
 
 		return array(
 
@@ -766,7 +762,7 @@ final class Assets {
 			 *
 			 * @param array $data Admin data.
 			 */
-			'admin'              => apply_filters( 'googlesitekit_admin_data', $admin_data ),
+			'admin'         => apply_filters( 'googlesitekit_admin_data', $admin_data ),
 
 			/**
 			 * Filters the modules data to pass to JS.
@@ -775,9 +771,9 @@ final class Assets {
 			 *
 			 * @param array $data Data about each module.
 			 */
-			'modules'            => apply_filters( 'googlesitekit_modules_data', array() ),
-			'locale'             => $locale,
-			'permissions'        => array(
+			'modules'       => apply_filters( 'googlesitekit_modules_data', array() ),
+			'locale'        => $locale,
+			'permissions'   => array(
 				'canAuthenticate'      => current_user_can( Permissions::AUTHENTICATE ),
 				'canSetup'             => current_user_can( Permissions::SETUP ),
 				'canViewPostsInsights' => current_user_can( Permissions::VIEW_POSTS_INSIGHTS ),
@@ -796,7 +792,7 @@ final class Assets {
 			 *
 			 * @param array $data Authentication Data.
 			 */
-			'setup'              => apply_filters( 'googlesitekit_setup_data', array() ),
+			'setup'         => apply_filters( 'googlesitekit_setup_data', array() ),
 
 			/**
 			 * Filters the notification message to print to plugin dashboard.
@@ -805,14 +801,11 @@ final class Assets {
 			 *
 			 * @param array $data Notification Data.
 			 */
-			'notifications'      => apply_filters( 'googlesitekit_notification_data', array() ),
-			'permaLink'          => esc_url_raw( $permalink ),
-			'pageTitle'          => $page_title,
-			'postID'             => get_the_ID(),
-			'postType'           => get_post_type(),
-			'dashboardPermalink' => $this->context->admin_url( 'dashboard' ),
-			'publicPath'         => $this->context->url( 'dist/assets/js/' ),
-			'editmodule'         => $input->filter( INPUT_GET, 'editmodule', FILTER_SANITIZE_STRING ),
+			'notifications' => apply_filters( 'googlesitekit_notification_data', array() ),
+			'permaLink'     => $current_entity ? esc_url_raw( $current_entity->get_url() ) : false,
+			'pageTitle'     => $current_entity ? $current_entity->get_title() : '',
+			'publicPath'    => $this->context->url( 'dist/assets/js/' ),
+			'editmodule'    => $input->filter( INPUT_GET, 'editmodule', FILTER_SANITIZE_STRING ),
 		);
 	}
 

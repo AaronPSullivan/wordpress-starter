@@ -3,7 +3,7 @@
  * Plugin Name:  Popup Maker
  * Plugin URI:   https://wppopupmaker.com/?utm_campaign=PluginInfo&utm_source=plugin-header&utm_medium=plugin-uri
  * Description:  Easily create & style popups with any content. Theme editor to quickly style your popups. Add forms, social media boxes, videos & more.
- * Version:      1.10.2
+ * Version:      1.11.2
  * Author:       Popup Maker
  * Author URI:   https://wppopupmaker.com/?utm_campaign=PluginInfo&utm_source=plugin-header&utm_medium=author-uri
  * License:      GPL2 or later
@@ -13,10 +13,10 @@
  *
  * @package     POPMAKE
  * @author      Daniel Iser
- * @copyright   Copyright (c) 2019, Code Atlantic LLC
+ * @copyright   Copyright (c) 2020, Code Atlantic LLC
  */
 
-// Exit if accessed directly
+// Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -93,7 +93,7 @@ class Popup_Maker {
 	/**
 	 * @var string Plugin Version
 	 */
-	public static $VER = '1.10.2';
+	public static $VER = '1.11.2';
 
 	/**
 	 * @var int DB Version
@@ -327,6 +327,8 @@ class Popup_Maker {
 		PUM_Shortcode_PopupTrigger::init();
 		PUM_Shortcode_PopupClose::init();
 		PUM_Shortcode_PopupCookie::init();
+
+		PUM_Telemetry::init();
 	}
 
 	/**
@@ -411,3 +413,8 @@ function popmake_initialize() {
 function PopMake() {
 	return Popup_Maker::instance();
 }
+
+/**
+ * This is currently here until we reorganize the plugin file structure to handle package loading & composer autoloading with failure notices.
+ */
+require_once( plugin_dir_path( __FILE__ ) . '/packages/action-scheduler/action-scheduler.php' );

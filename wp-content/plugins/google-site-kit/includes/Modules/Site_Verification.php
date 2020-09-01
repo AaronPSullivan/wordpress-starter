@@ -129,19 +129,18 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	}
 
 	/**
-	 * Returns the mapping between available datapoints and their services.
+	 * Gets map of datapoint to definition data for each.
 	 *
-	 * @since 1.0.0
+	 * @since 1.12.0
 	 *
-	 * @return array Associative array of $datapoint => $service_identifier pairs.
+	 * @return array Map of datapoints to their definitions.
 	 */
-	protected function get_datapoint_services() {
+	protected function get_datapoint_definitions() {
 		return array(
-			// GET / POST.
-			'verification'       => 'siteverification',
-			// GET.
-			'verification-token' => 'siteverification',
-			'verified-sites'     => 'siteverification',
+			'GET:verification'       => array( 'service' => 'siteverification' ),
+			'POST:verification'      => array( 'service' => 'siteverification' ),
+			'GET:verification-token' => array( 'service' => 'siteverification' ),
+			'GET:verified-sites'     => array( 'service' => 'siteverification' ),
 		);
 	}
 
@@ -488,7 +487,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	private function serve_verification_file( $verification_token ) {
 		$user_ids = ( new \WP_User_Query(
 			array(
-				// phpcs:ignore WordPress.VIP.SlowDBQuery
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 				'meta_key'   => $this->user_options->get_meta_key( Verification_File::OPTION ),
 				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 				'meta_value' => $verification_token,

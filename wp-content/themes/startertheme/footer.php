@@ -22,7 +22,7 @@
                 <div class="col-12 col-lg-4 text-center text-sm-left pb-sm-4">
                     
                       <div class="site-info">
-                            <a href="<?php home_url();?>" id="footer-logo-link" rel="home"><img src="<?php echo get_template_directory_uri();?>/images/startertheme-logo-reversed.svg" class="footer-logo" alt="startertheme logo"></a>
+                            <a href="<?php   echo get_home_url();  ?>" id="footer-logo-link" rel="home"><img src="<?php echo get_template_directory_uri();?>/images/startertheme-logo-reversed.svg" class="footer-logo" alt="startertheme logo"></a>
                           
                           
                     </div><!-- .site-info -->
