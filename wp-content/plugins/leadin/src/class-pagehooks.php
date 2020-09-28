@@ -13,9 +13,17 @@ class PageHooks {
 	 */
 	public function __construct() {
 		add_action( 'wp_head', array( $this, 'add_page_analytics' ) );
+		add_action( 'wp_head', array( $this, 'add_form_management_script' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'add_frontend_scripts' ) );
 		add_filter( 'script_loader_tag', array( $this, 'add_id_to_tracking_code' ), 10, 2 );
 		add_shortcode( 'hubspot', array( $this, 'leadin_add_hubspot_shortcode' ) );
+	}
+
+	/**
+	 * Generates a unique uuid
+	 */
+	private function generate_div_uuid() {
+		return time() * 1000 . '-' . rand( 1e9, 1e10 - 1 );
 	}
 
 	/**
@@ -112,17 +120,20 @@ class PageHooks {
 
 		switch ( $parsed_attributes['type'] ) {
 			case 'form':
+				$form_div_uuid = $this->generate_div_uuid();
 				return '
-					<' . 'script charset="utf-8" type="text/javascript" src="' . LEADIN_FORMS_SCRIPT_URL . '"></script>
 					<script>
-						hbspt.forms.create({
+						hbsptReady({
 							portalId: ' . $portal_id . ',
 							formId: "' . $id . '",
+							target: "#hbspt-form-' . $form_div_uuid . '",
 							shortcode: "wp",
 							' . LEADIN_FORMS_PAYLOAD . '
 						});
 					</script>
-				';
+					<div class="hbspt-form" id="hbspt-form-' . $form_div_uuid . '"></div>
+					<' . 'script charset="utf-8" type="text/javascript" src="' . LEADIN_FORMS_SCRIPT_URL . '" defer onload="window.hbsptReady()"></script>
+        ';
 			case 'cta':
 				return '
 					<!--HubSpot Call-to-Action Code -->
@@ -143,5 +154,30 @@ class PageHooks {
 					<!-- end HubSpot Call-to-Action Code -->
 				';
 		}
+	}
+
+	/**
+	 * Adds script to manage HubSpot forms on the page
+	 */
+	public function add_form_management_script() {
+		?>
+			<script>
+				(function() {
+					var formObjects = [];
+					window.hbsptReady = function(formObject) {
+						if (!formObject) {
+							for (var i in formObjects) {
+								hbspt.forms.create(formObjects[i]);
+							};
+							formObjects = [];
+						} else if (window.hbspt && window.hbspt.forms) {
+							hbspt.forms.create(formObject);
+						} else {
+							formObjects.push(formObject);
+						}
+					};
+				})();
+			</script>
+		<?php
 	}
 }

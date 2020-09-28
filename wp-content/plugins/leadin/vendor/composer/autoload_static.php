@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit5fccdcba9a4978ce45066a9a4a6af8fd
+class ComposerStaticInit157a5c1b56bbe8cb35cc96bc2b039c20
 {
     public static $classMap = array (
         'Leadin\\AssetsManager' => __DIR__ . '/../..' . '/src/class-assetsmanager.php',
@@ -41,7 +41,7 @@ class ComposerStaticInit5fccdcba9a4978ce45066a9a4a6af8fd
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->classMap = ComposerStaticInit5fccdcba9a4978ce45066a9a4a6af8fd::$classMap;
+            $loader->classMap = ComposerStaticInit157a5c1b56bbe8cb35cc96bc2b039c20::$classMap;
 
         }, null, ClassLoader::class);
     }

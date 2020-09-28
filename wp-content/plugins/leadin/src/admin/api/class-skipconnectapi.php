@@ -25,10 +25,10 @@ class SkipConnectApi extends ApiGenerator {
 		$default_app  = $data['defaultApp'];
 
 		if ( empty( $default_app ) ) {
-			RequestUtils::send_error( 'default app field is missing' );
+			Connection::exit_intro();
+		} else {
+			Connection::skip_connect( $default_app );
 		}
-
-		Connection::skip_connect( $default_app );
 
 		RequestUtils::send_message( 'Success' );
 	}

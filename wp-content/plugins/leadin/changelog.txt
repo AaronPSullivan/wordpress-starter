@@ -1,4 +1,12 @@
-= 7.34.4 (2020.06.15) =
+= 7.35.4 (2020.07.03) =
+- Pass a div ID to the form create function where the form will be appended
+
+= 7.35.2 (2020.07.02) =
+- Update text on the plugin listing page
+- Make the forms creation code independent of the order which the files are parsed
+
+= 7.35.1 (2020.06.29) =
+- Allow users to try the plugin before signup
 - Enable an API which will allow pre-signup demo eperience
 
 = 7.34.0 (2020.06.10) =

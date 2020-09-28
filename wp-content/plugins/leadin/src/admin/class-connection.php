@@ -43,7 +43,7 @@ class Connection {
 		add_option( 'leadin_account_name', $portal_name );
 		add_option( 'leadin_portal_domain', $portal_domain );
 
-		self::delete_metadata( 'leadin_default_app' );
+		self::exit_intro();
 		self::add_metadata( array( 'leadin_email' => $hs_user_email ) );
 	}
 
@@ -69,5 +69,12 @@ class Connection {
 	 */
 	public static function skip_connect( $default_app ) {
 		self::add_metadata( array( 'leadin_default_app' => $default_app ) );
+	}
+
+	/**
+	 * Remove the option that will load the unauthed preview
+	 */
+	public static function exit_intro() {
+		self::delete_metadata( 'leadin_default_app' );
 	}
 }
