@@ -1,7 +1,5 @@
 // Rem output with px fallback
 @mixin font-size($sizeValue: 1) {
-	//font-size: ($sizeValue * 16) * 1px;
-	//font-size: $sizeValue * 1rem;
     font-size: $sizeValue+em;
 }
 
@@ -30,14 +28,24 @@
 }
 
 
+
 @mixin force-full-width() {
-    
-    //margin-left: calc(-100vw / 2 + 100% / 2) !important;
-    //margin-right: calc(-100vw / 2 + 100% / 2) !important;
-    //max-width: 100%;
-    width: 100vw;
-    left: calc(-1 * (100vw - 100%) / 2) ;
-    
+    margin-left: calc(-100vw / 2 + 100% / 2) !important;
+    margin-right: calc(-100vw / 2 + 100% / 2) !important;
+    max-width: 100vw !important;
+    width: 100vw !important;
+    margin-top:0;
+    margin-bottom: 0;
+    margin-block-start: 0;
+    margin-block-end: 0;
+    margin-inline-start: 0;
+    margin-inline-end: 0;;
+    padding-right: 15px;
+    padding-left: 15px;
+    @include media-breakpoint-up(md) {
+         padding-right: 0;
+        padding-left: 0;
+    }
 }
 
 

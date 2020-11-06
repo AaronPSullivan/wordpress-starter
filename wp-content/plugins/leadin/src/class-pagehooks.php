@@ -2,12 +2,14 @@
 
 namespace Leadin;
 
+use Leadin\LeadinFilters;
 use Leadin\wp\User;
 
 /**
  * Class responsible of adding the script loader to the website, as well as rendering forms, live chat, etc.
  */
 class PageHooks {
+	const HUBSPOT_FORMS_LOADER_SCRIPT_ID = 'hbspt-forms-loader-script';
 	/**
 	 * Class constructor, adds the necessary hooks.
 	 */
@@ -20,10 +22,34 @@ class PageHooks {
 	}
 
 	/**
+	 * Generates 10 characters long string with random values
+	 */
+	private function get_random_number_string() {
+		$result = '';
+		for ( $i = 0; $i < 10; $i++ ) {
+			$result .= rand( 0, 9 );
+		}
+		return $result;
+	}
+
+	/**
 	 * Generates a unique uuid
 	 */
 	private function generate_div_uuid() {
-		return time() * 1000 . '-' . rand( 1e9, 1e10 - 1 );
+		return time() * 1000 . '-' . $this->get_random_number_string();
+	}
+
+	/**
+	 * Add the V2 form script
+	 */
+	private function generate_forms_loader_script() {
+		static $script_added = false;
+		$loader_script       = '';
+		if ( ! $script_added ) {
+			$script_added  = true;
+			$loader_script = '<script charset="utf-8" type="text/javascript" id="' . self::HUBSPOT_FORMS_LOADER_SCRIPT_ID . '" src="' . LeadinFilters::get_leadin_forms_script_url() . '" defer></script>';
+		}
+		return $loader_script;
 	}
 
 	/**
@@ -120,20 +146,20 @@ class PageHooks {
 
 		switch ( $parsed_attributes['type'] ) {
 			case 'form':
-				$form_div_uuid = $this->generate_div_uuid();
+				$form_div_uuid      = $this->generate_div_uuid();
+				$form_loader_script = $this->generate_forms_loader_script();
 				return '
 					<script>
-						hbsptReady({
+						hbspt.enqueueForm({
 							portalId: ' . $portal_id . ',
 							formId: "' . $id . '",
 							target: "#hbspt-form-' . $form_div_uuid . '",
 							shortcode: "wp",
-							' . LEADIN_FORMS_PAYLOAD . '
+							' . LeadinFilters::get_leadin_forms_payload() . '
 						});
 					</script>
 					<div class="hbspt-form" id="hbspt-form-' . $form_div_uuid . '"></div>
-					<' . 'script charset="utf-8" type="text/javascript" src="' . LEADIN_FORMS_SCRIPT_URL . '" defer onload="window.hbsptReady()"></script>
-        ';
+					' . $form_loader_script;
 			case 'cta':
 				return '
 					<!--HubSpot Call-to-Action Code -->
@@ -163,19 +189,33 @@ class PageHooks {
 		?>
 			<script>
 				(function() {
-					var formObjects = [];
-					window.hbsptReady = function(formObject) {
-						if (!formObject) {
-							for (var i in formObjects) {
-								hbspt.forms.create(formObjects[i]);
-							};
-							formObjects = [];
-						} else if (window.hbspt && window.hbspt.forms) {
-							hbspt.forms.create(formObject);
+					var hbspt = window.hbspt = window.hbspt || {};
+					hbspt.forms = hbspt.forms || {};
+					hbspt._wpFormsQueue = [];
+					hbspt.enqueueForm = function(formDef) {
+						if (hbspt.forms && hbspt.forms.create) {
+							hbspt.forms.create(formDef);
 						} else {
-							formObjects.push(formObject);
+							hbspt._wpFormsQueue.push(formDef);
 						}
-					};
+					}
+					Object.defineProperty(window.hbspt.forms, 'create', {
+						configurable: true,
+						get: function() {
+							return hbspt._wpCreateForm;
+						},
+						set: function(value) {
+							hbspt._wpCreateForm = value;
+							while (hbspt._wpFormsQueue.length) {
+								var formDef = hbspt._wpFormsQueue.shift();
+								if (!document.currentScript) {
+									var formScriptId = '<?php echo esc_html( self::HUBSPOT_FORMS_LOADER_SCRIPT_ID ); ?>';
+									hubspot.utils.currentScript = document.getElementsById(formScriptId);
+								}
+								hbspt._wpCreateForm.call(hbspt.forms, formDef);
+							}
+						},
+					})
 				})();
 			</script>
 		<?php

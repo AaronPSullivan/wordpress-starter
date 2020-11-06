@@ -64,7 +64,7 @@ $box_stats = apply_filters('mec_dashboard_box_stats', true);
                         <?php if(!$this->getPRO()): ?>
                         <span><a href="https://wordpress.org/support/plugin/modern-events-calendar-lite/reviews/#new-post" target="_blank"><?php echo _x('Rate the plugin ★★★★★', 'plugin rate', 'modern-events-calendar-lite'); ?></a></span>
                         <?php endif; ?>
-                        <?php if(version_compare(MEC_VERSION , $version, '<')): ?>
+                        <?php if(version_compare(MEC_VERSION, $version, '<')): ?>
                         <span class="mec-tooltip">
                             <div class="box">
                                 <h5 class="title"><?php _e('Update', 'modern-events-calendar-lite'); ?></h5>
@@ -77,10 +77,7 @@ $box_stats = apply_filters('mec_dashboard_box_stats', true);
                 </div>
             </div>
             <div class="w-col-sm-3">
-                <?php $styling = $this->get_styling(); $darkadmin_mode = ( isset($styling['dark_mode']) ) ? $styling['dark_mode'] : '';
-                    if ($darkadmin_mode == 1): $darklogo = plugin_dir_url(__FILE__ ) . '../../../assets/img/mec-logo-w2.png';
-                    else: $darklogo = plugin_dir_url(__FILE__ ) . '../../../assets/img/mec-logo-w.png';
-                    endif; ?>
+                <?php $styling = $this->get_styling(); $darkadmin_mode = ( isset($styling['dark_mode']) ) ? $styling['dark_mode'] : ''; if ($darkadmin_mode == 1): $darklogo = plugin_dir_url(__FILE__ ) . '../../../assets/img/mec-logo-w2.png'; else: $darklogo = plugin_dir_url(__FILE__ ) . '../../../assets/img/mec-logo-w.png'; endif; ?>
                 <img src="<?php echo $darklogo; ?>" />
                 <span class="w-theme-version"><?php echo __('Version', 'modern-events-calendar-lite'); ?> <?php echo MEC_VERSION; ?></span>
             </div>
@@ -126,6 +123,7 @@ $box_stats = apply_filters('mec_dashboard_box_stats', true);
             </div>
         </div>
         <?php endif; ?>
+        <?php echo $this->mec_custom_msg_2('yes', 'yes'); ?>
         <?php echo $this->mec_custom_msg('yes', 'yes'); ?>
         <?php //echo $this->addons_msg(); ?>
         <div class="w-row">
@@ -157,7 +155,7 @@ $box_stats = apply_filters('mec_dashboard_box_stats', true);
                             <?php $mec_options = get_option('mec_options'); ?>
                             <div class="box-addon-activation-toggle-head"><i class="mec-sl-plus"></i><span><?php _e('Activate Addons', 'modern-events-calendar-lite'); ?></span></div>
                             <div class="box-addon-activation-toggle-content">
-                                <?php do_action( 'addons_activation' ); ?>
+                                <?php do_action('addons_activation'); ?>
                             </div>
                         </div>
                     </div>
@@ -183,7 +181,7 @@ $box_stats = apply_filters('mec_dashboard_box_stats', true);
                         <div class="box-mec-avtivation">
                             <?php 
                                 $mec_options = get_option('mec_options');
-                                $one_license = $five_license = $ten_license = $product_license = '';
+                                $one_license = $five_license = $ten_license = $appsumo =  $product_license = '';
 
                                 if(!empty($mec_options) && isset($mec_options['product_name']))
                                 {
@@ -198,6 +196,10 @@ $box_stats = apply_filters('mec_dashboard_box_stats', true);
                                     elseif($mec_options['product_name'] == '10 License for MEC Plugin')
                                     {
                                         $ten_license = 'checked';
+                                    }
+                                    elseif($mec_options['product_name'] == 'appsumo')
+                                    {
+                                        $appsumo = 'checked';
                                     }
 
                                     if($mec_options['product_name'] != '')
@@ -214,6 +216,8 @@ $box_stats = apply_filters('mec_dashboard_box_stats', true);
                                     <label for="FiveLicense"><span></span>5 License</label>
                                     <input type="radio" id="TenLicense" value="10 License for MEC Plugin" name="MECLicense" class="<?php echo esc_html($ten_license); ?>" />
                                     <label for="TenLicense"><span></span>10 License</label>
+                                    <input type="radio" id="Appsumo" value="appsumo" name="MECLicense" class="<?php echo esc_html($appsumo); ?>" />
+                                    <label for="Appsumo"><span></span>AppSumo</label>
                                 </div>
                                 <div class="LicenseField">
                                     <input type="password" placeholder="Put your purchase code here" name="MECPurchaseCode" value="<?php echo esc_html($product_license); ?>">
@@ -239,7 +243,7 @@ $box_stats = apply_filters('mec_dashboard_box_stats', true);
                             <?php $mec_options = get_option('mec_options'); ?>
                             <div class="box-addon-activation-toggle-head"><i class="mec-sl-plus"></i><span><?php _e('Activate Addons', 'modern-events-calendar-lite'); ?></span></div>
                             <div class="box-addon-activation-toggle-content">
-                                <?php do_action( 'addons_activation' ); ?>
+                                <?php do_action('addons_activation'); ?>
                             </div>
                         </div>
                     </div>

@@ -1,3 +1,63 @@
+= 7.47.0 (2020.11.02)
+- Include the forms loader script only once in the page when a form is added.
+
+= 7.46.2 (2020.10.27)
+- Released the updated user guide
+- Fix forms rendering on IE11
+
+= 7.45.6 (2020.10.20)
+- Use https instead of relative-protocol URLs for HubSpot scripts
+- Define custom filters instead of constants for HubSpot properties
+
+= 7.45.4 (2020.10.12)
+- Fix iframe communication for IE11
+- Fix for JS error when it is re-executed by jQuery and attempting to modify an immutable object
+
+= 7.44.6 (2020.09.30)
+- Added a demo of the tools for new users
+- Redesigned the intro page
+
+= 7.43.4 (2020.09.14) =
+- Fix login flow from the gutenberg block
+- Log error when requests are blocked by a browser extension
+
+= 7.42.3 (2020.09.07) =
+- Bump the latest WordPress version where the plugin has been tested
+- Create a new WordPress specific report page
+- Add a monitor to the Hubspot gutenberg block preview render
+
+= 7.41.1 (2020.09.01) =
+- Generate a reporting dashboard if none exists
+
+= 7.41.0 (2020.08.25) =
+- Hide menu items when unauthenticated
+
+= 7.40.0 (2020.08.17) =
+- Update the latest version the plugin has been tested on
+- Redesign the Getting Started experience
+- Fix the signup progression bar on the intro page
+- Add the correct highlighting of sidebar menu items when redirected from inside the plugin
+
+
+= 7.39.5 (2020.08.11) =
+- Add a script that fetches contact properties from HubSpot
+- Renamed "Dashboard" to "Setup Guide"
+
+= 7.38.1 (2020.08.4) =
+- Embed Live Chat inside the plugin
+- Saving the Gutenberg block as a shortcode to fix an error with parsing a previously saved block
+
+= 7.37.2 (2020.07.27) =
+- Embed the email app now as part of the plugin
+- Rename "Advanced Features" menu item to "Upgrade"
+
+= 7.36.3 (2020.07.20) =
+- Fixed syncing of the URL between the iframe and WordPress
+
+= 7.36.1 (2020.07.13) =
+- Add Tracking consent banner and the logic to communicate the consent to the embedded signup
+- Prevent the integer value passed to rand to overflow and being stored as float when the site runs on a 32 bit system
+
 = 7.35.4 (2020.07.03) =
 - Pass a div ID to the form create function where the form will be appended
 

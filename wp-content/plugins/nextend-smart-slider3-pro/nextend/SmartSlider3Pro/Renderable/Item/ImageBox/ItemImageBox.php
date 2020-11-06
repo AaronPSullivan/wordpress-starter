@@ -11,6 +11,7 @@ use Nextend\Framework\Form\Element\Hidden\HiddenStyle;
 use Nextend\Framework\Form\Element\Icon;
 use Nextend\Framework\Form\Element\IconTab;
 use Nextend\Framework\Form\Element\MarginPadding;
+use Nextend\Framework\Form\Element\OnOff;
 use Nextend\Framework\Form\Element\RichTextarea;
 use Nextend\Framework\Form\Element\Select;
 use Nextend\Framework\Form\Element\Select\LinkTarget;
@@ -102,6 +103,7 @@ class ItemImageBox extends AbstractItem {
                 'href'            => '#',
                 'href-target'     => '_self',
                 'href-rel'        => '',
+                'fullwidth'       => 0,
             );
     }
 
@@ -240,6 +242,8 @@ class ItemImageBox extends AbstractItem {
         new Color($imageSettings, 'iconcolor', n2_('Color'), '', array(
             'alpha' => true
         ));
+
+        new OnOff($imageSettings, 'fullwidth', n2_('Full width'), 1);
 
         $text = new Fieldset\LayerWindow\FieldsetLayerWindow($container, 'text-settings', n2_('Text'));
         new Text($text, 'heading', n2_('Heading'), n2_('Heading'), array(

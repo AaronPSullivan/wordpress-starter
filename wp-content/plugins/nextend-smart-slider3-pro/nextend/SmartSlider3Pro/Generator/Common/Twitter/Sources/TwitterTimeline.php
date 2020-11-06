@@ -79,7 +79,7 @@ class TwitterTimeline extends AbstractGenerator {
                 }
 
                 $item['id']          = number_format($item['id'], 0, '.', '');
-                $record['url']       = 'https://twitter.com/' . $record['author_url'] . '/statuses/' . $item['id_str'];
+                $record['url']       = 'https://twitter.com/' . $record['author_name'] . '/status/' . $item['id_str'];
                 $record['url_label'] = n2_('View tweet');
 
                 if (!empty($item['entities']['media'][0]['media_url'])) {

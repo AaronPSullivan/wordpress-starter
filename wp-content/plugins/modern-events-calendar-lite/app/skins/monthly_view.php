@@ -61,6 +61,7 @@ class MEC_skin_monthly_view extends MEC_skins
         
         // The style
         $this->style = isset($this->skin_options['style']) ? $this->skin_options['style'] : 'modern';
+        if($this->style == 'fluent' and !is_plugin_active('mec-fluent-layouts/mec-fluent-layouts.php')) $this->style = 'modern';
         
         // Next/Previous Month
         $this->next_previous_button = isset($this->skin_options['next_previous_button']) ? $this->skin_options['next_previous_button'] : true;
@@ -71,6 +72,9 @@ class MEC_skin_monthly_view extends MEC_skins
         // HTML class
         $this->html_class = '';
         if(isset($this->atts['html-class']) and trim($this->atts['html-class']) != '') $this->html_class = $this->atts['html-class'];
+
+        // Booking Button
+        $this->booking_button = isset($this->skin_options['booking_button']) ? (int) $this->skin_options['booking_button'] : 0;
         
         // SED Method
         $this->sed_method = isset($this->skin_options['sed_method']) ? $this->skin_options['sed_method'] : '0';
@@ -157,11 +161,26 @@ class MEC_skin_monthly_view extends MEC_skins
         {
             $start = date('Y-m-d H:i:s', current_time('timestamp', 0));
             $end = $this->start_date;
+
+            $this->weeks = $this->main->split_to_weeks($end, $start);
+
+            $this->week_of_days = array();
+            foreach($this->weeks as $week_number=>$week) foreach($week as $day) $this->week_of_days[$day] = $week_number;
+
+            $end = $this->main->array_key_first($this->week_of_days);
         }
         else
         {
             $start = $this->start_date;
             $end = date('Y-m-t', strtotime($this->start_date));
+
+            $this->weeks = $this->main->split_to_weeks($start, $end);
+
+            $this->week_of_days = array();
+            foreach($this->weeks as $week_number=>$week) foreach($week as $day) $this->week_of_days[$day] = $week_number;
+
+            $start = $this->main->array_key_first($this->week_of_days);
+            $end = $this->main->array_key_last($this->week_of_days);
         }
 
         // Date Events
@@ -216,7 +235,7 @@ class MEC_skin_monthly_view extends MEC_skins
                             'end'=>array('date'=>$this->main->get_end_date($date, $rendered))
                         );
 
-                        $d[] = $this->render->after_render($data, $i);
+                        $d[] = $this->render->after_render($data, $this, $i);
                     }
                 }
 
@@ -243,6 +262,7 @@ class MEC_skin_monthly_view extends MEC_skins
         
         if(isset($this->skin_options['start_date_type']) and $this->skin_options['start_date_type'] == 'start_current_month') $date = date('Y-m-d', strtotime('first day of this month'));
         elseif(isset($this->skin_options['start_date_type']) and $this->skin_options['start_date_type'] == 'start_next_month') $date = date('Y-m-d', strtotime('first day of next month'));
+        elseif(isset($this->skin_options['start_date_type']) and $this->skin_options['start_date_type'] == 'start_last_month') $date = date('Y-m-d', strtotime('first day of last month'));
         elseif(isset($this->skin_options['start_date_type']) and $this->skin_options['start_date_type'] == 'date') $date = date('Y-m-d', strtotime($this->skin_options['start_date']));
         
         // Hide past events
@@ -284,7 +304,7 @@ class MEC_skin_monthly_view extends MEC_skins
 
         do
         {
-            if($c > 6) $break = true;
+            if($c > 12) $break = true;
             if($c and !$break)
             {
                 if(intval($this->month) == 12)
@@ -334,7 +354,7 @@ class MEC_skin_monthly_view extends MEC_skins
             }
 
             // Set active day to current day if not resault
-            if(count($this->events)) $this->active_day = key($this->events);
+            if(count($this->events) and date('m', strtotime(key($this->events))) == $this->month) $this->active_day = key($this->events);
             if($navigator_click) break;
           
             $c++;
@@ -346,5 +366,16 @@ class MEC_skin_monthly_view extends MEC_skins
         
         echo json_encode($output);
         exit;
+    }
+
+    public function day_label($time)
+    {
+        $date_suffix = (isset($this->settings['date_suffix']) && $this->settings['date_suffix'] == '0') ? $this->main->date_i18n('jS', $time) : $this->main->date_i18n('j', $time);
+
+        if($this->main->is_day_first())
+        {
+            return '<h6 class="mec-table-side-title">'.sprintf(__('Events for %s %s', 'modern-events-calendar-lite'), '<span class="mec-color mec-table-side-day"> '.$date_suffix.'</span>', $this->main->date_i18n('F', $time)).'</h6>';
+        }
+        else return '<h6 class="mec-table-side-title">'.sprintf(__('Events for %s', 'modern-events-calendar-lite'), $this->main->date_i18n('F', $time)).'</h6><h3 class="mec-color mec-table-side-day"> '.$date_suffix.'</h3>';
     }
 }

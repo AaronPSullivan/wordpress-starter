@@ -157,6 +157,16 @@ var mecSingleEventDisplayer = {
 
 }(jQuery));
 
+jQuery(document).ready(function($)
+{
+    // Select2
+    jQuery(".mec-fes-form-cntt #mec-location select, .mec-fes-form-cntt #mec-organizer select").select2();
+    // Location select2
+    jQuery("#mec_location_id").select2();
+    // Organizer Select2
+    jQuery("#mec_organizer_id").select2();
+});
+
 // MEC FULL CALENDAR PLUGIN
 (function ($) {
     $.fn.mecFullCalendar = function (options) {
@@ -207,7 +217,16 @@ var mecSingleEventDisplayer = {
                     });
                 }
 
-                if(skin == 'list')
+                if(mec_month_select.val() == 'none')
+                {
+                    mec_month_select.find('option').each(function()
+                    {
+                        var option_val = $(this).val();
+                        if(option_val == mecdata.current_month) mec_month_select.val(option_val);
+                    });
+                }
+
+                if(skin == 'list' || skin == 'grid' || skin == 'agenda')
                 {
                     var mec_filter_none = '<option class="mec-none-item" value="none">' + $('#mec-filter-none').val() + '</option>';
                     if(mec_month_select.find('.mec-none-item').length == 0) mec_month_select.prepend(mec_filter_none);
@@ -317,9 +336,6 @@ var mecSingleEventDisplayer = {
         // Initialize Year Navigator
         if (settings.year_navigator) initYearNavigator();
 
-        // Load Next Year in background
-        if (settings.year_navigator) setYear(settings.next_year.year, true);
-
         // Set onclick Listeners
         setListeners();
 
@@ -345,12 +361,11 @@ var mecSingleEventDisplayer = {
             });
         }
 
-        function initYearNavigator() {
-            // Remove the onclick event
-            $("#mec_skin_" + settings.id + " .mec-load-year").off("click");
-
+        function initYearNavigator()
+        {
             // Add onclick event
-            $("#mec_skin_" + settings.id + " .mec-load-year").on("click", function () {
+            $("#mec_skin_" + settings.id + " .mec-load-year").off("click").on("click", function()
+            {
                 var year = $(this).data("mec-year");
                 setYear(year);
             });
@@ -471,6 +486,42 @@ var mecSingleEventDisplayer = {
             if (settings.sed_method != '0') {
                 sed();
             }
+
+            // Yearly view
+            $("#mec_skin_" + settings.id + " .mec-has-event a").on('click', function(e)
+            {
+                e.preventDefault();
+
+                var des = $(this).attr('href');
+                var visible = $(des).is(':visible');
+                if(!visible)
+                {
+                    var year = $(des).parent().parent().parent().data('year-id');
+                    while(!visible)
+                    {
+                        loadMoreButton(year);
+
+                        visible = $(des).is(':visible');
+                    }
+                }
+
+                $('.mec-events-agenda').removeClass('mec-selected');
+                $(des).closest('.mec-events-agenda').addClass('mec-selected');
+
+                var scrollTopVal = $(des).closest('.mec-events-agenda').offset().top - 35;
+                if($(this).closest('.mec-fluent-wrap').length > 0)
+                {
+                    var parent = jQuery(this).closest('.mec-fluent-wrap').find('.mec-yearly-agenda-sec');
+                    scrollTopVal = parent.scrollTop() + ($(des).closest('.mec-events-agenda').offset().top - parent.offset().top);
+                    jQuery(this).closest('.mec-fluent-wrap').find('.mec-yearly-agenda-sec').getNiceScroll(0).doScrollTop(scrollTopVal - 15, 120);
+                }
+                else
+                {
+                    $('html, body').animate({
+                        scrollTop: scrollTopVal
+                    }, 300);
+                }
+            });
         }
 
         function sed() {
@@ -536,9 +587,6 @@ var mecSingleEventDisplayer = {
 
         // Initialize Month Navigator
         if (settings.month_navigator) initMonthNavigator();
-
-        // Load Next Month in background
-        setMonth(settings.next_month.year, settings.next_month.month, true);
 
         active_month = settings.active_month.month;
         active_year = settings.active_month.year;
@@ -1515,7 +1563,7 @@ var mecSingleEventDisplayer = {
 
             // Show related events
             $('#mec_skin_' + settings.id + ' .mec-weekly-view-date-events').addClass('mec-util-hidden');
-            $('#mec_weekly_view_date_events' + settings.id + '_' + day).removeClass('mec-util-hidden');
+            $('.mec_weekly_view_date_events' + settings.id + '_' + day).removeClass('mec-util-hidden').show();
         }
 
         function initMonthNavigator(month_id) {
@@ -3370,6 +3418,20 @@ var mecSingleEventDisplayer = {
                 loadMore();
             });
 
+            $("#mec_skin_" + settings.id + " article").off("click").on("click", function(e)
+            {
+                // Link Clicked
+                if(e.target.nodeName.toLowerCase() === 'a') return;
+
+                var href = $(this).data('href');
+                if(!href) return;
+
+                var target = $(this).data('target');
+
+                if(target === 'blank') window.open(href, '_blank');
+                else document.location.href = href;
+            });
+
             // Add the onclick event
             $("#mec_skin_" + settings.id + " .mec-has-event").off("click").on('click', function(e)
             {
@@ -3661,26 +3723,6 @@ function mec_focus_week(id, skin) {
                 }
             }
         }
-
-        // Yearly view
-        $('.mec-yearly-calendar .mec-has-event a').on('click', function(e) {
-            e.preventDefault();
-            var des = $(this).attr('href');
-            $('.mec-events-agenda').removeClass('mec-selected');
-            $(des).closest('.mec-events-agenda').addClass('mec-selected');
-            var scrollTopVal = $(des).closest('.mec-events-agenda').offset().top - 35;
-
-            if ($(this).closest('.mec-fluent-wrap').length > 0) {
-                var parent = jQuery(this).closest('.mec-fluent-wrap').find('.mec-yearly-agenda-sec');
-                scrollTopVal = parent.scrollTop() + ($(des).closest('.mec-events-agenda').offset().top - parent.offset().top);
-                jQuery(this).closest('.mec-fluent-wrap').find('.mec-yearly-agenda-sec').getNiceScroll(0).doScrollTop(scrollTopVal - 15, 120);
-            } else {
-                $('html, body').animate({
-                    scrollTop: scrollTopVal
-                }, 300);    
-            }
-        });
-
     });
 })(jQuery);
 
@@ -3706,32 +3748,41 @@ function mec_focus_week(id, skin) {
         return Math.round((0.6214 * parseFloat(value)));
     }
 
-    $(document).ready(function ($) {
+    $(document).ready(function ($)
+    {
         var degree = $('.mec-weather-summary-temp');
         var weather_extra = $('.mec-weather-extras');
         var wind = weather_extra.children('.mec-weather-wind');
         var visibility = weather_extra.children('.mec-weather-visibility');
+        var feelslike = weather_extra.children('.mec-weather-feels-like');
 
         //  Events
-        $('.degrees-mode').click(function () {
+        $('.degrees-mode').on('click', function()
+        {
             var degree_mode = degree.children('var').text().trim();
             var wind_text = wind.text().substring(5);
             var visibility_text = visibility.text().substring(11);
+            var feelslike_text = feelslike.text().substring(12);
 
-            if (degree_mode == degree.data('c').trim()) {
+            if(degree_mode == degree.data('c').trim())
+            {
                 degree.html(convertToF(parseInt(degree.text())) + ' <var>' + degree.data('f') + '</var>');
+                feelslike.html('<span>Feels Like:</span> ' + convertToF(parseInt(feelslike_text)) + ' <var>' + feelslike.data('f') + '</var>');
                 wind.html('<span>Wind:</span> ' + KPHToMPH(parseInt(wind_text)) + '<var>' + wind.data('mph') + '</var>');
                 visibility.html('<span>Visibility:</span> ' + KPHToMPH(parseInt(visibility_text)) + '<var>' + visibility.data('mph') + '</var>');
                 $(this).text($(this).data('metric'));
-            } else if (degree_mode == degree.data('f').trim()) {
+            }
+            else if(degree_mode == degree.data('f').trim())
+            {
                 degree.html(convertToC(parseInt(degree.text())) + ' <var>' + degree.data('c') + '</var>');
+                feelslike.html('<span>Feels Like:</span> ' + convertToC(parseInt(feelslike_text)) + ' <var>' + feelslike.data('c') + '</var>');
                 wind.html('<span>Wind:</span> ' + MPHToKPH(parseInt(wind_text)) + '<var>' + wind.data('kph') + '</var>');
                 visibility.html('<span>Visibility:</span> ' + MPHToKPH(parseInt(visibility_text)) + '<var>' + visibility.data('kph') + '</var>');
                 $(this).text($(this).data('imperial'));
             }
         });
 
-        $('a').on('click', function () {})
+        $('a').on('click', function () {});
 
         // FES Speakers Adding
         $('#mec_add_speaker_button').on('click', function () {
@@ -3785,16 +3836,14 @@ function mec_focus_week(id, skin) {
         $('.mec-event-export-csv, .mec-event-export-excel').click(function()
         {
             var mec_event_id = $(this).parent().parent().data('event-id');
-            var booking_data = $(this).parent().parent().find('.mec-fes-btn-date .mec-certain-user-booking-ids').val();
-            var certain_data = $(this).parent().parent().find('.fes-export-date-active').data('ids');
-            
-            if(typeof booking_data == 'undefined') booking_data = ',';
-            if(typeof certain_data != 'undefined') booking_data = certain_data;
 
-            booking_data = booking_data.substr(0, booking_data.length -1);
-            $.ajax({
+            var time = $(this).parent().parent().find($('.fes-export-date-active')).data('time');
+            if(typeof time === 'undefined') time = 0;
+
+            $.ajax(
+            {
                 url: mecdata.ajax_url,
-                data: "action=mec_fes_csv_export&fes_nonce=" + mecdata.fes_nonce + "&mec_event_id=" + mec_event_id + "&booking_ids=" + booking_data,
+                data: "action=mec_fes_csv_export&fes_nonce=" + mecdata.fes_nonce + "&mec_event_id=" + mec_event_id + "&timestamp=" + time,
                 dataType: 'json',
                 type: "post",
                 success: function (res) {
@@ -3831,10 +3880,10 @@ function mec_book_form_back_btn_cache(context, unique_id)
 
 function mec_agreement_change(context)
 {
-    var status = jQuery(context).is(":checked") ? true : false;
+    var status = jQuery(context).is(":checked");
     
-    if(status) jQuery(context).attr("checked", "checked");
-    else jQuery(context).removeAttr("checked");
+    if(status) jQuery(context).prop("checked", "checked");
+    else jQuery(context).removeProp("checked");
 }
 
 function mec_book_form_back_btn_click(context, unique_id)
@@ -4766,3 +4815,14 @@ function mecFluentYearlyUI(eventID, yearID) {
         }
     };
 }(jQuery));
+
+// Booking Shortcode Scripts
+jQuery(document).ready(function () {
+    if (jQuery('.mec-booking-shortcode').length < 0) {
+        return;
+    }
+    // Events
+    if (jQuery().niceSelect) {
+        jQuery('.mec-booking-shortcode').find('.mec-book-first').find('select').niceSelect();
+    }
+});

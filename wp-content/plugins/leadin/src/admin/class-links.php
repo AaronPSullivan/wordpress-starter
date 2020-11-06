@@ -2,8 +2,10 @@
 
 namespace Leadin\admin;
 
+use Leadin\LeadinFilters;
 use Leadin\LeadinOptions;
 use Leadin\admin\AdminFilters;
+use Leadin\admin\MenuConstants;
 use Leadin\admin\utils\Background;
 use Leadin\wp\User;
 use Leadin\utils\Versions;
@@ -20,21 +22,29 @@ class Links {
 	 */
 	public static function get_routes_mapping() {
 		$portal_id      = get_option( 'leadin_portalId' );
-		$reporting_page = "/reports-dashboard/$portal_id";
-		$dashboard_page = "/wordpress-plugin-ui/$portal_id/onboarding/start";
+		$reporting_page = "/wordpress-plugin-ui/$portal_id/reporting";
+		$user_guide     = "/wordpress-plugin-ui/$portal_id/onboarding/start";
 
 		return array(
-			'leadin'           => $dashboard_page,
-			'leadin_reporting' => $reporting_page,
-			'leadin_contacts'  => "/contacts/$portal_id/contacts",
-			'leadin_lists'     => "/contacts/$portal_id/lists",
-			'leadin_forms'     => "/forms/$portal_id",
-			'leadin_settings'  => array(
-				''      => "/wordpress-plugin-ui/$portal_id/settings",
-				'forms' => "/settings/$portal_id/marketing/forms",
+			MenuConstants::ROOT       => $user_guide,
+			MenuConstants::REPORTING  => $reporting_page,
+			MenuConstants::CHATFLOWS  => array(
+				''         => "/chatflows/$portal_id",
+				'settings' => "/live-messages-settings/$portal_id",
 			),
-			'leadin_dashboard' => $dashboard_page,
-			'leadin_pricing'   => "/pricing/$portal_id/marketing",
+			MenuConstants::CONTACTS   => "/contacts/$portal_id",
+			MenuConstants::LISTS      => "/contacts/$portal_id/lists",
+			MenuConstants::FORMS      => "/forms/$portal_id",
+			MenuConstants::EMAIL      => array(
+				''    => "/email/$portal_id",
+				'cms' => "/content/$portal_id/create/email",
+			),
+			MenuConstants::SETTINGS   => array(
+				''      => "/wordpress-plugin-ui/$portal_id/settings",
+				'forms' => "/settings/$portal_id/marketing/form",
+			),
+			MenuConstants::USER_GUIDE => $user_guide,
+			MenuConstants::PRICING    => "/pricing/$portal_id/marketing",
 		);
 	}
 
@@ -57,7 +67,15 @@ class Links {
 	}
 
 	/**
-	 * Return query string from object.
+	 * Get the parsed `leadin_search` from the query string.
+	 */
+	private static function get_iframe_search_string() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		return isset( $_GET['leadin_search'] ) ? esc_url_raw( wp_unslash( '&' . $_GET['leadin_search'] ) ) : '';
+	}
+
+	/**
+	 * Return query string from object
 	 *
 	 * @param array $arr query parameters to stringify.
 	 */
@@ -93,10 +111,10 @@ class Links {
 	}
 
 	/**
-	 * Return array of query parameters to add to the iframe src.
+	 * Return an array of properties to be included in the iframe search string
 	 */
-	public static function get_query_params() {
-		$query_param_array = array(
+	public static function get_search_string_array() {
+		return array(
 			'l'       => get_locale(),
 			'php'     => Versions::get_php_version(),
 			'v'       => LEADIN_PLUGIN_VERSION,
@@ -107,6 +125,13 @@ class Links {
 			'domain'  => get_site_url(),
 			'nonce'   => wp_create_nonce( 'hubspot-ajax' ),
 		);
+	}
+
+	/**
+	 * Return a string query parameters to add to the iframe src.
+	 */
+	public static function get_query_params() {
+		$query_param_array = self::get_search_string_array();
 
 		return self::http_build_query( $query_param_array );
 	}
@@ -140,7 +165,7 @@ class Links {
 		$signup_params['wp_gravatar'] = get_avatar_url( $wp_user->ID );
 
 		$affiliate_code = AdminFilters::apply_affiliate_code();
-		$signup_url     = LEADIN_SIGNUP_BASE_URL . '/signup/wordpress?';
+		$signup_url     = LeadinFilters::get_leadin_signup_base_url() . '/signup/wordpress?';
 
 		if ( $affiliate_code ) {
 			$signup_url     .= self::http_build_query( $signup_params );
@@ -170,10 +195,9 @@ class Links {
 			$portal_id_url = "/$portal_id";
 		}
 
-		$query  = '';
-		$screen = get_current_screen();
+		$query = '';
 
-		return LEADIN_BASE_URL . "/wordpress-plugin-ui$portal_id_url/background?$query" . self::get_query_params();
+		return LeadinFilters::get_leadin_base_url() . "/wordpress-plugin-ui$portal_id_url/background?$query" . self::get_query_params();
 	}
 
 	/**
@@ -181,7 +205,7 @@ class Links {
 	 */
 	public static function get_login_url() {
 		$portal_id = LeadinOptions::get_portal_id();
-		return LEADIN_BASE_URL . "/wordpress-plugin-ui/$portal_id/login?" . self::get_query_params();
+		return LeadinFilters::get_leadin_base_url() . "/wordpress-plugin-ui/$portal_id/login?" . self::get_query_params();
 	}
 
 	/**
@@ -190,7 +214,7 @@ class Links {
 	private static function get_connection_src() {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 		$portal_id = filter_var( wp_unslash( $_GET['leadin_connect'] ), FILTER_VALIDATE_INT );
-		return LEADIN_BASE_URL . "/wordpress-plugin-ui/onboarding/connect?portalId=$portal_id&" . self::get_query_params();
+		return LeadinFilters::get_leadin_base_url() . "/wordpress-plugin-ui/onboarding/connect?portalId=$portal_id&" . self::get_query_params();
 	}
 
 	/**
@@ -199,7 +223,7 @@ class Links {
 	 * @param String $wp_user_id WordPress user ID.
 	 */
 	private static function get_unauthed_src( $wp_user_id ) {
-		return LEADIN_BASE_URL . '/wordpress-plugin-ui/unauthed/' . get_user_meta( $wp_user_id, 'leadin_default_app', true );
+		return LeadinFilters::get_leadin_base_url() . '/wordpress-plugin-ui/unauthed/' . get_user_meta( $wp_user_id, 'leadin_default_app', true );
 	}
 
 	/**
@@ -219,12 +243,9 @@ class Links {
 	 * ?page=leadin_settings&leadin=route[]=foo&leadin_route[]=bar will redirect to /wordpress_plugin_ui/$portal_id/settings/foo/bar
 	 */
 	public static function get_iframe_src() {
-		if ( Background::should_load_background_iframe() ) {
-			return self::get_background_iframe_src();
-		}
-
-		$leadin_onboarding = 'leadin_onboarding';
-		$search            = '';
+		$leadin_onboarding     = 'leadin_onboarding';
+		$leadin_new_portal     = 'leadin_new_portal';
+		$browser_search_string = '';
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_GET['leadin_connect'] ) ) {
@@ -232,16 +253,23 @@ class Links {
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			if ( isset( $_GET['is_new_portal'] ) ) {
 				$extra = '&isNewPortal=true';
+				set_transient( $leadin_new_portal, 'true' );
 			}
 			return self::get_connection_src() . $extra;
 		}
 
 		if ( get_transient( $leadin_onboarding ) ) {
 			delete_transient( $leadin_onboarding );
-			$search = '&justConnected=true';
+			$browser_search_string = '&justConnected=true';
+			if ( get_transient( $leadin_new_portal ) ) {
+				delete_transient( $leadin_new_portal );
+				$browser_search_string = $browser_search_string . '&isNewPortal=true';
+			}
 		}
 
-		$sub_routes_array = self::get_iframe_route();
+		$sub_routes_array      = self::get_iframe_route();
+		$inframe_search_string = self::get_iframe_search_string();
+		$browser_search_string = $browser_search_string . $inframe_search_string;
 
 		if ( empty( LeadinOptions::get_portal_id() ) ) {
 			$wp_user    = wp_get_current_user();
@@ -250,7 +278,7 @@ class Links {
 				return self::get_unauthed_src( $wp_user_id );
 			} else {
 				set_transient( $leadin_onboarding, 'true' );
-				$route = '/wordpress-plugin-ui/intro';
+				$route = '/wordpress-plugin-ui/onboarding';
 			}
 		} else {
 			$page_id = self::get_page_id();
@@ -281,6 +309,6 @@ class Links {
 		// Query string separator "?" may have been added to the URL already.
 		$add_separator = strpos( $sub_routes, '?' ) ? '&' : '?';
 
-		return LEADIN_BASE_URL . "$route$sub_routes" . $add_separator . self::get_query_params() . $search;
+		return LeadinFilters::get_leadin_base_url() . "$route$sub_routes" . $add_separator . self::get_query_params() . $browser_search_string;
 	}
 }

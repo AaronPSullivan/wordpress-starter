@@ -1,10 +1,10 @@
 === WordPress Infinite Scroll - Ajax Load More ===
 Contributors: dcooney, connekthq
 Donate link: https://connekthq.com/donate/
-Tags: infinite scroll, infinite scrolling, scroll, infinite, lazy load, lazy loading, endless scroll, pagination, ajax pagination, ajax, ajax posts, woocommerce, ajax load more, masonry
+Tags: infinite scroll, load more, scroll, infinite, lazy load, lazy loading, endless scroll, pagination, ajax pagination, ajax, ajax posts, woocommerce, ajax load more, masonry
 Requires at least: 4.0
-Tested up to: 5.4.2
-Stable tag: 5.3.5
+Tested up to: 5.5
+Stable tag: 5.3.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,7 +34,7 @@ Check out the **[demo site](https://connekthq.com/plugins/ajax-load-more/)** for
 
 #### What's New
 
--  **[WooCommerce](https://connekthq.com/plugins/ajax-load-more/add-ons/wocommerce/)** - Infinite scroll WooCommerce products without updating a line of template code.
+-  **[WooCommerce](https://connekthq.com/plugins/ajax-load-more/add-ons/woocommerce/)** - Infinite scroll WooCommerce products without updating a line of template code.
 -  **[Pro](https://connekthq.com/plugins/ajax-load-more/pro/)** - Access to all premium add-ons in a single installation.
 -  **[Filters](https://connekthq.com/plugins/ajax-load-more/add-ons/filters/)** - The Filters add-on provides front-end and admin functionality for building and managing Ajax filters.
 -  **[User Query](https://connekthq.com/plugins/ajax-load-more/add-ons/users/)** - Query and display a list of WordPress users by role using a `WP_User_Query` and Ajax Load More.
@@ -345,6 +345,43 @@ How to install Ajax Load More.
 7. Shortcode and implementation examples
 
 == Changelog ==
+
+= 5.3.8 - September 10, 2020 =
+
+** UPGRADE NOTICE **
+ALM users with the WooCommerce add-on activated MUST update the add-on to version `1.0.2` when prompted.
+
+* NEW - Added [Cache](https://connekthq.com/plugins/ajax-load-more/add-ons/cache/) support for the [Comments Add-on](https://connekthq.com/plugins/ajax-load-more/add-ons/comments/)
+* NEW - Adding querystring variables to [Single Post add-on](https://connekthq.com/plugins/ajax-load-more/add-ons/single-posts/) URLs that allows users to perform tasks based on these values. Much like you can do with [ALM Variables](https://connekthq.com/plugins/ajax-load-more/docs/variables/). e.g. http://website.com/post-title/?id=469&alm_page=2
+* NEW - Added new `ajaxloadmore.reset` public JavaScript function that will reset Ajax Load More back to it's original state (page 1).
+
+
+= 5.3.7 - July 31, 2020 =
+
+** UPGRADE NOTICE **
+ALM users who are using out of the box styling of Ajax Load More listing elements should be aware of the following update to the core plugin CSS.
+
+The default Ajax Load More listing CSS has been updated for individual list items. The CSS now targets a `li.alm-item` element for styling.
+Previously, the CSS referenced only the `<li />` element. Adding this classname to the `<li class="alm-item" />` will allow for easier overriding of styles.
+I have also added default resposnive styles for users making use of this classname.
+
+If you notice issues with your list styling, update your Repeater Template and add the `alm-item` classname to the `<li/>`.
+
+** OTHER UPDATES **
+
+-  NEW - Adding responsive CSS styling for the default Repeater Template.
+-  NEW - Added new `button_done_label` parameter that allows for updating the button label after all posts have been loaded.
+-  NEW - Added custom Ajax Load More shortcode widget to the [Elementor](https://elementor.com/) page builder live edit mode.
+-  FIX - Fixed issue with placeholder image not be removed after `almDone` callback is fired.
+-  FIX - Fixed issue in Chrome scroll position issue that was introduced after a recent Chrome update.
+
+= 5.3.6 - June 29, 2020 =
+
+-  NEW - Added support for Masonry `transition` and [Filters](https://connekthq.com/plugins/ajax-load-more/add-ons/filters/) add-on - previously when using Masonry paging URLs would not update as users load additional pages.
+   This requires Filters 1.9.3
+-  FIX - Fixed issue with `Load More` not working after running a [custom filter](https://connekthq.com/plugins/ajax-load-more/docs/public-functions/#filter) when using Masonry `transition` .
+-  UPDATE - Updated Babel dependancy versions to (hopefully) resolve issues around IE11 `startsWith` and `endsWith` errors.
+-  UPDATE - Updated uninstall.php script to skip removal of Repeater Templates if the template directory has been changed via the `alm_repeater_path` hook.
 
 = 5.3.5 - June 12, 2020 =
 

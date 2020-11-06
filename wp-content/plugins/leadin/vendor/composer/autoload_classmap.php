@@ -6,8 +6,10 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
     'Leadin\\AssetsManager' => $baseDir . '/src/class-assetsmanager.php',
     'Leadin\\Leadin' => $baseDir . '/src/class-leadin.php',
+    'Leadin\\LeadinFilters' => $baseDir . '/src/class-leadinfilters.php',
     'Leadin\\LeadinOptions' => $baseDir . '/src/class-leadinoptions.php',
     'Leadin\\PageHooks' => $baseDir . '/src/class-pagehooks.php',
     'Leadin\\admin\\AdminConstants' => $baseDir . '/src/admin/class-adminconstants.php',
@@ -26,7 +28,6 @@ return array(
     'Leadin\\admin\\api\\DisconnectApi' => $baseDir . '/src/admin/api/class-disconnectapi.php',
     'Leadin\\admin\\api\\RegistrationApi' => $baseDir . '/src/admin/api/class-registrationapi.php',
     'Leadin\\admin\\api\\SkipConnectApi' => $baseDir . '/src/admin/api/class-skipconnectapi.php',
-    'Leadin\\admin\\utils\\Background' => $baseDir . '/src/admin/utils/class-background.php',
     'Leadin\\admin\\utils\\DeviceId' => $baseDir . '/src/admin/utils/class-deviceid.php',
     'Leadin\\utils\\RequestUtils' => $baseDir . '/src/utils/class-requestutils.php',
     'Leadin\\utils\\Validator' => $baseDir . '/src/utils/class-validator.php',

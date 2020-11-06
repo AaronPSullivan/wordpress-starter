@@ -7,41 +7,34 @@ Text Domain: ajax-load-more
 Author: Darren Cooney
 Twitter: @KaptonKaos
 Author URI: https://connekthq.com
-Version: 5.3.5
+Version: 5.3.8
 License: GPL
 Copyright: Darren Cooney & Connekt Media
 */
 
-
-define('ALM_VERSION', '5.3.5');
-define('ALM_RELEASE', 'June 12, 2020');
-define('ALM_STORE_URL', 'https://connekthq.com');
-
-
+define( 'ALM_VERSION', '5.3.8' );
+define( 'ALM_RELEASE', 'September 10, 2020' );
+define( 'ALM_STORE_URL', 'https://connekthq.com' );
 
 /**
- * alm_install
- * Activation hook - Create table & repeater
+ * Activation hook - Create table & repeater.
  *
  * @since 2.0.0
  */
-
-function alm_install($network_wide) {
-
+function alm_install( $network_wide ) {
    global $wpdb;
-	add_option( "alm_version", ALM_VERSION ); // Add to WP Option tbl
+	add_option( "alm_version", ALM_VERSION ); // Add to WP Option tbl.
    if ( is_multisite() && $network_wide ) {
-      // Get all blogs in the network and activate plugin on each one
-      $blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
-      foreach ( $blog_ids as $blog_id ) {
-         switch_to_blog( $blog_id );
-         alm_create_table();
-         restore_current_blog();
-      }
-   } else {
-      alm_create_table();
-   }
-
+		// Get all blogs in the network and activate plugin on each one.
+		$blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
+		foreach ( $blog_ids as $blog_id ) {
+			switch_to_blog( $blog_id );
+			alm_create_table();
+			restore_current_blog();
+		}
+	} else {
+		alm_create_table();
+	}
 }
 register_activation_hook( __FILE__, 'alm_install' );
 add_action( 'wpmu_new_blog', 'alm_install' );
@@ -49,38 +42,35 @@ add_action( 'wpmu_new_blog', 'alm_install' );
 
 
 /**
- * alm_create_table
- * Create new table and repeater template
+ * Create new table and repeater template.
  *
  * @since 2.0.0
  * @updated 3.5
  */
-function alm_create_table(){
-
+function alm_create_table() {
 	global $wpdb;
-	$table_name = $wpdb->prefix . "alm";
-	$blog_id = $wpdb->blogid;
+	$table_name = $wpdb->prefix . 'alm';
+	$blog_id    = $wpdb->blogid;
+	$repeater = '<li class="alm-item<?php if (!has_post_thumbnail()) { ?> no-img<?php } ?>">' . PHP_EOL . '   <?php if ( has_post_thumbnail() ) { the_post_thumbnail(\'alm-thumbnail\'); }?>'. PHP_EOL .'   <h3><a href="<?php the_permalink(); ?>" title="<?php the_title(); ?>"><?php the_title(); ?></a></h3>' . PHP_EOL . '   <p class="entry-meta"><?php the_time("F d, Y"); ?></p>' . PHP_EOL . '   <?php the_excerpt(); ?>' . PHP_EOL . '</li>';
 
-	$defaultRepeater = '<li <?php if (!has_post_thumbnail()) { ?> class="no-img"<?php } ?>>'. PHP_EOL .'   <?php if ( has_post_thumbnail() ) { the_post_thumbnail(\'alm-thumbnail\'); }?>'. PHP_EOL .'   <h3><a href="<?php the_permalink(); ?>" title="<?php the_title(); ?>"><?php the_title(); ?></a></h3>'. PHP_EOL .'   <p class="entry-meta"><?php the_time("F d, Y"); ?></p>'. PHP_EOL .'   <?php the_excerpt(); ?>'. PHP_EOL .'</li>';
-
-   // Create Base Repeater Directory
+   // Create Base Repeater Directory.
    $base_dir = AjaxLoadMore::alm_get_repeater_path();
-   AjaxLoadMore::alm_mkdir($base_dir);
+   AjaxLoadMore::alm_mkdir( $base_dir );
 
-   $file = $base_dir .'/default.php';
-	if( !file_exists($file) ){
-      $tmp = fopen($file, 'w+');
-		$w = fwrite($tmp, $defaultRepeater);
-		fclose($tmp);
+   $file = $base_dir . '/default.php';
+	if ( ! file_exists( $file ) ) {
+		$tmp = fopen( $file, 'w+' );
+		$w   = fwrite( $tmp, $repeater );
+		fclose( $tmp );
 	}
 
-	// Exit if Repeater Templates are disbaled, we don't want to create the table
-	if( defined('ALM_DISABLE_REPEATER_TEMPLATES') && ALM_DISABLE_REPEATER_TEMPLATES ){
+	// Exit if Repeater Templates are disbaled, we don't want to create the table.
+	if ( defined( 'ALM_DISABLE_REPEATER_TEMPLATES' ) && ALM_DISABLE_REPEATER_TEMPLATES ) {
 		return false;
 	}
 
 	// Create table, if it doesn't already exist.
-	if( $wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name ) {
+	if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) != $table_name ) {
 		$sql = "CREATE TABLE $table_name (
 			id mediumint(9) NOT NULL AUTO_INCREMENT,
 			name text NOT NULL,
@@ -91,10 +81,9 @@ function alm_create_table(){
 		);";
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 		dbDelta( $sql );
-		// Insert the default data in created table
-		$wpdb->insert($table_name , array('name' => 'default', 'repeaterDefault' => $defaultRepeater, 'repeaterType' => 'default', 'pluginVersion' => ALM_VERSION));
+		// Insert the default data in created table.
+		$wpdb->insert( $table_name , array( 'name' => 'default', 'repeaterDefault' => $repeater, 'repeaterType' => 'default', 'pluginVersion' => ALM_VERSION ) );
 	}
-
 }
 
 
@@ -133,9 +122,9 @@ if( !class_exists('AjaxLoadMore') ):
    		add_filter( 'plugin_row_meta', array(&$this, 'alm_plugin_meta_links'), 10, 2 );
    		add_shortcode( 'ajax_load_more', array(&$this, 'alm_shortcode') );
    		add_filter( 'widget_text', 'do_shortcode' ); // Allow shortcodes in widget areas
-   		load_plugin_textdomain( 'ajax-load-more', false, dirname(plugin_basename( __FILE__ )).'/lang'); //load text domain
+			load_plugin_textdomain( 'ajax-load-more', false, dirname(plugin_basename( __FILE__ )).'/lang'); //load text domain
 
-   	}
+		}
 
 
 
@@ -229,7 +218,7 @@ if( !class_exists('AjaxLoadMore') ):
        */
       public static function alm_get_repeater_path(){
          $upload_dir = wp_upload_dir();
-         $path = apply_filters( 'alm_repeater_path', $upload_dir['basedir']. '/alm_templates' );
+         $path = apply_filters( 'alm_repeater_path', $upload_dir['basedir'] . '/alm_templates' );
          return $path;
       }
 
@@ -270,6 +259,7 @@ if( !class_exists('AjaxLoadMore') ):
       	include_once( ALM_PATH . 'core/classes/class.alm-enqueue.php'); // Load Enqueue Class
       	include_once( ALM_PATH . 'core/classes/class.alm-queryargs.php'); // Load Query Args Class
       	include_once( ALM_PATH . 'core/classes/class.alm-localize.php'); // Load Localize Class
+      	include_once( ALM_PATH . 'core/integration/elementor/elementor.php');
 
    		if( is_admin() ){
    			require_once('admin/editor/editor.php');

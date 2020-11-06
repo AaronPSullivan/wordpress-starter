@@ -47,14 +47,14 @@
 <div class="shortcode-parameter-wrap">
    <h2 tabindex="0" class="shortcode-title"><i class="fa fa-cog"></i><?php _e('Display Settings', 'ajax-load-more'); ?></h2>
    <div class="section-wrap">
-	   
+
 	   <p class="section-intro"><?php _e('Display Settings allow you create a custom Ajax Load More experience for your visitors.', 'ajax-load-more'); ?></p>
-	   
+
 	   <!-- Options -->
 	   <div class="row input alm-instance-options" id="alm-instance-options">
 	      <h3 class="heading" tabindex="0"><?php _e('Options', 'ajax-load-more'); ?></h3>
 	      <div class="expand-wrap">
-				
+
 	         <!-- ID -->
 	         <section class="first">
 		         <div class="shortcode-builder--label">
@@ -161,13 +161,13 @@
 		               <input class="alm_element" name="container-classes" type="text" id="container-classes" placeholder="listing large-12 columns">
 		            </div>
 		         </div>
-	         </section>        
-	         
+	         </section>
+
 	         <!-- Pause -->
 	         <section class="pause_load" id="alm-pause">
 		         <div class="shortcode-builder--label">
    		         <h4><?php _e('Pause', 'ajax-load-more'); ?></h4>
-		   		 	<p><?php _e('Don\'t load any Ajax content until the user clicks or interacts with the <em>Load More</em> button.', 'ajax-load-more'); ?></p>
+		   		 	<p><?php _e('Do not load Ajax content until the user clicks or interacts with the <em>Load More</em> button.', 'ajax-load-more'); ?></p>
 		   		 </div>
 		         <div class="shortcode-builder--fields">
 		            <div class="inner">
@@ -189,7 +189,7 @@
 	         <section>
 		         <div class="shortcode-builder--label">
 		            <h4><?php _e('Destroy After', 'ajax-load-more'); ?></h4>
-		   		 	<p><?php _e('Remove Ajax Load More functionality after {<em>n</em>} number of pages have been loaded.', 'ajax-load-more'); ?></p>		   		 	
+		   		 	<p><?php _e('Remove Ajax Load More functionality after {<em>n</em>} number of pages have been loaded.', 'ajax-load-more'); ?></p>
 		   		 	<p><a class="button-small" href="https://connekthq.com/plugins/ajax-load-more/examples/destroy-after/" target="_blank"><?php _e('View Example', 'ajax-load-more'); ?></a></p>
 		   		 </div>
 		         <div class="shortcode-builder--fields alm-destroy-after">
@@ -197,13 +197,13 @@
 		               <input type="number" class="alm_element numbers-only" placeholder="0" name="destroy-after" id="disable-after" step="1" min="0" value="">
 		            </div>
 		         </div>
-	         </section>	 
+	         </section>
 
 	         <!-- Images Loaded -->
 	         <section>
 		         <div class="shortcode-builder--label">
 	   	         <h4><?php _e('Images Loaded', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Background images are not supported.','ajax-load-more'); ?>"></a></h4>
-		   		 	<p><?php _e('Wait for all images to load before displaying ajax loaded content.', 'ajax-load-more'); ?></p>		   		 	
+		   		 	<p><?php _e('Wait for all images to load before displaying ajax loaded content.', 'ajax-load-more'); ?></p>
 		   		 	<p><a class="button-small" href="https://connekthq.com/plugins/ajax-load-more/examples/images-loaded/" target="_blank"><?php _e('View Example', 'ajax-load-more'); ?></a></p>
 		   		</div>
 		         <div class="shortcode-builder--fields alm-images-loaded">
@@ -314,21 +314,21 @@
 					if (has_action('alm_get_unlimited_repeaters')) {
 					  do_action('alm_get_unlimited_repeaters');
 					}
-					echo '</select>';	
+					echo '</select>';
 				echo '</div>';
 			echo '</section>';
-			
+
 			// Get Theme Repeaters
 		   if (has_action('alm_theme_repeaters_selection')){
 		      do_action('alm_theme_repeaters_selection');
 		   }
 		   ?>
-	
+
 			<?php // Custom Repeaters v2 - /cta/extend.php
 			if (!has_action('alm_get_unlimited_repeaters') && !has_action('alm_get_custom_repeaters') && !has_action('alm_theme_repeaters_installed')) {
 		      include( ALM_PATH . 'admin/includes/cta/extend.php');
 			}
-	
+
 			echo '</div>';
 		echo '</div>';
 		?>
@@ -354,12 +354,24 @@
 
 				<section>
 		         <div class="shortcode-builder--label">
-			         <h4><?php _e('Loading Label', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Leave field empty to not update text while loading content','ajax-load-more'); ?>."></a></h4>
+			         <h4><?php _e('Loading Label', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Leave field empty to not update button text while loading content','ajax-load-more'); ?>."></a></h4>
 		   		 	<p><?php _e('Update the text of the <em>Load More</em> button while content is loading.', 'ajax-load-more'); ?></p>
 		   		 </div>
 		         <div class="shortcode-builder--fields">
 		            <div class="inner">
 		               <input class="alm_element" name="button-loading-label" type="text" id="button-loading-label" value="" placeholder="<?php _e('Loading Posts...', 'ajax-load-more'); ?>">
+		            </div>
+		         </div>
+				</section>
+
+				<section>
+		         <div class="shortcode-builder--label">
+			         <h4><?php _e('Done Label', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Leave field empty to not update button text','ajax-load-more'); ?>."></a></h4>
+		   		 	<p><?php _e('Update the text of the <em>Load More</em> button when no content remains to be loaded.', 'ajax-load-more'); ?></p>
+		   		 </div>
+		         <div class="shortcode-builder--fields">
+		            <div class="inner">
+		               <input class="alm_element" name="button-done-label" type="text" id="button-done-label" value="" placeholder="<?php _e('No Posts Remain...', 'ajax-load-more'); ?>">
 		            </div>
 		         </div>
 				</section>
@@ -397,7 +409,7 @@
 
 	         <div class="scrolling-options nested-component">
             	<div class="nested-component--inner">
-	            	
+
 	            	<!-- Scroll Distance -->
 						<section class="border-btm scroll_distance">
 			            <div class="shortcode-builder--label">
@@ -414,19 +426,6 @@
 				                  	<button type="button" value="%" class="perc">%</button>
 			                  	</div>
 				               </div>
-			               </div>
-			            </div>
-			         </section>
-			         
-						<!-- Scroll Container -->
-			         <section class="border-btm scroll_container">
-				         <div class="shortcode-builder--label">
-			               <h4><?php _e('Scroll Container', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Confine Ajax Load More scrolling to a parent container.','ajax-load-more'); ?>"></a></h4>
-			      		 	<p><?php _e('Enter the ID or classname of the parent container', 'ajax-load-more'); ?></p>
-			      		 </div>
-			            <div class="shortcode-builder--fields">
-			               <div class="inner">
-			                  <input type="text" class="alm_element" name="scroll-container" id="scroll-container" placeholder="#my-div">
 			               </div>
 			            </div>
 			         </section>
@@ -448,7 +447,7 @@
 			         <section class="border-btm pause_override">
 			            <div class="shortcode-builder--label">
 			               <h4><?php _e('Pause Override', 'ajax-load-more'); ?></h4>
-			      		 	<p><?php _e('Allow scrolling to override the Pause parameter and trigger the loading of posts on scroll.', 'ajax-load-more'); ?></p>
+			      		 	<p><?php _e('Override the <em>Pause</em> parameter and trigger the initial loading of posts on scroll.', 'ajax-load-more'); ?></p>
 			      		 </div>
 			            <div class="shortcode-builder--fields">
 			               <ul>
@@ -463,8 +462,71 @@
 			               </ul>
 			            </div>
 			         </section>
-            	</div>
+					</div>
+
 	         </div>
+
+				<!-- Scroll Container -->
+				<section class="border-btm scroll_container_section">
+					<div class="shortcode-builder--label">
+						<h4><?php _e('Scroll Container', 'ajax-load-more'); ?></h4>
+						<p><?php _e('Confine Ajax Load More scrolling to a parent container element.', 'ajax-load-more'); ?></p>
+						</div>
+					<div class="shortcode-builder--fields">
+						<ul>
+							<li>
+								<input class="alm_element" type="radio" name="scroll_container_toggle" value="t" id="scroll_container_t">
+								<label for="scroll_container_t"><?php _e('True', 'ajax-load-more'); ?></label>
+							</li>
+							<li>
+								<input class="alm_element" type="radio" name="scroll_container_toggle" value="f" id="scroll_container_f" checked="checked">
+								<label for="scroll_container_f"><?php _e('False', 'ajax-load-more'); ?></label>
+							</li>
+						</ul>
+					</div>
+				</section>
+
+				<div class="clear"></div>
+
+	         <div class="scroll-container-options nested-component" style="display: none;">
+            	<div class="nested-component--inner">
+
+						<!-- Scroll Container -->
+						<section class="border-btm scroll_container">
+							<div class="shortcode-builder--label">
+								<h4><?php _e('Container Element', 'ajax-load-more'); ?></h4>
+								<p><?php _e('Enter the ID or classname of the parent container element to be used as the scrolling container.', 'ajax-load-more'); ?></p>
+								</div>
+							<div class="shortcode-builder--fields">
+								<div class="inner">
+									<input type="text" class="alm_element" name="scroll-container" id="scroll-container" placeholder="#my-div">
+								</div>
+							</div>
+						</section>
+
+						<!-- Scroll Direction -->
+						<section class="border-btm scroll_direction">
+							<div class="shortcode-builder--label">
+								<h4><?php _e('Scroll Direction', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Scroll Direction only works when using a Scroll Container.','ajax-load-more'); ?>"></a></h4>
+								<p><?php _e('Select the direction Ajax Load More should scroll to load posts.', 'ajax-load-more'); ?></p>
+								</div>
+							<div class="shortcode-builder--fields">
+								<ul>
+									<li>
+										<input class="alm_element" type="radio" name="scroll_direction" value="vertical" id="scroll_direction_v" checked="checked">
+										<label for="scroll_direction_v"><?php _e('Vertical', 'ajax-load-more'); ?></label>
+									</li>
+									<li>
+										<input class="alm_element" type="radio" name="scroll_direction" value="horizontal" id="scroll_direction_h">
+										<label for="scroll_direction_h"><?php _e('Horizontal', 'ajax-load-more'); ?></label>
+									</li>
+								</ul>
+							</div>
+						</section>
+
+					</div>
+				</div>
+
 	      </div>
 	   </div>
 	   <!-- End Scrolling -->
@@ -472,7 +534,7 @@
 	   <!-- Transition -->
 	   <div class="row input transition" id="alm-transition">
 	      <h3 class="heading" tabindex="0"><?php _e('Transition', 'ajax-load-more'); ?></h3>
-	      
+
 	      <div class="expand-wrap">
 		      <section class="first">
 		         <div class="shortcode-builder--label">
@@ -494,14 +556,14 @@
 
 	         <div class="masonry-options nested-component" style="display: none;">
             	<div class="nested-component--inner">
-	            	
+
 						<section>
 				         <div class="shortcode-builder--label full">
 				         	<h4><?php _e('Masonry Options', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Ajax Load More does not support all available Masonry options','ajax-load-more'); ?>."></a></h4>
 				         	<p><?php _e('The following Masonry <a href="https://masonry.desandro.com/options.html" target="_blank">options</a> are supported by Ajax Load More.', 'ajax-load-more'); ?></p>
 				         </div>
 						</section>
-						
+
 						<section>
 				         <div class="shortcode-builder--label">
 				            <h4><?php _e('Item Selector', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Item Selector is required for Masonry to target each element loaded with Ajax.','ajax-load-more'); ?>"></a></h4>
@@ -515,8 +577,8 @@
 				            </div>
 				         </div>
 						</section>
-			         
-						
+
+
 						<section>
 				         <div class="shortcode-builder--label">
 				            <h4><?php _e('Column Width', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('If columnWidth is not set, Masonry will use the outer width of the first Item Selector.','ajax-load-more'); ?>"></a></h4>
@@ -530,7 +592,7 @@
 				            </div>
 				         </div>
 						</section>
-			         
+
 						<section>
 				         <div class="shortcode-builder--label">
 				            <h4><?php _e('Animation Type', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('All Masonry animations include a fade-in effect as items are loaded.','ajax-load-more'); ?>"></a></h4>
@@ -577,7 +639,7 @@
 				            </div>
 				         </div>
 						</section>
-						
+
 						<section>
 				         <div class="shortcode-builder--label">
 				            <h4><?php _e('Horizontal Order', 'ajax-load-more'); ?></h4>
@@ -599,7 +661,7 @@
 				            </div>
 				         </div>
 						</section>
-						
+
 						<p class="warning-callout">
 							<?php _e('Don\'t see your favorite Masonry option listed? You can always add your own!', 'ajax-load-more'); ?>
 							<a class="button-small" href="https://connekthq.com/plugins/ajax-load-more/docs/masonry/" target="_blank"><?php _e('View Docs', 'ajax-load-more'); ?></a>
@@ -611,10 +673,10 @@
 
 	         <!-- Hide transition_container if Masonry is selected -->
 	         <div class="masonry-options-hide">
-					
+
 		         <div class="transition-container-classes-wrap">
-			         
-				      <section>	
+
+				      <section>
 				         <div class="shortcode-builder--label">
 				            <h4><?php _e('Transition Container Classes', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('This setting is not available with the Single Post or Next Page add-ons','ajax-load-more'); ?>."></a></h4>
 				   		 	<p><?php _e('Add custom classes to the <span>.alm-reveal</span> loading container', 'ajax-load-more'); ?>.</p>
@@ -626,7 +688,7 @@
 				         </div>
 			         </div>
 					</section>
-		         
+
 					<section>
 			         <div class="shortcode-builder--label">
 			            <h4><?php _e('Transition Container', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Removing the transition container may have undesired results and is not recommended','ajax-load-more'); ?>."></a></h4>
@@ -675,27 +737,28 @@
 			         </div>
 		         </div>
 		      </section>
-	      </div>
 
-	      <div class="clear"></div>
+				<div class="clear"></div>
 
-	      <div class="progress-bar-options nested-component" style="display: none;">
-            <div class="nested-component--inner">
-	            <section>
-			         <div class="shortcode-builder--label">
-			            <h4><?php _e('Color', 'ajax-load-more'); ?> </h4>
-			   		 	<p><?php _e('Enter the hex color of the progress bar', 'ajax-load-more'); ?>.<br/>
-			   		 	<?php _e('Default:', 'ajax-load-more'); ?> #<span>ed7070</span>
-			   		 	</p>
-			   		 </div>
-			   		 <div class="shortcode-builder--fields">
-			            <div class="inner" style="position: relative;">
-			               <input type="text" class="alm_element" name="progress_bar_color" id="progress_bar_color" placeholder="ed7070" value="ed7070" maxlength="6" style="padding-left: 40px;">
-			               <span class="progress_bar_color_indicator"></span>
-			            </div>
-			         </div>
-	            </section>
-            </div>
+				<div class="progress-bar-options nested-component" style="display: none;">
+					<div class="nested-component--inner">
+						<section>
+							<div class="shortcode-builder--label">
+								<h4><?php _e('Color', 'ajax-load-more'); ?> </h4>
+								<p><?php _e('Enter the hex color of the progress bar', 'ajax-load-more'); ?>.<br/>
+								<?php _e('Default:', 'ajax-load-more'); ?> #<span>ed7070</span>
+								</p>
+							</div>
+							<div class="shortcode-builder--fields">
+								<div class="inner" style="position: relative;">
+									<input type="text" class="alm_element" name="progress_bar_color" id="progress_bar_color" placeholder="ed7070" value="ed7070" maxlength="6" style="padding-left: 40px;">
+									<span class="progress_bar_color_indicator"></span>
+								</div>
+							</div>
+						</section>
+					</div>
+				</div>
+
 	      </div>
 
 	   </div>
@@ -711,9 +774,9 @@
 <div class="shortcode-parameter-wrap">
    <h2 tabindex="0" class="shortcode-title"><i class="fa fa-database"></i><?php _e('Query Parameters', 'ajax-load-more'); ?></h2>
 	<div class="section-wrap">
-		
+
 		<p class="section-intro"><?php _e('Query Parameters allow you build a custom <b>WP_Query</b> based on Ajax Load More shortcode values.', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('When using Ajax Load More add-ons or extensions not all Query Parameters will be available in the query.', 'ajax-load-more'); ?>"></a></p>
-	   
+
 	   <!-- Posts Per Page -->
 	   <div class="row input posts_per_page" id="alm-post-page">
 	      <h3 class="heading" tabindex="0"><?php _e('Posts Per Page', 'ajax-load-more'); ?></h3>
@@ -1296,11 +1359,11 @@
 <!-- Integrations -->
 <div class="shortcode-parameter-wrap">
    <h2 tabindex="0" class="shortcode-title"><i class="fa fa-handshake-o" aria-hidden="true"></i> <?php _e('Integrations', 'ajax-load-more'); ?></h2>
-	
+
 	<div class="section-wrap">
-		
+
 		<p class="section-intro"><?php _e('Ajax Load More provides integration solutions for popular plugins and core WP functionality - when selecting an integration, Ajax Load More will automatically set various parameters on the server side to provide the best experience for users based on the selected integration.', 'ajax-load-more'); ?></a></p>
-		
+
 		<!-- Archives -->
 	   <div class="row input alm-archive" id="alm-archive">
 	      <h3 class="heading" tabindex="0"><?php _e('Archives', 'ajax-load-more'); ?></h3>
@@ -1327,10 +1390,10 @@
 		         </div>
 		      </section>
 		      <p class="warning-callout"><?php _e('<b>Note</b>: Do not select Query Parameters other than <b>Posts Per Page</b> and/or <b>Post Type</b> when using the Archives integration. Ajax Load More will automatically create the perfect shortcode for you based on the current archive page.', 'ajax-load-more'); ?></p>
-	      </div>		   
+	      </div>
 	   </div>
-	   
-	   <!-- WooCommerce -->	   	
+
+	   <!-- WooCommerce -->
 <!--
 	   <div class="row input alm-woocommerce" id="alm-woocommerce">
 	      <h3 class="heading" tabindex="0"><?php _e('WooCommerce', 'ajax-load-more'); ?></h3>
@@ -1343,7 +1406,7 @@
 		   		</div>
 		         <div class="shortcode-builder--fields">
 			         <div class="inner">
-				         <?php if( is_plugin_active('woocommerce/woocommerce.php') ) { ?>	
+				         <?php if( is_plugin_active('woocommerce/woocommerce.php') ) { ?>
 		               <ul>
 		                  <li>
 		                     <input class="alm_element" type="radio" name="woocommerce" value="t" id="woocommerce_t">
@@ -1353,7 +1416,7 @@
 		                     <input class="alm_element" type="radio" name="woocommerce" value="f" id="woocommerce_f" checked="checked">
 		                     <label for="woocommerce_f"><?php _e('False', 'ajax-load-more'); ?></label>
 		                  </li>
-		               </ul>		               
+		               </ul>
 							<?php } else { ?>
 							<p class="highlight" style="font-size: 13px; border-radius: 3px; line-height: 1; padding: 6px;">WooCommerce is not installed.</p>
 							<?php }?>
@@ -1363,7 +1426,7 @@
 	      </div>
 	   </div>
 -->
-	   
+
 	</div>
 </div>
 

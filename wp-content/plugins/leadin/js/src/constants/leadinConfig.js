@@ -1,6 +1,7 @@
 const {
   adminUrl,
   ajaxUrl,
+  backgroundIframeUrl,
   deviceId,
   didDisconnect,
   env,
@@ -23,6 +24,7 @@ const {
   signupUrl,
   portalDomain,
   dismissedReview,
+  leadinQueryParamsKeys,
 } = window.leadinConfig;
 
 const i18n = window.leadinI18n;
@@ -30,6 +32,7 @@ const i18n = window.leadinI18n;
 export {
   adminUrl,
   ajaxUrl,
+  backgroundIframeUrl,
   deviceId,
   didDisconnect,
   env,
@@ -53,4 +56,5 @@ export {
   signupUrl,
   portalDomain,
   dismissedReview,
+  leadinQueryParamsKeys,
 };

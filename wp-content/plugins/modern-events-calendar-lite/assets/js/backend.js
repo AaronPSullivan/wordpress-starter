@@ -22,19 +22,24 @@ jQuery(document).ready(function($)
     });
 
     // MEC Accordion
-    $('.mec-accordion .mec-acc-label').on('click', function()
+    $('.mec-accordion .mec-acc-label .mec-acc-cat-name').on('click', function()
     {
-        var key = $(this).attr('data-key');
-        var status = $(this).attr('data-status');
-
+        var key = $(this).parent().attr('data-key');
+        var status = $(this).parent().attr('data-status');
+        
         // Open the accordion
         if(status === 'close')
         {
             $('.mec-accordion .mec-acc-label ul').hide();
             $('.mec-accordion .mec-acc-label').attr('data-status', 'close');
-            $(this).attr('data-status', 'open');
+            $(this).parent().attr('data-status', 'open');
             $('#mec-acc-'+key).show();
+        } else {
+            $('.mec-accordion .mec-acc-label ul').hide();
+            $('.mec-accordion .mec-acc-label').attr('data-status', 'close');
+            $('#mec-acc-'+key).hide();
         }
+
     });
 
     // MEC Select, Deselect, Toggle
@@ -133,7 +138,7 @@ jQuery(document).ready(function($)
     $('.mec-checkbox-toggle').on('change', function()
     {
         var id = $(this).attr('id');
-        $(".mec-checkbox-toggle:not(#"+id+")").attr('checked', false);
+        $(".mec-checkbox-toggle:not(#"+id+")").prop('checked', false);
     });
 
     // MEC Setting Sticky
@@ -177,10 +182,11 @@ jQuery(document).ready(function($)
                     {
                         var search_label = $(this).find('label.mec-col-3').text().toLowerCase();
                         var search_title = $(this).find('h4.mec-form-subtitle').text().toLowerCase();
+                        var search_title = $(this).find('.mec-form-row').text().toLowerCase();
                         if ((!search_label || search_label == "") && (!search_title || search_title == "")) {
                             return false;
                         }
-                        if ($(this).find('label.mec-col-3').text().toLowerCase().indexOf(value) > -1 || $(this).find('h4.mec-form-subtitle').text().toLowerCase().indexOf(value) > -1) {
+                        if ($(this).find('label.mec-col-3').text().toLowerCase().indexOf(value) > -1 || $(this).find('h4.mec-form-subtitle').text().toLowerCase().indexOf(value) > -1 || $(this).find('.mec-form-row').text().toLowerCase().indexOf(value) > -1) {
                             $('.mec-options-fields').hide();
                             $('.mec-options-fields').removeClass('active');
                             $('.wns-be-group-menu .subsection .mec-settings-menu li').removeClass('active');
@@ -207,6 +213,29 @@ jQuery(document).ready(function($)
                         searchStr.show();
                         searchStr.addClass('active')
                     });
+
+                    jQuery("#wns-be-content .mec-form-row").each(function() {
+                        if (value != "" && $(this).text().search(new RegExp(value, 'gi')) != -1) {
+                            jQuery(this).addClass("results");
+                        } else if (value != "" && $(this).text().search(value) != 1) {
+                            jQuery(this).addClass("noresults");
+                        }
+                    });
+
+                    jQuery("#wns-be-content ul li").each(function() {
+                        if (value != "" && $(this).text().search(new RegExp(value, 'gi')) != -1) {
+                            jQuery(this).addClass("enable");
+                        } else if (value != "" && $(this).text().search(value) != 1) {
+                            jQuery(this).addClass("disable");
+                        }
+                    });
+
+                }
+                if ( !value || value == "" ) {
+                    jQuery(".results").removeClass("results");
+                    jQuery(".noresults").removeClass("noresults");
+                    jQuery(".enable").removeClass("enable");
+                    jQuery(".disable").removeClass("disable");
                 }
             }
         });
@@ -364,6 +393,22 @@ jQuery(document).ready(function($)
             success: function (response) {
                 $(".mec-custom-msg-notification-set-box").fadeOut(100, function () { $(this).remove(); });
                 $(".mec-custom-msg-notification-wrap").fadeOut(100, function () { $(this).remove(); });
+            },
+        });
+    });
+
+    $('.mec-cmsg-2-notification-box-wrap span').on('click', function (e) {
+        e.preventDefault();
+        $.ajax({
+            url: mec_admin_localize.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'close_cmsg_2_notification',
+                nonce: mec_admin_localize.ajax_nonce,
+            },
+            success: function (response) {
+                $(".mec-custom-msg-2-notification-set-box").fadeOut(100, function () { $(this).remove(); });
+                $(".mec-custom-msg-2-notification-wrap").fadeOut(100, function () { $(this).remove(); });
             },
         });
     });
@@ -576,14 +621,14 @@ function mec_skin_toggle()
     if(skin === 'list' || skin === 'grid' || skin === 'agenda' || skin === 'timeline') jQuery('#mec_date_ongoing_filter').show();
     else
     {
-        jQuery("#mec_show_only_ongoing_events").attr('checked', false);
+        jQuery("#mec_show_only_ongoing_events").prop('checked', false);
         jQuery('#mec_date_ongoing_filter').hide();
     }
 
     // Show/Hide Expired Events
     if(skin === 'map')
     {
-        jQuery("#mec_show_only_past_events").attr('checked', false);
+        jQuery("#mec_show_only_past_events").prop('checked', false);
         jQuery('#mec_date_only_past_filter').hide();
     }
     else jQuery('#mec_date_only_past_filter').show();
@@ -646,6 +691,7 @@ jQuery(document).ready(function()
         var mail_subject = jQuery('#mec-send-email-subject').val();
         var mail_content = wp.editor.getContent('editor' + jQuery(this).data('id'));
         var mail_message = jQuery('#mec-send-email-message');
+        var mail_copy = jQuery('#mec-send-admin-copy').is(':checked') ? 1 : 0;
 
         if(data_send.length == 0) mail_message.attr('class', 'mec-util-hidden mec-error').html(jQuery('#mec-send-email-no-user-selected').val()).show();
         else if(mail_subject.length == 0) mail_message.attr('class', 'mec-util-hidden mec-error').html(jQuery('#mec-send-email-empty-subject').val()).show();
@@ -663,7 +709,8 @@ jQuery(document).ready(function()
                     nonce: mec_admin_localize.ajax_nonce,
                     mail_recipients_info: data_send,
                     mail_subject: mail_subject,
-                    mail_content: mail_content
+                    mail_content: mail_content,
+                    mail_copy: mail_copy
                 },
                 success: function(response)
                 {

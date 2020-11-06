@@ -4,11 +4,13 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit157a5c1b56bbe8cb35cc96bc2b039c20
+class ComposerStaticInit24ace8fa9cb0d117dbd58b30ed3725e8
 {
     public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Leadin\\AssetsManager' => __DIR__ . '/../..' . '/src/class-assetsmanager.php',
         'Leadin\\Leadin' => __DIR__ . '/../..' . '/src/class-leadin.php',
+        'Leadin\\LeadinFilters' => __DIR__ . '/../..' . '/src/class-leadinfilters.php',
         'Leadin\\LeadinOptions' => __DIR__ . '/../..' . '/src/class-leadinoptions.php',
         'Leadin\\PageHooks' => __DIR__ . '/../..' . '/src/class-pagehooks.php',
         'Leadin\\admin\\AdminConstants' => __DIR__ . '/../..' . '/src/admin/class-adminconstants.php',
@@ -27,7 +29,6 @@ class ComposerStaticInit157a5c1b56bbe8cb35cc96bc2b039c20
         'Leadin\\admin\\api\\DisconnectApi' => __DIR__ . '/../..' . '/src/admin/api/class-disconnectapi.php',
         'Leadin\\admin\\api\\RegistrationApi' => __DIR__ . '/../..' . '/src/admin/api/class-registrationapi.php',
         'Leadin\\admin\\api\\SkipConnectApi' => __DIR__ . '/../..' . '/src/admin/api/class-skipconnectapi.php',
-        'Leadin\\admin\\utils\\Background' => __DIR__ . '/../..' . '/src/admin/utils/class-background.php',
         'Leadin\\admin\\utils\\DeviceId' => __DIR__ . '/../..' . '/src/admin/utils/class-deviceid.php',
         'Leadin\\utils\\RequestUtils' => __DIR__ . '/../..' . '/src/utils/class-requestutils.php',
         'Leadin\\utils\\Validator' => __DIR__ . '/../..' . '/src/utils/class-validator.php',
@@ -41,7 +42,7 @@ class ComposerStaticInit157a5c1b56bbe8cb35cc96bc2b039c20
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->classMap = ComposerStaticInit157a5c1b56bbe8cb35cc96bc2b039c20::$classMap;
+            $loader->classMap = ComposerStaticInit24ace8fa9cb0d117dbd58b30ed3725e8::$classMap;
 
         }, null, ClassLoader::class);
     }

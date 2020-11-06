@@ -132,7 +132,7 @@ class MEC_feature_search extends MEC_base
     {
         if($_POST['length'] < '3')
         {
-            _e('Please enter at least 3 characters and try again' , 'modern-events-calendar-lite');
+            _e('Please enter at least 3 characters and try again', 'modern-events-calendar-lite');
             die();
         }
 
@@ -306,12 +306,8 @@ class MEC_feature_search extends MEC_base
             );
         }
 
-        // wordpress event list search
-        $post_types = array('mec-events');
-
         if($mec_tag_query) $query->set('tag', $mec_tag_query);
-        $query->set('tax_query', $mec_queries);
-        $query->set('post_type', $post_types);
+        if(count($mec_queries)) $query->set('tax_query', $mec_queries);
 
         return $query;
     }

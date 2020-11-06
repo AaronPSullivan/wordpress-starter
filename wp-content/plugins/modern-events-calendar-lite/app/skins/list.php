@@ -129,6 +129,7 @@ class MEC_skin_list extends MEC_skins
 
         // The style
         $this->style = isset($this->skin_options['style']) ? $this->skin_options['style'] : 'modern';
+        if($this->style == 'fluent' and !is_plugin_active('mec-fluent-layouts/mec-fluent-layouts.php')) $this->style = 'modern';
         
         // Override the style if the style forced by us in a widget etc
         if(isset($this->atts['style']) and trim($this->atts['style']) != '') $this->style = $this->atts['style'];
@@ -136,6 +137,9 @@ class MEC_skin_list extends MEC_skins
         // HTML class
         $this->html_class = '';
         if(isset($this->atts['html-class']) and trim($this->atts['html-class']) != '') $this->html_class = $this->atts['html-class'];
+
+        // Booking Button
+        $this->booking_button = isset($this->skin_options['booking_button']) ? (int) $this->skin_options['booking_button'] : 0;
         
         // SED Method
         $this->sed_method = isset($this->skin_options['sed_method']) ? $this->skin_options['sed_method'] : '0';
@@ -283,7 +287,7 @@ class MEC_skin_list extends MEC_skins
                 else
                 {
                     $now = current_time('timestamp', 0);
-                    $startDateTime = strtotime(date($this->year.$this->month.'t')) + (int) (get_option('gmt_offset') * HOUR_IN_SECONDS);
+                    $startDateTime = strtotime(date($this->year.$this->month.'t')) + (int) $this->main->get_gmt_offset_seconds();
                     $now = $startDateTime < $now ? $startDateTime : $now;
 
                     $start = date('Y-m-d H:i:s', $now);
@@ -369,7 +373,7 @@ class MEC_skin_list extends MEC_skins
                                 'end'=>array('date'=>$this->main->get_end_date($date, $rendered))
                             );
 
-                            $d[] = $this->render->after_render($data, $i);
+                            $d[] = $this->render->after_render($data, $this, $i);
                             $found++;
                         }
 
@@ -377,6 +381,9 @@ class MEC_skin_list extends MEC_skins
                         {
                             // Next Offset
                             $this->next_offset = ($query->post_count-($query->current_post+1)) >= 0 ? ($query->current_post+1)+$this->offset : 0;
+
+                            usort($d, array($this, 'sort_day_events'));
+                            $events[$date] = $d;
 
                             // Restore original Post Data
                             wp_reset_postdata();
@@ -420,6 +427,8 @@ class MEC_skin_list extends MEC_skins
         
         if(isset($this->skin_options['start_date_type']) and $this->skin_options['start_date_type'] == 'today') $date = current_time('Y-m-d');
         elseif(isset($this->skin_options['start_date_type']) and $this->skin_options['start_date_type'] == 'tomorrow') $date = date('Y-m-d', strtotime('Tomorrow'));
+        elseif(isset($this->skin_options['start_date_type']) and $this->skin_options['start_date_type'] == 'yesterday') $date = date('Y-m-d', strtotime('Yesterday'));
+        elseif(isset($this->skin_options['start_date_type']) and $this->skin_options['start_date_type'] == 'start_last_month') $date = date('Y-m-d', strtotime('first day of last month'));
         elseif(isset($this->skin_options['start_date_type']) and $this->skin_options['start_date_type'] == 'start_current_month') $date = date('Y-m-d', strtotime('first day of this month'));
         elseif(isset($this->skin_options['start_date_type']) and $this->skin_options['start_date_type'] == 'start_next_month') $date = date('Y-m-d', strtotime('first day of next month'));
         elseif(isset($this->skin_options['start_date_type']) and $this->skin_options['start_date_type'] == 'date') $date = date('Y-m-d', strtotime($this->skin_options['start_date']));
@@ -515,7 +524,7 @@ class MEC_skin_list extends MEC_skins
 
         do
         {
-            if($c > 6) $break = true;
+            if($c > 12) $break = true;
             if($c and !$break)
             {
                 if(intval($this->month) == 12)

@@ -2,13 +2,30 @@
 /** no direct access **/
 defined('MECEXEC') or die();
 
+/** @var MEC_feature_books $this */
+/** @var array $raw_tickets */
+/** @var array $price_details */
+/** @var string $transaction_id */
+
 $event_id = $event->ID;
 $gateways = $this->main->get_gateways();
+
+$booking_options = get_post_meta($event_id, 'mec_booking', true);
+if(!is_array($booking_options)) $booking_options = array();
+
+$gateway_settings = $this->main->get_gateways_options();
 
 $active_gateways = array();
 foreach($gateways as $gateway)
 {
     if(!$gateway->enabled()) continue;
+
+    // Gateway is disabled per event
+    if(isset($gateway_settings['gateways_per_event']) and $gateway_settings['gateways_per_event'])
+    {
+        if(isset($booking_options['gateways_'.$gateway->id().'_disabled']) and $booking_options['gateways_'.$gateway->id().'_disabled']) continue;
+    }
+
     $active_gateways[] = $gateway;
 
     // When Stripe Connect is enabled and organizer is connected then skip other gateways
@@ -20,20 +37,21 @@ foreach($gateways as $gateway)
 }
 
 $mecFluentEnable = class_exists('MEC_Fluent\Core\pluginBase\MecFluent') && (isset($this->settings['single_single_style']) and $this->settings['single_single_style'] == 'fluent') ? true : false;
-if ($mecFluentEnable) {
+if($mecFluentEnable)
+{
     $ticketsDetails = [];
-    foreach ($raw_tickets as $ticket_id => $count) {
-        if (!isset($event_tickets[$ticket_id])){
-            continue;
-        }
-        $ticketPrice = isset($event_tickets[$ticket_id]['price']) ? $this->book->get_ticket_price($event_tickets[$ticket_id], current_time('Y-m-d')) : 0;
+    foreach($raw_tickets as $ticket_id => $count)
+    {
+        if(!isset($event_tickets[$ticket_id])) continue;
+
+        $ticketPrice = isset($event_tickets[$ticket_id]['price']) ? $this->book->get_ticket_price($event_tickets[$ticket_id], current_time('Y-m-d'), $event_id) : 0;
         $ticketsDetails[$ticket_id]['name'] = $event_tickets[$ticket_id]['name'];
         $ticketsDetails[$ticket_id]['count'] = $count;
         $ticketsDetails[$ticket_id]['price'] = ($ticketPrice*$count);
     }
 }
 ?>
-<div id="mec_book_payment_form">
+<div id="mec_book_payment_form" class="mec-booking-form-container mec-wrap-checkout row">
     <h4><?php _e('Checkout', 'modern-events-calendar-lite'); ?></h4>
     <div class="mec-book-form-price">
     <?php if ($mecFluentEnable) { ?>
@@ -70,6 +88,7 @@ if ($mecFluentEnable) {
                 <span class="mec-book-price-total-description"><?php esc_html_e('Total Due', 'modern-events-calendar-lite'); ?></span>
                 <span class="mec-book-price-total-amount"><?php echo $this->main->render_price($price_details['total']); ?></span>
             </div>
+            <div style="clear:both"></div>
         <?php } else { ?>
             <?php if(isset($price_details['details']) and is_array($price_details['details']) and count($price_details['details'])): ?>
             <ul class="mec-book-price-details">
@@ -87,7 +106,7 @@ if ($mecFluentEnable) {
     <?php if(isset($this->settings['coupons_status']) and $this->settings['coupons_status']): ?>
     <div class="mec-book-form-coupon">
         <form id="mec_book_form_coupon<?php echo $uniqueid; ?>" onsubmit="mec_book_apply_coupon<?php echo $uniqueid; ?>(); return false;">
-            <input type="text" name="coupon" placeholder="<?php esc_attr_e('Discount Coupon', 'modern-events-calendar-lite'); ?>" />
+            <input type="text" name="coupon" title="<?php esc_attr_e('Discount Coupon'); ?>" placeholder="<?php esc_attr_e('Discount Coupon', 'modern-events-calendar-lite'); ?>" />
             <input type="hidden" name="transaction_id" value="<?php echo $transaction_id; ?>" />
             <input type="hidden" name="action" value="mec_apply_coupon" />
             <?php wp_nonce_field('mec_apply_coupon_'.$transaction_id); ?>

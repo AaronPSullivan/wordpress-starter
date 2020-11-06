@@ -56,6 +56,9 @@ if(isset($this->atts['return_items']) and $this->atts['return_items'])
     exit;
 }
 
+$sed_method = $this->sed_method;
+if ($sed_method == 'new') $sed_method = '0';
+
 // Generating javascript code tpl
 $javascript = '<script type="text/javascript">
 jQuery(document).ready(function()
@@ -73,7 +76,7 @@ jQuery(document).ready(function()
         atts: "'.http_build_query(array('atts'=>$this->atts), '', '&').'",
         style: "'.(isset($this->skin_options['style']) ? $this->skin_options['style'] : NULL).'",
         ajax_url: "'.admin_url('admin-ajax.php', NULL).'",
-        sed_method: "'.$this->sed_method.'",
+        sed_method: "'.$sed_method.'",
         image_popup: "'.$this->image_popup.'",
         sf:
         {
@@ -108,7 +111,8 @@ else
     $events_side      = '<div class="mec-calendar-events-side mec-clear"><div class="mec-month-side" id="mec_month_side_'.$this->id.'_'.date('Ym', $current_month_time).'">'.$this->events_str.'</div></div>';
     $div_footer       = '<div class="mec-event-footer"></div>';
 }
-do_action('mec_start_skin' , $this->id);
+
+do_action('mec_start_skin', $this->id);
 do_action('mec_monthly_skin_head');
 ?>
 <div id="mec_skin_<?php echo $this->id; ?>" class="mec-wrap <?php echo $event_colorskin . ' ' . $this->html_class . ' ' . $set_dark; ?>">

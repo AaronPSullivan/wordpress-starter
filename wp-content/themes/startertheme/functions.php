@@ -18,7 +18,13 @@ if ( ! function_exists( 'startertheme_setup' ) ) :
 	 * as indicating support for post thumbnails.
 	 */
 	function startertheme_setup() {
-    
+        /*
+         * Add web fonts for editor here
+         */
+        add_theme_support( 'editor-styles' );
+        add_editor_style( array( 'css/editor-styles.css', str_replace( ',', '%2C', 'https://fonts.googleapis.com/css2?family=Encode+Sans:wght@100;700&family=Lato:ital,wght@0,300;0,700;1,300;1,700&display=swap' ) ));
+        
+        
 		/*
 		 * Make theme available for translation.
 		 * Translations can be filed in the /languages/ directory.
@@ -39,6 +45,10 @@ if ( ! function_exists( 'startertheme_setup' ) ) :
 		add_theme_support( 'title-tag' );
 
         
+        
+        
+        /* enable wide blocks */
+        add_theme_support('align-wide');
         
         
         
@@ -89,11 +99,11 @@ if ( ! function_exists( 'startertheme_setup' ) ) :
 		 *
 		 * @link https://codex.wordpress.org/Theme_Logo
 		 */
-		add_theme_support( 'custom-logo', array(
+		/*add_theme_support( 'custom-logo', array(
 			
 			'flex-width'  => true,
 			'flex-height' => true,
-		) );
+		) );*/
 	}
 endif;
 add_action( 'after_setup_theme', 'startertheme_setup' );
@@ -108,9 +118,9 @@ add_action( 'after_setup_theme', 'startertheme_setup' );
  */
 function startertheme_add_gutenberg_assets() {
 	// Load the theme styles within Gutenberg.
-	wp_enqueue_style( 'startertheme-gutenberg', get_theme_file_uri( '/css/editor-styles.css' ), false );
+	//wp_enqueue_style( 'startertheme-gutenberg', get_theme_file_uri( '/css/editor-styles.css' ), false );
     
-    wp_enqueue_style('startertheme-admin-google-fonts', 'https://fonts.googleapis.com/css?family=Lato:300,400,400i,700|Roboto+Slab:500&display=swap' );
+    //wp_enqueue_style('startertheme-admin-google-fonts', 'https://fonts.googleapis.com/css?family=Lato:300,400,400i,700|Roboto+Slab:500&display=swap' );
     
   
 }
@@ -268,22 +278,47 @@ add_action( 'widgets_init', 'startertheme_widgets_init' );
  */
 function startertheme_scripts() {
     wp_enqueue_style( 'startertheme-theme-setup', get_stylesheet_uri() );
-    wp_enqueue_style('bootstrap4', 'https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css');
     
-
+    /*
+     * Add web fonts here
+     */
     wp_enqueue_style('startertheme-google-fonts', 'https://fonts.googleapis.com/css?family=Lato:300,400,400i,700|Roboto+Slab:500&display=swap' );
      
-
-    wp_enqueue_style( 'startertheme-styles', get_template_directory_uri() . '/css/style.css' );
     
-    wp_enqueue_script( 'boot1','https://code.jquery.com/jquery-3.3.1.slim.min.js', array( 'jquery' ),'',true );
-    wp_enqueue_script( 'boot2','https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js', array( 'jquery' ),'',true );
-    wp_enqueue_script( 'boot3','https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js', array( 'jquery' ),'',true );
+    /*
+     * Load jquery and bootstrap 
+     */
+    wp_enqueue_style('startertheme-bootstrap4-css', 'https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css');
+    wp_enqueue_script( 'startertheme-jquery','https://code.jquery.com/jquery-3.5.1.min.js', array( 'jquery' ),'',true );
+    wp_enqueue_script( 'startertheme-jquery-easing','https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js', array( 'jquery' ),'',true );
+    wp_enqueue_script( 'startertheme-popper','https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js', array( 'jquery' ),'',true );
+    wp_enqueue_script( 'startertheme-bootstrap4-js','https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js', array( 'jquery' ),'',true );
+    
+     
+     /*
+     * Slick Slider (uncomment out if using)
+     */
+    //wp_enqueue_style( 'startertheme-slick-styles' , get_template_directory_uri() . '/inc/slick/slick.css');
+    //wp_enqueue_script( 'startertheme-slick-js', get_template_directory_uri() . '/inc/slick/slick.min.js', array('jquery'), '20201016', true );
+    
+    
+    
+    /*
+     * Load nav js and other
+     */
 	wp_enqueue_script( 'startertheme-navigation', get_template_directory_uri() . '/js/navigation.js', array(), '20151215', true );
 	wp_enqueue_script( 'startertheme-skip-link-focus-fix', get_template_directory_uri() . '/js/skip-link-focus-fix.js', array(), '20151215', true );
     wp_enqueue_script( 'startertheme-skrollr', get_stylesheet_directory_uri() . '/js/skrollr.min.js', array(), '20160310', true );
-    wp_enqueue_script( 'startertheme-main-js', get_stylesheet_directory_uri() . '/js/main.js', array('jquery'), '', true );
     
+     /* 
+     * Load main stylesheet  
+     */
+    wp_enqueue_style( 'startertheme-styles', get_template_directory_uri() . '/css/style.css' );
+    
+    /* 
+     * Load main JS
+     */
+    wp_enqueue_script( 'startertheme-main-js', get_stylesheet_directory_uri() . '/js/main.js', array('jquery'), '', true );
     
     
     
@@ -321,3 +356,7 @@ if ( defined( 'JETPACK__VERSION' ) ) {
 	require get_template_directory() . '/inc/jetpack.php';
 }
 
+/**
+ * Hide Advanced Custom Fields
+ */
+//add_filter('acf/settings/show_admin', '__return_false');

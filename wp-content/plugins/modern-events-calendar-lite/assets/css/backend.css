@@ -693,11 +693,17 @@ body.post-type-mec-books th.column-author {
     }
 }
 
+#mec-occurrences .mec-occurrences-list,
+#mec_bfixed_form_fields,
+#mec_event_form_fields,
 #mec_reg_form_fields {
     background: #eee;
     padding: 20px
 }
 
+#mec-occurrences .mec-occurrences-list li,
+#mec_bfixed_form_fields li,
+#mec_event_form_fields li,
 #mec_reg_form_fields li {
     margin: 4px;
     border-radius: 2px;
@@ -707,16 +713,23 @@ body.post-type-mec-books th.column-author {
     transition: all .3s ease
 }
 
+
+#mec_bfixed_form_fields li ul,
+#mec_event_form_fields li ul,
 #mec_reg_form_fields li ul {
     padding-top: 15px;
     padding-bottom: 15px;
     margin: 1px
 }
 
+#mec_bfixed_form_fields li ul li,
+#mec_event_form_fields li ul li,
 #mec_reg_form_fields li ul li {
     padding: 7px 30px 7px 46px
 }
 
+#mec_bfixed_form_fields span.mec_event_field_type,
+#mec_event_form_fields span.mec_event_field_type,
 #mec_reg_form_fields span.mec_reg_field_type {
     font-size: 11px;
     font-weight: 600;
@@ -725,18 +738,39 @@ body.post-type-mec-books th.column-author {
     letter-spacing: 2px
 }
 
-#mec_reg_form_fields span.mec_reg_field_option_sort,#mec_reg_form_fields span.mec_reg_field_remove,#mec_reg_form_fields span.mec_reg_field_sort {
+#mec-occurrences .mec-occurrences-list .mec-occurrences-delete-button,
+#mec_bfixed_form_fields span.mec_bfixed_field_option_sort,
+#mec_bfixed_form_fields span.mec_bfixed_field_remove,
+#mec_bfixed_form_fields span.mec_bfixed_field_sort,
+#mec_event_form_fields span.mec_event_field_option_sort,
+#mec_event_form_fields span.mec_event_field_remove,
+#mec_event_form_fields span.mec_event_field_sort,
+#mec_reg_form_fields span.mec_reg_field_option_sort,
+#mec_reg_form_fields span.mec_reg_field_remove,
+#mec_reg_form_fields span.mec_reg_field_sort {
     font-size: 0;
     color: #fff
 }
 
+#mec-occurrences .mec-occurrences-list .mec-occurrences-delete-button,
+#mec_bfixed_form_fields span.mec_bfixed_field_remove,
+#mec_event_form_fields span.mec_event_field_remove,
 #mec_reg_form_fields span.mec_reg_field_remove {
     position: absolute;
     right: 0;
     top: 0
 }
 
-#mec_reg_form_fields span.mec_reg_field_option_sort:before,#mec_reg_form_fields span.mec_reg_field_remove:before,#mec_reg_form_fields span.mec_reg_field_sort:before {
+#mec-occurrences .mec-occurrences-list .mec-occurrences-delete-button:before,
+#mec_bfixed_form_fields span.mec_bfixed_field_option_sort:before,
+#mec_bfixed_form_fields span.mec_bfixed_field_remove:before,
+#mec_bfixed_form_fields span.mec_bfixed_field_sort:before,
+#mec_event_form_fields span.mec_event_field_option_sort:before,
+#mec_event_form_fields span.mec_event_field_remove:before,
+#mec_event_form_fields span.mec_event_field_sort:before,
+#mec_reg_form_fields span.mec_reg_field_option_sort:before,
+#mec_reg_form_fields span.mec_reg_field_remove:before,
+#mec_reg_form_fields span.mec_reg_field_sort:before {
     position: absolute;
     left: 10px;
     top: 20px;
@@ -750,6 +784,13 @@ body.post-type-mec-books th.column-author {
     color: #888
 }
 
+#mec-occurrences .mec-occurrences-list .mec-occurrences-delete-button:before {
+    font-weight: 400;
+}
+
+#mec-occurrences .mec-occurrences-list .mec-occurrences-delete-button:before,
+#mec_bfixed_form_fields span.mec_bfixed_field_remove:before,
+#mec_event_form_fields span.mec_event_field_remove:before,
 #mec_reg_form_fields span.mec_reg_field_remove:before {
     content: "\e082";
     width: 20px;
@@ -760,6 +801,8 @@ body.post-type-mec-books th.column-author {
     cursor: pointer
 }
 
+#mec_bfixed_form_fields span.mec_bfixed_field_option_sort:before,
+#mec_event_form_fields span.mec_event_field_option_sort:before,
 #mec_reg_form_fields span.mec_reg_field_option_sort:before {
     font-size: 13px;
     left: 2px;
@@ -768,16 +811,22 @@ body.post-type-mec-books th.column-author {
     height: 14px
 }
 
+#mec_bfixed_form_fields li ul li span.mec_bfixed_field_remove,
+#mec_event_form_fields li ul li span.mec_event_field_remove,
 #mec_reg_form_fields li ul li span.mec_reg_field_remove {
     right: auto;
     left: 60px;
     top: 2px
 }
 
+#mec_bfixed_form_fields p.mec_bfixed_field_options,
+#mec_event_form_fields p.mec_event_field_options,
 #mec_reg_form_fields p.mec_reg_field_options {
     margin: 6px 0 8px
 }
 
+#mec_bfixed_form_fields input[type=number],#mec_bfixed_form_fields input[type=text],#mec_bfixed_form_fields select,#mec_bfixed_form_fields textarea,
+#mec_event_form_fields input[type=number],#mec_event_form_fields input[type=text],#mec_event_form_fields select,#mec_event_form_fields textarea,
 #mec_reg_form_fields input[type=number],#mec_reg_form_fields input[type=text],#mec_reg_form_fields select,#mec_reg_form_fields textarea {
     min-width: 260px;
     min-height: 34px;
@@ -785,10 +834,14 @@ body.post-type-mec-books th.column-author {
     margin-top: 7px
 }
 
+#mec_bfixed_form_fields textarea,
+#mec_event_form_fields textarea,
 #mec_reg_form_fields textarea {
     min-height: 66px
 }
 
+#mec_bfixed_form_field_types button,#mec_bfixed_form_fields button,
+#mec_event_form_field_types button,#mec_event_form_fields button,
 #mec_reg_form_field_types button,#mec_reg_form_fields button {
     position: relative;
     outline: 0;
@@ -808,11 +861,15 @@ body.post-type-mec-books th.column-author {
     box-shadow: 0 0 3px rgba(0,0,0,.03)
 }
 
+#mec_bfixed_form_field_types button:hover,#mec_bfixed_form_fields button:hover,
+#mec_event_form_field_types button:hover,#mec_event_form_fields button:hover,
 #mec_reg_form_field_types button:hover,#mec_reg_form_fields button:hover {
     border-color: #008aff;
     box-shadow: 0 0 7px rgba(0,0,0,.1)
 }
 
+#mec_bfixed_form_field_types button:before,#mec_bfixed_form_fields button:before,
+#mec_event_form_field_types button:before,#mec_event_form_fields button:before,
 #mec_reg_form_field_types button:before,#mec_reg_form_fields button:before {
     position: absolute;
     left: 12px;
@@ -823,11 +880,15 @@ body.post-type-mec-books th.column-author {
     display: inline-block
 }
 
+#mec_bfixed_form_field_types button.red:hover,#mec_bfixed_form_fields button.red:hover,
+#mec_event_form_field_types button.red:hover,#mec_event_form_fields button.red:hover,
 #mec_reg_form_field_types button.red:hover,#mec_reg_form_fields button.red:hover {
     border-color: red;
     box-shadow: 0 0 7px rgba(0,0,0,.1)
 }
 
+#mec_bfixed_form_field_types button.red:before,#mec_bfixed_form_fields button.red:before,
+#mec_event_form_field_types button.red:before,#mec_event_form_fields button.red:before,
 #mec_reg_form_field_types button.red:before,#mec_reg_form_fields button.red:before {
     position: absolute;
     left: 12px;
@@ -838,12 +899,22 @@ body.post-type-mec-books th.column-author {
     display: inline-block
 }
 
+#mec_bfixed_form_fields .mec_bfixed_notification_placeholder, 
+#mec_event_form_fields .mec_event_notification_placeholder {
+    padding: 2px;
+    display: block;
+    margin: 10px 0 20px;
+}
+
 @media (max-width: 768px) {
+    #mec_bfixed_form_fields input[type=number],#mec_bfixed_form_fields input[type=text],#mec_bfixed_form_fields select,#mec_bfixed_form_fields textarea,
+    #mec_event_form_fields input[type=number],#mec_event_form_fields input[type=text],#mec_event_form_fields select,#mec_event_form_fields textarea,
     #mec_reg_form_fields input[type=number],#mec_reg_form_fields input[type=text],#mec_reg_form_fields select,#mec_reg_form_fields textarea {
         min-width:80px;
         width: 100%
     }
 }
+
 
 .mec-form-row {
     margin: 0 auto 16px;
@@ -899,7 +970,7 @@ body.post-type-mec-books th.column-author {
 }
 
 .mec-form-row input[type=radio] {
-    margin: 5px 0
+    margin: 0 6px 0 0;
 }
 
 .mec-form-row select {
@@ -908,6 +979,10 @@ body.post-type-mec-books th.column-author {
 
 /* WordPress 3 select */
 .mec-form-row select {
+    min-width: 87px;
+}
+
+#mec_meta_box_repeat_form .mec-form-row select {
     min-width: 65px;
 }
 
@@ -928,6 +1003,11 @@ body.post-type-mec-books th.column-author {
 
 .mec-form-row label {
     margin: 10px 0
+}
+
+#mec-event-data .mec-form-row label {
+    margin: 10px 0;
+    display: block;
 }
 
 .mec-form-row input[type=checkbox] {
@@ -957,7 +1037,7 @@ body.post-type-mec-books th.column-author {
 .mec-form-row .mec-col-4 select,
 .mec-form-row .mec-col-4 textarea,
 .mec-form-row .mec-col-4 input[type=number] {
-    width: 75%;
+    width: 82%;
 }
 
 .mec-form-row .description {
@@ -1139,30 +1219,30 @@ div#mec_gateways_form_container .mec-required.mec-mandatory {
     border: 1px solid red;
 }
 
-#mec_notifications_form label {
+#booking_notification_section label {
     display: inline-block;
     min-width: 160px
 }
 
-div#booking_notification iframe {
+div#booking_notification_section iframe {
     height: 300px !important;
 }
 
-#mec_notifications_form input[type=text],#mec_notifications_form select {
+#booking_notification_section input[type=text],#booking_notification_section select {
     min-width: 300px
 }
 
 @media (max-width: 536px) {
-    #mec_notifications_form input[type=text],#mec_notifications_form select {
+    #booking_notification_section input[type=text],#booking_notification_section select {
         min-width:100%
     }
 }
 
-#mec_notifications_form .wp-editor-container {
+#booking_notification_section .wp-editor-container {
     margin-bottom: 45px
 }
 
-#mec_notifications_form ul li:last-child .wp-editor-container {
+#booking_notification_section ul li:last-child .wp-editor-container {
     margin-bottom: 0
 }
 
@@ -1179,7 +1259,7 @@ div#booking_notification iframe {
 .mec-message-categories li.mec-acc-label {
     font-size: 15px;
     font-weight: 600;
-    padding: 25px 30px;
+    padding: 0 30px;
     cursor: pointer;
     background-color: #fff;
     border: none;
@@ -1189,6 +1269,9 @@ div#booking_notification iframe {
     position: relative;
 }
 
+.mec-message-categories li.mec-acc-label .mec-acc-cat-name {
+    line-height: 68px;
+}
 
 .mec-message-categories ul {
     margin: 15px 5px
@@ -1926,7 +2009,6 @@ p.mec_dash_count {
 
 .w-box.total-bookings ul li {
     display: inline-block;
-    padding: 4px 12px;
     background: #f1f1f1;
     margin-right: 5px;
     border-radius: 3px
@@ -1936,6 +2018,48 @@ p.mec_dash_count {
     background: #fff;
     border: 1px solid #e9e9e9
 }
+
+.w-box.total-bookings ul li {
+    padding: 0;
+    transition: all .1s ease;
+}
+
+.w-box.total-bookings ul li a {
+    padding: 6px 12px;
+    display: inline-block;
+    border-radius: 3px;
+    text-transform: none;
+    font-size: 13px;
+    letter-spacing: .4px;
+    transition: all .1s ease;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.w-box.total-bookings ul li.active {
+    background: #38d5ed;
+}
+
+.w-box.total-bookings ul li:hover {
+    background: #000;
+    box-shadow: 0 2px 3px -2px #222;
+}
+
+#webnus-dashboard .w-box.total-bookings ul li a {
+    color: #000;
+}
+
+#webnus-dashboard .w-box.total-bookings ul li.active a,
+#webnus-dashboard .w-box.total-bookings ul li:hover a {
+    color: #fff;
+}
+
+#webnus-dashboard .w-box.total-bookings ul li a:focus {
+    box-shadow: unset;
+    outline: unset;
+    outline-offset: 0;
+}
+
 
 .info-msg,.mec-error,.mec-success,.warning-msg {
     margin: 10px 0;
@@ -2088,6 +2212,10 @@ span.mec-archive-skins,span.mec-category-skins {
     span.mec-archive-skins,span.mec-category-skins {
         margin-left:0
     }
+}
+
+.mec-shortcode-virtual-badge i {
+    padding: 0 5px 0 7px;
 }
 
 /*!
@@ -4058,7 +4186,7 @@ textarea.mec-import-settings-content {
 
 #ticket_variations_option input[type=text].mec-col-12,
 #taxes_option .mec-form-row input[type=text].mec-col-12 {
-    max-width: 554px
+    max-width: 575px;
 }
 
 .mec-booking-tab-content .mec-form-row textarea {
@@ -4104,6 +4232,18 @@ textarea.mec-import-settings-content {
     }
 }
 
+.mec-ticket-id {
+    font-size: 12px;
+    line-height: 12px;
+    font-weight: 400;
+    color: #008aff;
+    padding: 0 0 8px;
+    margin-top: -6px;
+    margin-bottom: 14px;
+    cursor: default;
+}
+
+
 /* Single Event Page Fields + Shortcode Page Fields + Payment Gatway in Setting Page */
 #mec_meta_box_hourly_schedule_days .mec-form-row input[type=text],
 #mec_meta_box_tickets_form .mec-form-row input[type=text] {
@@ -4114,17 +4254,19 @@ textarea.mec-import-settings-content {
     width: 100%;
 }
 
+#mec-event-data input[type=text], #mec-event-data input[type=tel], #mec-event-data input[type=date], #mec-event-data input[type=email], #mec-event-data input[type=url], #mec-event-data textarea, #mec-event-data select,
 #mec_select_tags.mec-create-shortcode-tab-content input[type=text],
 #mec_settings_weather_module_api_key {
     width: 262px;
 }
 
+#mec-event-data input[type=text], #mec-event-data input[type=tel], #mec-event-data input[type=date], #mec-event-data input[type=email], #mec-event-data input[type=url], #mec-event-data textarea, #mec-event-data select,
 #mec_meta_box_date_form input[type=text],
-#mec_exceptions_not_in_days_date,
-#mec_meta_box_calendar_skin_options input[type=text].mec_date_picker {
+#mec_exceptions_not_in_days_date {
     max-width: 262px;
 }
 
+#mec-event-data input[type=text].mec_date_picker.mec-col-4
 #mec_meta_box_calendar_skin_options input[type=text].mec_date_picker.mec-col-4 {
     max-width: 32.33333333%;
 }
@@ -4691,6 +4833,7 @@ form#mec_reg_fields_form label {
 }
 
 .w-clearfix.w-box.mec-addons-notification-box-wrap span,
+.w-clearfix.w-box.mec-cmsg-2-notification-box-wrap span,
 .w-clearfix.w-box.mec-cmsg-notification-box-wrap span {
     right: 0;
     left: unset;
@@ -4700,6 +4843,7 @@ form#mec_reg_fields_form label {
 }
 
 .w-clearfix.w-box.mec-addons-notification-box-wrap span i,
+.w-clearfix.w-box.mec-cmsg-2-notification-box-wrap span i,
 .w-clearfix.w-box.mec-cmsg-notification-box-wrap span i {
     font-size: 28px;
     vertical-align: sub;
@@ -5664,6 +5808,59 @@ a.mec-create-shortcode-tabs-link {
     animation: fadeEffect2 0.31s
 }
 
+@media (min-width: 1199px) and (max-width:1280px) {
+    .mec-add-booking-tabs-right,
+    .mec-add-event-tabs-right,
+    .mec-create-shortcode-tabs-right {
+        padding: 0 0 0 10px;
+    }
+
+    #mec_meta_box_hourly_schedule_days {
+        padding: 0 40px 0 0;
+    }
+
+    #mec_meta_box_hourly_schedule_days .mec-form-row.mec-box {
+        margin-right: -40px;
+    }
+
+    #mec_meta_box_hourly_schedule_days .mec-col-1,
+    #mec_meta_box_hourly_schedule_days .mec-col-6,
+    #mec_meta_box_hourly_schedule_days .mec-col-3 {
+        width: 24%;
+    }
+
+    .mec-form-row .mec-time-picker select {
+        min-width: 60px;
+    }
+
+    #mec_countdown_method,
+    #mec_repeat_type {
+        min-width: 220px;
+        width: 220px;
+    }
+
+    #mec_exceptions_in_days_container .mec-col-4 {
+        width: 25%;
+    }
+
+    #mec_exceptions_in_days_container .mec-col-3 {
+        width: 50%;
+    }
+
+    #mec_exceptions_in_days_container .mec-col-5 {
+        width: 20%;
+    }
+
+    #mec_exceptions_in_days_container input[type=text] {
+        width: 95%;
+    }
+
+    #mec_repeat_certain_weekdays_container label:not(.mec-col-3) {
+        display: block;
+        padding-left: 25%;
+    }
+}
+
 @media (max-width: 550px) {
 
     .mec-add-booking-tabs-left,
@@ -5699,9 +5896,35 @@ a.mec-create-shortcode-tabs-link {
     padding-right: 20px;
 }
 
+#mec-event-data .mec-form-row label {
+    margin-right: 14px;
+}
+
+.mec-form-row input[type=date]::-webkit-calendar-picker-indicator {
+    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTQ1IDc5LjE2MzQ5OSwgMjAxOC8wOC8xMy0xNjo0MDoyMiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTkgKFdpbmRvd3MpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjA0QjQ2N0QwQjQ4MzExRUE4RDdFREZDRTUxMUVERTM5IiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjA0QjQ2N0QxQjQ4MzExRUE4RDdFREZDRTUxMUVERTM5Ij4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MDRCNDY3Q0VCNDgzMTFFQThEN0VERkNFNTExRURFMzkiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MDRCNDY3Q0ZCNDgzMTFFQThEN0VERkNFNTExRURFMzkiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz6WW71PAAAGIklEQVR42qRX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');
+    background-position: center;
+    background-size: cover;
+    width: 10px;
+    height: 12px;
+    display: block;
+}
+
 .mec-form-row input[type=number],
 .mec-form-row input[type=text],
 .mec-form-row input[type=url],
+.mec-form-row input[type=tel],
+.mec-form-row input[type=email],
+.mec-form-row input[type=date],
+.mec-occurrences-wrapper input[type=number],
+.mec-occurrences-wrapper input[type=number],
+.mec-occurrences-wrapper input[type=text],
+.mec-occurrences-wrapper input[type=url],
+.mec-occurrences-wrapper input[type=tel],
+.mec-occurrences-wrapper input[type=email],
+.mec-occurrences-wrapper input[type=date],
+.mec-occurrences-wrapper input[type=number],
+.mec-occurrences-wrapper select,
+.mec-occurrences-wrapper textarea,
 .mec-form-row select,
 .mec-form-row textarea,
 .mec-form-row.mec-skin-list-date-format-container input[type=text],
@@ -5908,7 +6131,7 @@ a.mec-create-shortcode-tabs-link {
 
 .mec-form-row ul.mec-message-categories li ul {
     padding: 10px 40px 40px;
-    margin: 25px -30px -25px;
+    margin: 0 -30px 0;
     background: #f5f5f5;
     box-shadow: inset 0 4px 7px rgba(0, 0, 0, 0.04);
     cursor: default;
@@ -5936,15 +6159,48 @@ a.mec-create-shortcode-tabs-link {
     margin-right: 6px;
 }
 
+.mec-occurrences-wrapper .button:not(.wp-color-result),
+#mec_meta_box_downloadable_file_options #mec_downloadable_file_remove_image_button,
 .mec-meta-box-fields .mec-form-row .button:not(.wp-color-result) {
-    height: 37px;
+    height: 39px;
     margin-top: 1px;
     box-shadow: inset 0 2px 4px #fff, inset 0 -2px 4px rgba(0, 0, 0, .05), 0 2px 2px rgba(0, 0, 0, .06);
+}
+
+#mec_meta_box_downloadable_file_options #mec_downloadable_file_remove_image_button {
+    margin-top: 12px;
 }
 
 #mec-read-more .mec-form-row span.mec-tooltip {
     top: 2px;
     left: -4px;
+}
+
+/* Occurrences Edit */
+#mec-occurrences .mec-occurrences-list h3 {
+    margin-top: 0;
+}
+
+#mec-occurrences .mec-occurrences-list .mec-form-row {
+    margin-bottom: 0;
+}
+
+#mec-occurrences .mec-occurrences-list .mec-form-row label {
+    line-height: 40px;
+    width: 120px;
+    display: inline-block;
+    margin: 0;
+}
+
+#mec-occurrences .mec-occurrences-list .mec-form-row .event-status-schema label {
+    width: auto;
+    min-width: 160px;
+}
+
+#mec-occurrences .mec-occurrences-list .mec-form-row .event-status-schema p {
+    border: unset;
+    padding-left: 0;
+    margin-left: 0;
 }
 
 /* Search Setting */
@@ -6000,6 +6256,25 @@ a.mec-create-shortcode-tabs-link {
 
 #mec-search-settings:-moz-placeholder {
     color: #7c838a
+}
+
+
+/* Search result — Find results beautiful */
+#wns-be-content .noresults label,
+#wns-be-content .results .results .noresults label {
+    color: #000;
+}
+
+#wns-be-content .results label,
+#wns-be-content .results .results .results label,
+#wns-be-content ul li.enable,
+#wns-be-content ul li.enable label {
+    color: #008aff;
+}
+
+#wns-be-content ul li.disable,
+#wns-be-content ul li.disable label {
+    color: #e7e7e7;
 }
 
 /* Fix datepicker */
@@ -8437,6 +8712,26 @@ div#mec_meta_box_date_form .mec-form-row {
     margin-top: 0;
 }
 
+/* Categories tab height */
+.mec-add-event-popup .mec-categories-tab-contents {
+    max-height: 200px;
+    overflow: hidden;
+    overflow-y: scroll;
+}
+
+.mec-add-event-popup .mec-categories-tab-contents::-webkit-scrollbar {
+    width: 5px;
+}
+
+.mec-add-event-popup .mec-categories-tab-contents::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+}
+
+.mec-add-event-popup .mec-categories-tab-contents::-webkit-scrollbar-thumb {
+    background-color: #008aff;
+    outline: 0 solid #fff;
+}
+
 .mec-add-event-popup span#mec_popup_new_category_button {
     cursor: pointer;
     position: relative;
@@ -8873,7 +9168,6 @@ div#mec_meta_box_date_form .mec-form-row {
     background: linear-gradient(95deg,#36a2ff 0,#008aff 50%,#0072ff 100%);
     border: none;
     transition: .24s;
-    linear-height: 1.4;
     padding: 6px 22px;
 }
 
@@ -9004,6 +9298,7 @@ div#mec_meta_box_date_form .mec-form-row {
 .mec-admin-dark-mode.m-e-calendar_page_MEC-support #webnus-dashboard .mec-pro-notice .info-msg,
 .mec-admin-dark-mode.m-e-calendar_page_MEC-ix .mec-container,
 .mec-admin-dark-mode.post-type-mec-events .components-popover__content,
+.mec-admin-dark-mode.post-type-mec-events #mec_event_form_fields li,
 .mec-admin-dark-mode.post-type-mec-events #mec_reg_form_fields li,
 .mec-admin-dark-mode.m-e-calendar_page_MEC-settings .wns-be-main,
 .mec-admin-dark-mode .wns-be-sidebar .wns-be-group-menu>li.active>a,
@@ -9013,8 +9308,12 @@ div#mec_meta_box_date_form .mec-form-row {
 .mec-admin-dark-mode.m-e-calendar_page_MEC-settings .wns-be-container #wns-be-content,
 .mec-admin-dark-mode.m-e-calendar_page_MEC-settings .wns-be-main,
 .mec-admin-dark-mode.m-e-calendar_page_MEC-settings .wns-be-container #wns-be-infobar,
+.mec-admin-dark-mode.m-e-calendar_page_MEC-settings #mec_event_form_fields button, 
 .mec-admin-dark-mode.m-e-calendar_page_MEC-settings #mec_reg_form_field_types button, 
+.mec-admin-dark-mode.m-e-calendar_page_MEC-settings #mec_bfixed_form_fields button, 
+.mec-admin-dark-mode.m-e-calendar_page_MEC-settings #mec_event_form_fields li,
 .mec-admin-dark-mode.m-e-calendar_page_MEC-settings #mec_reg_form_fields li,
+.mec-admin-dark-mode.m-e-calendar_page_MEC-settings #mec_bfixed_form_fields li,
 .mec-admin-dark-mode.post-type-mec-events #screen-meta-links .show-settings,
 .mec-admin-dark-mode.post-type-mec-events #screen-meta,
 .mec-admin-dark-mode.post-type-mec-events div.mce-toolbar-grp,
@@ -9050,7 +9349,9 @@ div#mec_meta_box_date_form .mec-form-row {
 .mec-admin-dark-mode .w-box-content pre,
 .mec-admin-dark-mode .w-clearfix.w-box.mec-addons-notification-box-wrap span,
 .mec-admin-dark-mode .w-clearfix.w-box.mec-cmsg-notification-box-wrap span,
+.mec-admin-dark-mode .w-clearfix.w-box.mec-cmsg-2-notification-box-wrap span,
 .mec-admin-dark-mode .w-box,
+.mec-admin-dark-mode #webnus-dashboard .mec-pro-notice .info-msg,
 .mec-admin-dark-mode .wns-be-main,
 .mec-admin-dark-mode .wns-be-main .mec-container,
 .mec-admin-dark-mode #mec_metabox_details,
@@ -9086,6 +9387,7 @@ div#mec_meta_box_date_form .mec-form-row {
 }
 
 .mec-admin-dark-mode.m-e-calendar_page_MEC-ix .mec-form-row.mec-syn-schedule,
+.mec-admin-dark-mode.post-type-mec-events #mec_event_form_fields,
 .mec-admin-dark-mode.post-type-mec-events #mec_reg_form_fields,
 .mec-admin-dark-mode #mec_calendar_filter .mec-add-booking-tabs-left a,
 .mec-admin-dark-mode #mec_calendar_filter .mec-add-event-tabs-left a,
@@ -9104,6 +9406,11 @@ div#mec_meta_box_date_form .mec-form-row {
 
 .mec-admin-dark-mode .select2-container--default .select2-selection--multiple .select2-selection__choice {
     color: #000;
+}
+
+.mec-admin-dark-mode ul#adminmenu a.wp-has-current-submenu:after,
+.mec-admin-dark-mode ul#adminmenu>li.current>a.current:after{
+    border-right-color: #23282d;
 }
 
 .mec-admin-dark-mode.m-e-calendar_page_MEC-report .select2-dropdown,
@@ -9147,7 +9454,9 @@ div#mec_meta_box_date_form .mec-form-row {
 .mec-admin-dark-mode.m-e-calendar_page_MEC-settings .tmce-active .switch-tmce,
 .mec-admin-dark-mode.m-e-calendar_page_MEC-settings .wp-switch-editor,
 .mec-admin-dark-mode.m-e-calendar_page_MEC-settings .select2-container--default .select2-selection--multiple,
-.mec-admin-dark-mode.m-e-calendar_page_MEC-settings  #mec_reg_form_field_types button, 
+.mec-admin-dark-mode.m-e-calendar_page_MEC-settings #mec_event_form_fields button, 
+.mec-admin-dark-mode.m-e-calendar_page_MEC-settings #mec_reg_form_field_types button, 
+.mec-admin-dark-mode.m-e-calendar_page_MEC-settings #mec_bfixed_form_fields button, 
 .mec-admin-dark-mode.m-e-calendar_page_MEC-settings .wns-be-container #wns-be-footer,
 .mec-admin-dark-mode.m-e-calendar_page_MEC-settings .mec-custom-msg-notification-set-box.extra,
 .mec-admin-dark-mode.post-type-mec_calendars .mec-custom-nice-select ul.list li.option,
@@ -9196,6 +9505,7 @@ div#mec_meta_box_date_form .mec-form-row {
     border-color: #353535;
 }
 
+.mec-admin-dark-mode.m-e-calendar_page_MEC-go-pro,
 .mec-admin-dark-mode.post-type-mec-books input[type=email],
 .mec-admin-dark-mode.post-type-mec-books input[type=url],
 .mec-admin-dark-mode.post-type-mec-books select,
@@ -9220,7 +9530,9 @@ div#mec_meta_box_date_form .mec-form-row {
 .mec-admin-dark-mode.post-type-mec-events .mec-xi-google-import-events .mec-select-deselect-actions li,
 .mec-admin-dark-mode.post-type-mec-events input[type=checkbox],
 .mec-admin-dark-mode.post-type-mec-events input[type=radio],
+.mec-admin-dark-mode.post-type-mec-events #mec_event_form_fields button,
 .mec-admin-dark-mode.post-type-mec-events #mec_reg_form_field_types button,
+.mec-admin-dark-mode.post-type-mec-events #mec_event_form_fields button,
 .mec-admin-dark-mode.post-type-mec-events #mec_reg_form_fields button,
 .mec-admin-dark-mode.post-type-mec-events .wp-admin p label input[type=checkbox],
 .mec-admin-dark-mode.post-type-mec-events .components-form-token-field__input-container,
@@ -9229,7 +9541,9 @@ div#mec_meta_box_date_form .mec-form-row {
 .mec-admin-dark-mode.toplevel_page_mec-intro .w-box.mec-activation input[name=MECPurchaseCode],
 .mec-admin-dark-mode.m-e-calendar_page_MEC-addons,
 .mec-admin-dark-mode.m-e-calendar_page_MEC-settings .wp-core-ui .quicktags-toolbar input.button.button-small,
+.mec-admin-dark-mode.m-e-calendar_page_MEC-settings #mec_event_form_fields button,
 .mec-admin-dark-mode.m-e-calendar_page_MEC-settings #mec_reg_form_field_types button,
+.mec-admin-dark-mode.m-e-calendar_page_MEC-settings #mec_event_form_fields button,
 .mec-admin-dark-mode.m-e-calendar_page_MEC-settings #mec_reg_form_fields button,
 .mec-admin-dark-mode.m-e-calendar_page_MEC-settings .quicktags-toolbar,
 .mec-admin-dark-mode.m-e-calendar_page_MEC-settings #mec-invoice-custom-css,
@@ -9401,6 +9715,8 @@ div#mec_meta_box_date_form .mec-form-row {
 .mec-admin-dark-mode .mec-message-categories li.mec-acc-label,
 .mec-admin-dark-mode #mec_styles_form #mec_styles_CSS,
 .mec-admin-dark-mode #mec-advanced-wraper div:first-child>ul>ul>li,
+.mec-admin-dark-mode.m-e-calendar_page_MEC-settings #mec_event_form_fields,
+.mec-admin-dark-mode.m-e-calendar_page_MEC-settings #mec_bfixed_form_fields,
 .mec-admin-dark-mode.m-e-calendar_page_MEC-settings #mec_reg_form_fields {
     background: #000;
 }
@@ -9475,6 +9791,8 @@ div#mec_meta_box_date_form .mec-form-row {
     color: #D2D2D2;
 }
 
+.mec-admin-dark-mode.m-e-calendar_page_MEC-report h2,
+.mec-admin-dark-mode.m-e-calendar_page_MEC-report h4,
 .mec-admin-dark-mode.m-e-calendar_page_MEC-support #webnus-dashboard .mec-faq-accordion-trigger a,
 .mec-admin-dark-mode.m-e-calendar_page_MEC-report .mec-report-selected-event-attendees-wrap .w-clearfix.mec-attendees-head span,
 .mec-admin-dark-mode.m-e-calendar_page_MEC-ix h1,
@@ -9534,6 +9852,8 @@ div#mec_meta_box_date_form .mec-form-row {
     color: #fff !important;
 }
 
+.mec-admin-dark-mode.m-e-calendar_page_MEC-go-pro,
+.mec-admin-dark-mode.m-e-calendar_page_MEC-go-pro h1,
 .mec-admin-dark-mode.post-type-mec-books,
 .mec-admin-dark-mode.post-type-mec-books h1,
 .mec-admin-dark-mode.m-e-calendar_page_MEC-support,
@@ -9553,8 +9873,8 @@ div#mec_meta_box_date_form .mec-form-row {
     color: #D2D2D2;
 }
 
-.mec-admin-dark-mode.m-e-calendar_page_MEC-report .w-theme-version,
-.mec-admin-dark-mode.toplevel_page_mec-intro .w-theme-version {
+.mec-admin-dark-mode .w-theme-version,
+.mec-admin-dark-mode .w-theme-version {
     box-shadow: 0 3px 30px -4px #000;
     background: #000;
     background: linear-gradient(95deg,#000 0,#282828 50%,#1f1f1f 100%);
@@ -9729,6 +10049,21 @@ div#mec_meta_box_date_form .mec-form-row {
     border-color: #282828;
 }
 
+/* Search result — Find results beautiful on dark mode */
+.mec-admin-dark-mode #wns-be-content ul li.disable,
+.mec-admin-dark-mode #wns-be-content ul li.disable label,
+.mec-admin-dark-mode #wns-be-content .noresults label,
+.mec-admin-dark-mode #wns-be-content .results .results .noresults label {
+    color: #666;   
+}
+
+.mec-admin-dark-mode #wns-be-content .results label,
+.mec-admin-dark-mode #wns-be-content .results .results .results label,
+.mec-admin-dark-mode #wns-be-content ul li.enable,
+.mec-admin-dark-mode #wns-be-content ul li.enable label {
+    color: #fff;
+}
+
 /* WP TABEL */
 .mec-admin-dark-mode.post-type-mec-books table.widefat,
 .mec-admin-dark-mode.post-type-mec_calendars table.widefat,
@@ -9812,10 +10147,135 @@ div#mec_meta_box_date_form .mec-form-row {
     background: #282828;
 }
 
+.mec-admin-dark-mode.taxonomy-mec_tag .button,
+.mec-admin-dark-mode.taxonomy-mec_category .button,
+.mec-admin-dark-mode.taxonomy-mec_label .button,
+.mec-admin-dark-mode.taxonomy-mec_location .button,
+.mec-admin-dark-mode.taxonomy-mec_organizer .button,
+.mec-admin-dark-mode.taxonomy-mec_speaker .button {
+    box-shadow: 0 3px 10px -4px #000 !important;
+}
+
 .mec-admin-dark-mode.post-type-mec_calendars .wn-mec-select .option .wn-hover-img-sh img,
 .mec-admin-dark-mode.post-type-mec_calendars .mec-switcher input+label:after {
     background: #282828;
 }
+
+/* Media Dark Mode */
+.mec-admin-dark-mode .media-router .media-menu-item:focus {
+    box-shadow: unset;
+}
+
+.mec-admin-dark-mode .media-router .media-menu-item {
+    background: #282828;
+    color: #ffff;
+}
+
+.mec-admin-dark-mode .media-router .media-menu-item:hover {
+    color: #d2d2d2;
+}
+
+.mec-admin-dark-mode .media-router .active,
+.mec-admin-dark-mode .media-router .media-menu-item.active:last-child {
+    background: #000;
+    color: #666;
+    border-color: #282828;
+}
+
+.mec-admin-dark-mode .attachment-info,
+.mec-admin-dark-mode .media-frame-toolbar .media-toolbar {
+    border-color: #282828;
+}
+
+.mec-admin-dark-mode .wp-core-ui .attachment-preview,
+.mec-admin-dark-mode.post-type-mec-events .button:hover {
+    background: #000 !important;
+}
+
+/* MEC Booking Attendees Hover Box - Attendees Tooltip */
+.post-type-mec-books .attendees .mec-booking-attendees-tooltip {
+    position: relative;
+}
+
+.post-type-mec-books .attendees strong {
+    line-height: 26px;
+    padding-left: 26px;
+}
+
+.post-type-mec-books .attendees .mec-booking-attendees-tooltip:before {
+    position: absolute;
+    content: "\e001";
+    font-family: simple-line-icons;
+    margin: 12px 0;
+    top: -30px;
+    left: 0;
+    font-size: 18px;
+    line-height: 12px;
+    color: #40d9f1;
+    padding: 0 60px 5px 0;
+}
+
+.post-type-mec-books .attendees .mec-booking-attendees-tooltip ul {
+    position: absolute;
+    min-width: 300px;
+    max-width: 600px;
+    display: inline-block;
+    left: 60px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #535a61;
+    color: #fff;
+    font-weight: 300;
+    font-size: 14px;
+    letter-spacing: .5px;
+    line-height: 1.3;
+    z-index: 9999999;
+    box-sizing: border-box;
+    box-shadow: 0 4px 45px -8px #444b50;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity .23s;
+    padding: 23px 20px 20px 20px;
+    border-radius: 8px;
+    margin-top: -13px;
+}
+
+.post-type-mec-books .attendees .mec-booking-attendees-tooltip ul:before {
+    display: block;
+    content: ''!important;
+    position: absolute!important;
+    width: 12px;
+    height: 12px;
+    left: -10px!important;
+    top: 50%!important;
+    transform: translate(50%,-50%) rotate(-45deg)!important;
+    background-color: #535a61!important;
+    box-shadow: 0 8px 9px -4px #535a61!important;
+    z-index: 0!important;
+}
+
+.post-type-mec-books .attendees .mec-booking-attendees-tooltip:hover ul {
+    visibility: visible;
+    opacity: 1;
+}
+
+.post-type-mec-books .attendees .mec-booking-attendees-tooltip ul a {
+    color: #40d9f1;
+    margin-bottom: 14px;
+    margin-left: 0;
+    font-weight: 400;
+    font-size: 14px;
+    letter-spacing: .5px;
+    position: relative;
+    text-decoration: none;
+    display: block;
+    width: max-content;
+}
+
+.post-type-mec-books .attendees .mec-booking-attendees-tooltip ul li:last-child a {
+    margin-bottom: 0;
+}
+
 
 /* Dashboard Widget */
 .mec-metabox-head-version img,.mec-metabox-head-version p {
@@ -9944,7 +10404,6 @@ div#mec_widget_news_features .inside {
 }
 
 #mec_widget_total_bookings .w-box.total-bookings ul li {
-    padding: 4px 13px 4px 13px;
     margin-right: 4px;
 }
 
@@ -9952,6 +10411,13 @@ div#mec_widget_news_features .inside {
     margin-right: 0;
 }
 
+#mec_widget_total_bookings .w-box.total-bookings ul li a {
+    color: #000;
+}
+
+#mec_widget_total_bookings .w-box.total-bookings ul li:hover a {
+    color: #fff;
+}
 
 #mec_widget_total_bookings {
     overflow: hidden;
@@ -10109,6 +10575,7 @@ div#mec_cancelled_reason_wrapper label {
         padding-right: 0;
     }
     
+    #mec_event_form_fields,
     #mec_reg_form_fields {
         padding: 10px;
     }
@@ -10161,4 +10628,52 @@ div#mec_cancelled_reason_wrapper label {
         margin: 15px 0;
     }
 
+}
+
+/* Popup Custom Design */
+.mec-skin-styles.mec-styles-custom {
+    padding-left: 0 !important;
+    top: 40%;
+    position: absolute;
+    width: 330px;
+    height: auto !important;
+    overflow: visible !important;
+}
+
+.mec-skin-styles.mec-styles-custom .nice-select {
+    box-shadow: 0 3px 13px -5px rgba(0, 0, 0, .1), inset 0 1px 2px rgba(0, 0, 0, .07);
+    clear: unset !important;
+    -webkit-tap-highlight-color: transparent;
+    background-color: #fff;
+    border-radius: 5px;
+    border: solid 1px #e8e8e8;
+    box-sizing: border-box;
+    clear: both;
+    cursor: pointer;
+    display: block;
+    float: left;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 400;
+    height: 42px;
+    line-height: 40px;
+    outline: 0;
+    padding-left: 18px;
+    padding-right: 30px;
+    position: relative;
+    text-align: left !important;
+    -webkit-transition: all .2s ease-in-out;
+    transition: all .2s ease-in-out;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    white-space: nowrap;
+    width: 300px !important;
+}
+
+.mec-styles-custom h3 {
+    font-size: 13px;
+    font-weight: 400;
+    color: #707070;
 }

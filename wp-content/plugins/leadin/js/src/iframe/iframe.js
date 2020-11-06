@@ -1,11 +1,22 @@
-import $ from 'jquery';
 import { initInterframe } from '../lib/Interframe';
-import { iframeUrl } from '../constants/leadinConfig';
+import { backgroundIframeUrl, iframeUrl } from '../constants/leadinConfig';
 
-export const createIframe = () => {
-  const container = $('#leadin-iframe-container');
-  const $iframe = $(`<iframe id="leadin-iframe" src="${iframeUrl}"></iframe>`);
-  initInterframe($iframe[0]);
+function createIframeElement(iframeSrc) {
+  const iframe = document.createElement('iframe');
+  iframe.id = 'leadin-iframe';
+  iframe.src = iframeSrc;
+  return iframe;
+}
 
-  container.append($iframe);
-};
+export function createIframe() {
+  const iframe = createIframeElement(iframeUrl);
+  initInterframe(iframe);
+  document.getElementById('leadin-iframe-container').appendChild(iframe);
+}
+
+export function createBackgroundIframe() {
+  const iframe = createIframeElement(backgroundIframeUrl);
+  iframe.style.display = 'none';
+  initInterframe(iframe);
+  document.body.appendChild(iframe);
+}

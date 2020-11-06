@@ -21,6 +21,9 @@ if(isset($this->atts['return_items']) and $this->atts['return_items'])
     exit;
 }
 
+$sed_method = $this->sed_method;
+if ($sed_method == 'new') $sed_method = '0';
+
 // Generating javascript code tpl
 $javascript = '<script type="text/javascript">
 jQuery(document).ready(function()
@@ -34,7 +37,7 @@ jQuery(document).ready(function()
 		limit: "'.$this->limit.'",
         atts: "'.http_build_query(array('atts'=>$this->atts), '', '&').'",
         ajax_url: "'.admin_url('admin-ajax.php', NULL).'",
-        sed_method: "'.$this->sed_method.'",
+        sed_method: "'.$sed_method.'",
         image_popup: "'.$this->image_popup.'",
         sf:
         {
@@ -47,7 +50,7 @@ jQuery(document).ready(function()
 // Include javascript code into the page
 if($this->main->is_ajax()) echo $javascript;
 else $this->factory->params('footer', $javascript);
-do_action('mec_start_skin' , $this->id);
+do_action('mec_start_skin', $this->id);
 do_action('mec_grid_skin_head');
 ?>
 <div class="mec-wrap mec-skin-grid-container <?php echo $this->html_class . ' ' . $set_dark; ?>" id="mec_skin_<?php echo $this->id; ?>">
@@ -60,7 +63,7 @@ do_action('mec_grid_skin_head');
             <div class="mec-googlemap-skin" id="mec_googlemap_canvas<?php echo $this->id; ?>" style="height: 500px;">
             <?php 
             $map = isset($this->settings['default_maps_view'])?$this->settings['default_maps_view']:'google';
-            do_action( 'mec_map_inner_element_tools' ,array('map'=>$map));
+            do_action('mec_map_inner_element_tools', array('map'=>$map));
             ?>
             </div>
             <input type="hidden" id="gmap-data" value="">

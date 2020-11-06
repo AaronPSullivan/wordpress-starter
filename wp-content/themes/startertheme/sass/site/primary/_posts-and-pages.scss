@@ -107,43 +107,100 @@ center > iframe {
    // padding-right: .5em;
 }
 
-/**************************************************
- * SOME STYLES SHARED BETWEEN LAYOUTS
- **************************************************/
- .alm-reveal {
-   /*include make-container();
-    padding: 0 0;
-    display: flex;
-     align-items: center !important;
-    position: relative;
-    flex-wrap: wrap;
-    &:nth-child(n+2) {
-        // not first
-       
+
+
+.alignfull, .alignwide {
+     @include force-full-width();
+  
+   
+   
+}
+.alignfull, .alignwide, .wp-block-group {
+
+    padding: 2em 0 1.5em;
+    .wp-block-group {
+        // Don't double the padding
+        padding: 0;
     }
-   padding-top: $spacer*3;
-        margin-top: $spacer;
-        border-top: $size__border-sm solid $color__gray--lightest;
-        &::before {
-            display: block;
-            background-color: white;
-            color: $color__gray--lightest;
-            content: 'MORE';
-            position: absolute;
-            top: 0;
-            padding: 0 .5em;
-            left: 50%;
-            font-size: .8em;
-            @include translate(-50%,-55%);
+   
+     @include media-breakpoint-up(sm) {
+          padding: 3em 0 2em;
+    }
+}
+.alignfull, .alignwide {
+     padding: 2em 10px 1.5em;
+    @include media-breakpoint-up(sm) {
+          padding: 3em 0 2em;
+    }
+}
+.alignwide {
+    .wp-block-group__inner-container {
+         @include make-container();
+          margin: 0 auto;
+        max-width: map.get($container-max-widths, xs);     
+         @include media-breakpoint-up(sm) {
+            max-width: map.get($container-max-widths, sm);     
         }
-*/
-}
+         @include media-breakpoint-up(md) {
+            max-width: map.get($container-max-widths, md);     
+        }
+         @include media-breakpoint-up(lg) {
+            max-width: map.get($container-max-widths, lg);     
+        }
+         @include media-breakpoint-up(xl) {
+            max-width: map.get($container-max-widths, xl);     
+        }
 
-
- .post-thumbnail {
-    //display: block;
-    @include media-breakpoint-down(xs) {
-      //margin-bottom: $spacer;   
+    }
+    &.p-1, &.p-2, &.p-3, &.p-4 {
+          padding-right: 7px !important;
+           padding-left: 7px !important;
+        @include media-breakpoint-up(sm) {
+            padding-right: 0 !important;
+           padding-left: 0 !important;
+        }
     }
 }
 
+.alignfull, .alignwide {
+    
+    
+     &.dark, &.blue,  {
+        color: white;
+         .entry td {
+             border: 1px solid white;
+         }
+         .table-2-column {
+            th {
+                border-bottom: none;
+
+
+            }
+        }
+         blockquote { 
+           color: white;   
+         }
+         h1, h2, h3, h4, h5, h6, h7 {
+              color: white;
+         }
+        
+    }
+    
+
+    &.blue, &.dark {
+        
+        background-color: $color__main-1;
+        h1, h2, h3, h4, h5, h6, a, p {
+            color: white;
+        }
+        button, input[type="button"], input[type="reset"], input[type="submit"], .wp-block-button__link, a.button {
+            background-color: lighten($color__main-1, 12%);
+             &:hover, &:active, &:focus {
+                background-color: darken($color__main-1, 12%);
+            }
+
+        }
+    }
+    
+    
+}

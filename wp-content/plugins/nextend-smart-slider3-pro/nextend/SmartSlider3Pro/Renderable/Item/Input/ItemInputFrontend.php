@@ -45,13 +45,13 @@ class ItemInputFrontend extends AbstractItemFrontend {
             $buttonStyle = $owner->addStyle($this->data->get('buttonstyle'), 'heading');
 
             $button = Html::tag('input', array(
-                'style' => 'white-space:nowrap;',
-                'type'  => 'submit',
-                'value' => $buttonLabel,
-                'class' => 'n2-form-button ' . $buttonFont . ' ' . $buttonStyle . ' n2-ow'
+                'encode' => false,
+                'style'  => 'white-space:nowrap;',
+                'type'   => 'submit',
+                'value'  => $buttonLabel,
+                'class'  => 'n2-form-button ' . $buttonFont . ' ' . $buttonStyle . ' n2-ow'
             ), false);
         }
-
 
         return Html::tag('form', array(
             'class'    => 'n2-ss-item-input-form ' . $style . ' n2-ss-item-content n2-ow ' . $owner->fill($this->data->get('class', '')),
@@ -61,6 +61,7 @@ class ItemInputFrontend extends AbstractItemFrontend {
             'target'   => $this->data->get('target'),
             'onsubmit' => $this->data->get('onsubmit')
         ), Html::tag('input', array(
+                'encode'      => false,
                 'name'        => $owner->fill($this->data->get('name', '')),
                 'type'        => 'text',
                 'placeholder' => strip_tags($owner->fill($this->data->get('placeholder', ''))),

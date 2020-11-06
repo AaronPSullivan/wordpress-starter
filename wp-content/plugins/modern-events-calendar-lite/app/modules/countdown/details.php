@@ -2,6 +2,9 @@
 /** no direct access **/
 defined('MECEXEC') or die();
 
+/** @var MEC_main $this */
+/** @var MEC_factory $factory */
+
 // MEC Settings
 $settings = $this->get_settings();
 
@@ -39,14 +42,15 @@ if(!empty($date))
 $start_time = date('D M j Y G:i:s', strtotime($start_date.' '.$s_time));
 $end_time = date('D M j Y G:i:s', strtotime($end_date.' '.$e_time));
 
-// Timezone
-$timezone = $this->get_timezone();
-
 $d1 = new DateTime($start_time);
 $d2 = new DateTime(current_time("D M j Y G:i:s"));
 $d3 = new DateTime($end_time);
 
-$ongoing = (isset($settings['hide_time_method']) and trim($settings['hide_time_method']) == 'end') ? true : false;
+$countdown_method = get_post_meta($event->ID, 'mec_countdown_method', true);
+if(trim($countdown_method) == '') $countdown_method = 'global';
+
+if($countdown_method == 'global') $ongoing = (isset($settings['hide_time_method']) and trim($settings['hide_time_method']) == 'end') ? true : false;
+else $ongoing = ($countdown_method == 'end') ? true : false;
 
 if($d3 < $d2)
 {
@@ -59,9 +63,9 @@ elseif($d1 < $d2 and !$ongoing)
     return;
 }
 
-$gmt_offset = $this->get_gmt_offset();
+$gmt_offset = $this->get_gmt_offset($event);
 if(isset($_SERVER['HTTP_USER_AGENT']) and strpos($_SERVER['HTTP_USER_AGENT'], 'Safari') === false) $gmt_offset = ' : '.$gmt_offset;
-if(isset($_SERVER['HTTP_USER_AGENT']) and strpos($_SERVER['HTTP_USER_AGENT'], 'Edge') == true)$gmt_offset = substr(trim($gmt_offset), 0 , 3);
+if(isset($_SERVER['HTTP_USER_AGENT']) and strpos($_SERVER['HTTP_USER_AGENT'], 'Edge') == true) $gmt_offset = substr(trim($gmt_offset), 0 , 3);
 if(isset($_SERVER['HTTP_USER_AGENT']) and strpos($_SERVER['HTTP_USER_AGENT'], 'Trident') == true) $gmt_offset = substr(trim($gmt_offset), 2 , 3);
 
 // Generating javascript code of countdown default module
@@ -70,7 +74,7 @@ jQuery(document).ready(function()
 {
     jQuery("#mec_countdown_details").mecCountDown(
     {
-        date: "'.(($ongoing and (isset($event->data->meta['mec_repeat_status']) and $event->data->meta['mec_repeat_status'] == 0)) ? $end_time : $start_time).$gmt_offset.'",
+        date: "'.($ongoing ? $end_time : $start_time).$gmt_offset.'",
         format: "off"
     },
     function()
@@ -87,21 +91,21 @@ jQuery(document).ready(function()
     var futureDate = new Date("'.($ongoing ? $end_time : $start_time).$gmt_offset.'");
     var currentDate = new Date();
     var diff = parseInt((futureDate.getTime() / 1000 - currentDate.getTime() / 1000));
-    
+
     function dayDiff(first, second)
     {
         return (second-first)/(1000*3600*24);
     }
-    
+
     if(dayDiff(currentDate, futureDate) < 100) jQuery(".clock").addClass("twodaydigits");
     else jQuery(".clock").addClass("threedaydigits");
-    
+
     if(diff < 0)
     {
         diff = 0;
         jQuery(".countdown-message").html();
     }
-    
+
     clock = jQuery(".clock").FlipClock(diff,
     {
         clockFace: "DailyCounter",
@@ -138,13 +142,13 @@ if(!function_exists('is_plugin_active')) include_once( ABSPATH . 'wp-admin/inclu
                     <p class="mec-timeRefDays label-w"><?php _e('days', 'modern-events-calendar-lite'); ?></p>
                 </li>
             </div>
-            <div class="hours-w block-w">    
+            <div class="hours-w block-w">
                 <li>
                     <i class="icon-w mec-fa-clock-o"></i>
                     <span class="mec-hours">00</span>
                     <p class="mec-timeRefHours label-w"><?php _e('hours', 'modern-events-calendar-lite'); ?></p>
                 </li>
-            </div>  
+            </div>
             <div class="minutes-w block-w">
                 <li>
                     <i class="icon-w mec-li_clock"></i>
@@ -167,9 +171,9 @@ if(!function_exists('is_plugin_active')) include_once( ABSPATH . 'wp-admin/inclu
     if($this->is_ajax()) echo $flipjs;
     elseif(is_plugin_active( 'mec-single-builder/mec-single-builder.php'))
     {
-        wp_enqueue_script('mec-flipcount-script', $this->asset('js/flipcount.js'));      
+        wp_enqueue_script('mec-flipcount-script', $this->asset('js/flipcount.js'));
         echo $flipjs;
-    }  
+    }
     else
     {
         // Include FlipCount library

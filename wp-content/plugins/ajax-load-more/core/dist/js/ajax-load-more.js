@@ -111,7 +111,7 @@ function _interopRequireDefault(obj) {
 	return obj && obj.__esModule ? obj : { default: obj };
 }
 
-/**  
+/**
  * createCacheFile
  * Create a single post cache file
  *
@@ -140,11 +140,10 @@ function createCacheFile(alm, content) {
 
 	_axios2.default.post(alm_localize.ajaxurl, formData).then(function (response) {
 		console.log('Cache created for: ' + alm.canonical_url);
-		//console.log(response);
 	});
 }
 
-/**  
+/**
  * wooCache
  * Create a WooCommerce cache file
  *
@@ -153,7 +152,6 @@ function createCacheFile(alm, content) {
  * @since 5.3.1
  */
 function wooCache(alm, content) {
-
 	if (alm.addons.cache !== 'true' || !content || content === '') {
 		return false;
 	}
@@ -175,6 +173,204 @@ function wooCache(alm, content) {
 
 /***/ }),
 
+/***/ "./core/src/js/addons/elementor.js":
+/*!*****************************************!*\
+  !*** ./core/src/js/addons/elementor.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.elementorInit = elementorInit;
+exports.elementor = elementor;
+exports.elementorGetContent = elementorGetContent;
+exports.elementorGetPages = elementorGetPages;
+
+var _loadItems = __webpack_require__(/*! ../modules/loadItems */ "./core/src/js/modules/loadItems.js");
+
+var _loadItems2 = _interopRequireDefault(_loadItems);
+
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
+
+function _asyncToGenerator(fn) {
+	return function () {
+		var gen = fn.apply(this, arguments);return new Promise(function (resolve, reject) {
+			function step(key, arg) {
+				try {
+					var info = gen[key](arg);var value = info.value;
+				} catch (error) {
+					reject(error);return;
+				}if (info.done) {
+					resolve(value);
+				} else {
+					return Promise.resolve(value).then(function (value) {
+						step("next", value);
+					}, function (err) {
+						step("throw", err);
+					});
+				}
+			}return step("next");
+		});
+	};
+}
+
+/**
+ * Set up the instance
+ *
+ * @param {object} alm
+ * @since 5.3.0
+ */
+
+function elementorInit(alm) {
+	if (!alm.addons.elementor || !alm.addons.elementor_type || !alm.addons.elementor_type === 'posts') {
+		return false;
+	}
+	var target = alm.addons.elementor_target_element;
+	if (target) {
+		// Set button data attributes
+		alm.button.dataset.page = alm.addons.elementor_paged;
+
+		// BSet button URL
+		var nextPage = alm.addons.elementor_pages[alm.addons.elementor_paged - 1];
+		alm.button.dataset.url = nextPage ? nextPage : '';
+
+		// Set a11y attributes
+		target.setAttribute('aria-live', 'polite');
+		target.setAttribute('aria-atomic', 'true');
+
+		alm.listing.removeAttribute('aria-live');
+		alm.listing.removeAttribute('aria-atomic');
+
+		// Set data atts on 1st grid item
+		var item = target.querySelector('.' + alm.addons.elementor_item_class); // Get first `.product` item
+		if (item) {
+			item.classList.add('alm-elementor');
+			item.dataset.url = window.location;
+			item.dataset.page = alm.addons.elementor_paged;
+			item.dataset.pageTitle = document.title;
+		}
+
+		if (alm.addons.elementor_paged > 1) {
+			// maybe soon
+			//almElementorResultsTextInit(alm);
+		}
+	}
+}
+
+/**
+ * elementor
+ * Core ALM Elementor loader
+ *
+ * @param {HTMLElement} content
+ * @param {object} alm
+ * @param {String} pageTitle
+ * @since 5.3.0
+ */
+
+function elementor(content, alm) {
+	var pageTitle = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : document.title;
+
+	if (!content || !alm) {
+		return false;
+	}
+
+	return new Promise(function (resolve) {
+		var container = alm.addons.elementor_target_element.querySelector('.' + alm.addons.elementor_container_class); // Get post container
+		var items = content.querySelectorAll('.' + alm.addons.elementor_item_class); // Get all items in container
+		var url = alm.addons.elementor_pages[alm.page - 1];
+
+		if (container && items && url) {
+			// Convert NodeList to Array
+			items = Array.prototype.slice.call(items);
+
+			// Load the items
+			_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+				return regeneratorRuntime.wrap(function _callee$(_context) {
+					while (1) {
+						switch (_context.prev = _context.next) {
+							case 0:
+								_context.next = 2;
+								return (0, _loadItems2.default)(container, items, alm, pageTitle, url, 'alm-elementor');
+
+							case 2:
+								resolve(true);
+
+							case 3:
+							case 'end':
+								return _context.stop();
+						}
+					}
+				}, _callee, this);
+			}))().catch(function (e) {
+				console.log(e, 'There was an error with Elementor');
+			});
+		}
+	});
+}
+
+/**
+ * elementorGetContent
+ * Get the content, title and results text from the Ajax response
+ *
+ * @param {object} alm
+ * @since 5.4.0
+ */
+
+function elementorGetContent(response, alm) {
+	var data = {
+		html: '',
+		meta: {
+			postcount: 1,
+			totalposts: alm.localize.total_posts,
+			debug: 'Elementor Query'
+		}
+	};
+	if (response.status === 200 && response.data) {
+		var div = document.createElement('div');
+		div.innerHTML = response.data;
+
+		// Get Page Title
+		var title = div.querySelector('title').innerHTML;
+		data.pageTitle = title;
+
+		// Get Elementor Items HTML
+		var items = div.querySelector(alm.addons.elementor_target + ' .' + alm.addons.elementor_container_class);
+		data.html = items ? items.innerHTML : '';
+
+		// Results Text
+		//almElementorResultsText(div, alm);
+	}
+
+	return data;
+}
+
+/**
+ * Return the paging URLs from `.elementor-pagination`
+ *
+ * @param {*} target
+ * @return {NodeList} pages
+ */
+function elementorGetPages(pagination_class, pagination_item, target) {
+	if (!target) {
+		return false;
+	}
+	var pagination = target.querySelector('.' + pagination_class);
+	if (!pagination) {
+		return 1;
+	}
+	var pages = pagination.querySelectorAll(pagination_item);
+	return pages;
+}
+
+/***/ }),
+
 /***/ "./core/src/js/addons/filters.js":
 /*!***************************************!*\
   !*** ./core/src/js/addons/filters.js ***!
@@ -190,6 +386,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.parseQuerystring = parseQuerystring;
 exports.buildFilterURL = buildFilterURL;
+exports.createMasonryFiltersPage = createMasonryFiltersPage;
+exports.createMasonryFiltersPages = createMasonryFiltersPages;
 
 var _getQueryVariable = __webpack_require__(/*! ../helpers/getQueryVariable */ "./core/src/js/helpers/getQueryVariable.js");
 
@@ -198,6 +396,8 @@ var _getQueryVariable2 = _interopRequireDefault(_getQueryVariable);
 function _interopRequireDefault(obj) {
 	return obj && obj.__esModule ? obj : { default: obj };
 }
+
+var FILTERS_CLASSNAME = 'alm-filters';
 
 /**
  * parseQuerystring
@@ -210,14 +410,14 @@ function _interopRequireDefault(obj) {
 function parseQuerystring(path) {
 	// Get querystring
 	var query = window.location.search.substring(1);
-	var obj = "";
-	var cache_dir = "";
+	var obj = '';
+	var cache_dir = '';
 
 	// Parse querystring into object
 	if (query) {
 		obj = JSON.parse('{"' + query.replace(/&/g, '","').replace(/=/g, '":"') + '"}', function (key, value) {
 			// Replace + with - in URL
-			return key === "" ? value : decodeURIComponent(value.replace(/\+/g, "-"));
+			return key === '' ? value : decodeURIComponent(value.replace(/\+/g, '-'));
 		});
 
 		// Remove the following properties from the object as they should not be included in the cache ID
@@ -234,10 +434,10 @@ function parseQuerystring(path) {
 	}
 
 	if (obj) {
-		cache_dir += "/";
+		cache_dir += '/';
 		Object.keys(obj).forEach(function (key, index) {
-			cache_dir += index > 0 ? "--" : "";
-			cache_dir += key + "--" + obj[key];
+			cache_dir += index > 0 ? '--' : '';
+			cache_dir += key + '--' + obj[key];
 		});
 	}
 
@@ -253,7 +453,7 @@ function parseQuerystring(path) {
  * @since 5.3.5
  */
 function buildFilterURL(alm) {
-	var querystring = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
+	var querystring = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
 	var page = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
 
 	var qs = querystring;
@@ -263,23 +463,102 @@ function buildFilterURL(alm) {
 			// Paged
 			if (qs) {
 				// If already has `pg` in querystring
-				if ((0, _getQueryVariable2.default)("pg")) {
-					qs = querystring.replace(/(pg=)[^\&]+/, "$1" + page);
+				if ((0, _getQueryVariable2.default)('pg')) {
+					qs = querystring.replace(/(pg=)[^\&]+/, '$1' + page);
 				} else {
-					qs = querystring + "&pg=" + page;
+					qs = querystring + '&pg=' + page;
 				}
 			} else {
-				qs = "?pg=" + page;
+				qs = '?pg=' + page;
 			}
 		} else {
 			// Not Paged
-			qs = querystring.replace(/(pg=)[^\&]+/, "");
-			qs = qs === "?" ? "" : qs; // Remove `?` if only symbol in querystring
-			qs = qs[qs.length - 1] === "&" ? qs.slice(0, -1) : qs; // Remove trailing `&` symbols
+			qs = querystring.replace(/(pg=)[^\&]+/, '');
+			qs = qs === '?' ? '' : qs; // Remove `?` if only symbol in querystring
+			qs = qs[qs.length - 1] === '&' ? qs.slice(0, -1) : qs; // Remove trailing `&` symbols
 		}
 	}
 
 	return qs;
+}
+
+/**
+ * Create data attributes for Filters paged results
+ *
+ * @param {Object} alm
+ * @param {Array} elements
+ * @since 5.3.1
+ */
+function createMasonryFiltersPage(alm, element) {
+	if (!alm.addons.filters) {
+		return element;
+	}
+
+	var querystring = window.location.search;
+	var page = alm.page + 1;
+	page = alm.addons.preloaded === 'true' ? page + 1 : page;
+	element = masonryFiltersAtts(alm, element, querystring, page);
+
+	return element;
+}
+
+/**
+ * Create data attributes for Filters - used when ?pg=2, ?pg=3 etc are hit on page load
+ *
+ * @param {Object} alm
+ * @param {Array} elements
+ * @since 5.3.1
+ */
+function createMasonryFiltersPages(alm, elements) {
+	if (!alm.addons.filters) {
+		return elements;
+	}
+
+	var pagenum = 1;
+	var page = alm.page;
+	var querystring = window.location.search;
+
+	if (alm.addons.filters_startpage > 1) {
+		// Create pages
+		var posts_per_page = parseInt(alm.posts_per_page);
+		var return_data = [];
+
+		// Slice data array into individual pages
+		for (var i = 0; i < elements.length; i += posts_per_page) {
+			return_data.push(elements.slice(i, posts_per_page + i));
+		}
+
+		// Loop new data array
+		for (var k = 0; k < return_data.length; k++) {
+			var target = k > 0 ? k * posts_per_page : 0;
+			pagenum = k + 1;
+
+			if (elements[target]) {
+				elements[target] = masonryFiltersAtts(alm, elements[target], querystring, pagenum);
+			}
+		}
+	} else {
+		pagenum = page;
+		elements[0] = masonryFiltersAtts(alm, elements[0], querystring, pagenum);
+	}
+
+	return elements;
+}
+
+// Create the attributes (page, url, classes)  for the masonry items
+function masonryFiltersAtts(alm, element, querystring, pagenum) {
+	element.classList.add(FILTERS_CLASSNAME);
+	element.dataset.page = pagenum;
+	if (pagenum > 1) {
+		element.dataset.url = alm.canonical_url + buildFilterURL(alm, querystring, pagenum);
+	} else {
+		var updatedQS = querystring.replace(/(pg=)[^\&]+/, ''); // Remove `pg` from querysting
+		updatedQS = updatedQS === '?' ? '' : updatedQS; // Remove empty querysting
+
+		element.dataset.url = alm.canonical_url + updatedQS;
+	}
+
+	return element;
 }
 
 /***/ }),
@@ -300,17 +579,15 @@ Object.defineProperty(exports, "__esModule", {
 exports.createMasonrySEOPage = createMasonrySEOPage;
 exports.createMasonrySEOPages = createMasonrySEOPages;
 exports.createSEOAttributes = createSEOAttributes;
-
-/**  
+/**
  * createMasonrySEOPage
  * Create data attributes for SEO paged results
  *
  * @param {Object} alm
  * @param {Array} elements
- * @since 5.3.1 
+ * @since 5.3.1
  */
 function createMasonrySEOPage(alm, element) {
-
 	if (!alm.addons.seo) {
 		return element;
 	}
@@ -319,21 +596,20 @@ function createMasonrySEOPage(alm, element) {
 	var seo_class = 'alm-seo';
 	var page = alm.page + 1;
 	page = alm.addons.preloaded === 'true' ? page + 1 : page;
-	element = createMasonryDataAtts(alm, element, querystring, seo_class, page);
+	element = masonrySEOAtts(alm, element, querystring, seo_class, page);
 
 	return element;
 }
 
-/**  
+/**
  * createMasonrySEOPages
  * Create data attributes for SEO -  used when /page/2/, /page/3/ etc are hit on page load
  *
  * @param {Object} alm
  * @param {Array} elements
- * @since 5.3.1 
+ * @since 5.3.1
  */
 function createMasonrySEOPages(alm, elements) {
-
 	if (!alm.addons.seo) {
 		return elements;
 	}
@@ -346,7 +622,6 @@ function createMasonrySEOPages(alm, elements) {
 	if (alm.start_page > 1) {
 		// Create pages
 		var posts_per_page = parseInt(alm.posts_per_page);
-		var pages = Math.ceil(elements.length / parseInt(posts_per_page));
 		var return_data = [];
 
 		// Slice data array into individual pages
@@ -359,25 +634,23 @@ function createMasonrySEOPages(alm, elements) {
 			var target = k > 0 ? k * posts_per_page : 0;
 			pagenum = k + 1;
 			if (elements[target]) {
-				elements[target] = createMasonryDataAtts(alm, elements[target], querystring, seo_class, pagenum);
+				elements[target] = masonrySEOAtts(alm, elements[target], querystring, seo_class, pagenum);
 			}
 		}
 	} else {
 		pagenum = page;
-		elements[0] = createMasonryDataAtts(alm, elements[0], querystring, seo_class, pagenum);
+		elements[0] = masonrySEOAtts(alm, elements[0], querystring, seo_class, pagenum);
 	}
 
 	return elements;
 }
 
 // Create the attributes (page, url, classes)  for the masonry items
-function createMasonryDataAtts(alm, element, querystring, seo_class, pagenum) {
-
+function masonrySEOAtts(alm, element, querystring, seo_class, pagenum) {
 	element.classList.add(seo_class);
 	element.dataset.page = pagenum;
 
 	if (alm.addons.seo_permalink === 'default') {
-
 		// Default Permalinks
 		if (pagenum > 1) {
 			element.dataset.url = alm.canonical_url + querystring + '&paged=' + pagenum;
@@ -385,7 +658,6 @@ function createMasonryDataAtts(alm, element, querystring, seo_class, pagenum) {
 			element.dataset.url = alm.canonical_url + querystring;
 		}
 	} else {
-
 		// Pretty Permalinks
 		if (pagenum > 1) {
 			element.dataset.url = alm.canonical_url + alm.addons.seo_leading_slash + 'page/' + pagenum + alm.addons.seo_trailing_slash + querystring;
@@ -397,17 +669,16 @@ function createMasonryDataAtts(alm, element, querystring, seo_class, pagenum) {
 	return element;
 }
 
-/**  
+/**
  * createSEOAttributes
  * Create data attributes for SEO -  used when /page/2/, /page/3/ etc are hit on page load
  *
  * @param {Object} alm
  * @param {Array} elements
  * ...
- * @since 5.3.1 
+ * @since 5.3.1
  */
 function createSEOAttributes(alm, element, querystring, seo_class, pagenum) {
-
 	element.setAttribute('class', 'alm-reveal' + seo_class + alm.tcc);
 	element.dataset.page = pagenum;
 
@@ -485,18 +756,18 @@ exports.default = singlePostHTML;
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.wooGetContent = wooGetContent;
 exports.wooInit = wooInit;
 exports.woocommerce = woocommerce;
-exports.wooGetURL = wooGetURL;
+exports.wooReset = wooReset;
+exports.wooGetContent = wooGetContent;
 
-var _srcsetPolyfill = __webpack_require__(/*! ../helpers/srcsetPolyfill */ "./core/src/js/helpers/srcsetPolyfill.js");
+var _axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 
-var _srcsetPolyfill2 = _interopRequireDefault(_srcsetPolyfill);
+var _axios2 = _interopRequireDefault(_axios);
 
-var _setFocus = __webpack_require__(/*! ../modules/setFocus */ "./core/src/js/modules/setFocus.js");
+var _loadItems = __webpack_require__(/*! ../modules/loadItems */ "./core/src/js/modules/loadItems.js");
 
-var _setFocus2 = _interopRequireDefault(_setFocus);
+var _loadItems2 = _interopRequireDefault(_loadItems);
 
 function _interopRequireDefault(obj) {
 	return obj && obj.__esModule ? obj : { default: obj };
@@ -524,65 +795,21 @@ function _asyncToGenerator(fn) {
 	};
 }
 
-var imagesLoaded = __webpack_require__(/*! imagesloaded */ "./node_modules/imagesloaded/imagesloaded.js");
-
-/**  
- * wooGetContent
- * Get the content, title and results text from the Ajax response
- *
- * @param {object} alm
- * @since 5.3.0 
- */
-function wooGetContent(response, alm) {
-
-	var data = {
-		html: '',
-		meta: {
-			postcount: 1,
-			totalposts: alm.localize.total_posts,
-			debug: 'WooCommerce Query'
-		}
-	};
-	if (response.status === 200 && response.data) {
-
-		var div = document.createElement("div");
-		div.innerHTML = response.data;
-
-		// Get Page Title
-		var title = div.querySelector('title').innerHTML;
-		data.pageTitle = title;
-
-		// Get Products HTML
-		var products = div.querySelector(alm.addons.woocommerce_classes.container);
-		data.html = products ? products.innerHTML : '';
-
-		// Results Text 
-		almWooCommerceResultsText(div, alm);
-	}
-
-	return data;
-}
-
-/**  
- * wooInit
+/**
  * Set up the instance of ALM WooCommerce
  *
  * @param {object} alm
- * @since 5.3.0 
+ * @since 5.3.0
  */
 function wooInit(alm) {
-
 	if (!alm || !alm.addons.woocommerce) {
 		return false;
 	}
 
-	// Set button data attributes
-
-	// Page
-	alm.button.dataset.page = alm.addons.woocommerce_paged + 1;
+	alm.button.dataset.page = alm.addons.woocommerce_settings.paged + 1; // Page
 
 	// URL
-	var nextPage = alm.addons.woocommerce_paged_urls[alm.addons.woocommerce_paged];
+	var nextPage = alm.addons.woocommerce_settings.paged_urls[alm.addons.woocommerce_settings.paged];
 	if (nextPage) {
 		alm.button.dataset.url = nextPage;
 	} else {
@@ -590,39 +817,37 @@ function wooInit(alm) {
 	}
 
 	// Set up URL and class parameters on first item in product listing
-	var products = document.querySelector(alm.addons.woocommerce_classes.container); // Get `ul.products`
+	var products = document.querySelector(alm.addons.woocommerce_settings.container); // Get `ul.products`
 	if (products) {
-
 		products.setAttribute('aria-live', 'polite');
 		products.setAttribute('aria-atomic', 'true');
 
 		alm.listing.removeAttribute('aria-live');
 		alm.listing.removeAttribute('aria-atomic');
 
-		var product = products.querySelector(alm.addons.woocommerce_classes.products); // Get first `.product` item
+		var product = products.querySelector(alm.addons.woocommerce_settings.products); // Get first `.product` item
 		if (product) {
 			product.classList.add('alm-woocommerce');
-			product.dataset.url = alm.addons.woocommerce_paged_urls[alm.addons.woocommerce_paged - 1];
+			product.dataset.url = alm.addons.woocommerce_settings.paged_urls[alm.addons.woocommerce_settings.paged - 1];
 			product.dataset.page = alm.page;
 			product.dataset.pageTitle = document.title;
 		}
 
-		if (alm.addons.woocommerce_paged > 1) {
-			// maybe soon
+		if (alm.addons.woocommerce_settings.paged > 1) {
 			almWooCommerceResultsTextInit(alm);
 		}
 	}
 }
 
-/**  
- * woocommerce
- * Core ALM WooCommerce Product Loader
+/**
+ * Core ALM WooCommerce product loader
  *
  * @param {HTMLElement} content
  * @param {object} alm
  * @param {String} pageTitle
- * @since 5.3.0 
+ * @since 5.3.0
  */
+
 function woocommerce(content, alm) {
 	var pageTitle = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : document.title;
 
@@ -631,13 +856,11 @@ function woocommerce(content, alm) {
 	}
 
 	return new Promise(function (resolve) {
+		var container = document.querySelector(alm.addons.woocommerce_settings.container); // Get `ul.products`
+		var products = content.querySelectorAll(alm.addons.woocommerce_settings.products); // Get all `.products`
+		var url = alm.addons.woocommerce_settings.paged_urls[alm.page];
 
-		var container = document.querySelector(alm.addons.woocommerce_classes.container); // Get `ul.products`
-		var products = content.querySelectorAll(alm.addons.woocommerce_classes.products); // Get all `.products`
-		var columns = alm.addons.woocommerce_columns; // Count columns
-
-		if (container && products) {
-
+		if (container && products && url) {
 			// Convert NodeList to Array
 			products = Array.prototype.slice.call(products);
 
@@ -648,7 +871,7 @@ function woocommerce(content, alm) {
 						switch (_context.prev = _context.next) {
 							case 0:
 								_context.next = 2;
-								return loadProducts(container, products, columns, alm, pageTitle);
+								return (0, _loadItems2.default)(container, products, alm, pageTitle, url, 'alm-woocommerce');
 
 							case 2:
 								resolve(true);
@@ -667,133 +890,67 @@ function woocommerce(content, alm) {
 }
 
 /**
- * loadProducts
- * Load all products
+ * Reset a WooCommerce Instance by hitting the updated site URL
  *
- * @param {HTMLElement} container
- * @param {HTMLElement} products
- * @param {String} columns
- * @param {Object} alm
- * @param {String} pageTitle
+ * @since 5.3.8
  */
-var loadProducts = function loadProducts(container, products, columns, alm, pageTitle) {
-
+function wooReset() {
 	return new Promise(function (resolve) {
+		var url = window.location;
+		_axios2.default.get(url).then(function (response) {
+			if (response.status === 200 && response.data) {
+				var div = document.createElement('div');
+				div.innerHTML = response.data; // Add data to div
 
-		var total = products.length;
-		var index = 0;
-		var count = 1;
-
-		function loadProduct() {
-
-			if (count <= total) {
-
-				_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-					return regeneratorRuntime.wrap(function _callee2$(_context2) {
-						while (1) {
-							switch (_context2.prev = _context2.next) {
-								case 0:
-
-									//products[index].classList.remove('first');
-									//products[index].classList.remove('last');
-									products[index].style.opacity = 0;
-
-									// First item only
-									if (count == 1) {
-										products[index].classList.add('alm-woocommerce');
-
-										// Get URL from localized variables
-										products[index].dataset.url = alm.addons.woocommerce_paged_urls[alm.page];
-
-										// Set page num
-										products[index].dataset.page = alm.page + 1;
-
-										// Set page title
-										products[index].dataset.pageTitle = pageTitle;
-									}
-
-									_context2.next = 4;
-									return loadProductImage(container, products[index], alm.ua);
-
-								case 4:
-
-									count++;
-									index++;
-
-									loadProduct();
-
-								case 7:
-								case 'end':
-									return _context2.stop();
-							}
-						}
-					}, _callee2, this);
-				}))().catch(function (e) {
-
-					console.log('There was an error with WooCommerce');
-				});
+				var alm = div.querySelector('.ajax-load-more-wrap .alm-listing[data-woo="true"]'); // Get ALM instance
+				var settings = alm ? alm.dataset.wooSettings : ''; // Get settings data
+				resolve(settings);
 			} else {
-
-				resolve(true);
-				products.map(function (product) {
-					product.style.opacity = 1;
-				});
-				if (products[0]) {
-					(0, _setFocus2.default)(alm, products[0], null, false);
-				}
+				resolve(false);
 			}
-		}
-
-		loadProduct();
-	});
-};
-
-/**
- * loadProductImage
- * Load the product image with imagesLoaded
- *
- * @param {HTMLElement} container
- * @param {HTMLElement} product
- * @param {String} ua
- */
-var loadProductImage = function loadProductImage(container, product, ua) {
-	return new Promise(function (resolve) {
-		imagesLoaded(product, function () {
-			// Add CSS transition
-			product.style.transition = 'all 0.3s ease';
-			// Append to container
-			container.appendChild(product);
-			// Run srcset fix
-			(0, _srcsetPolyfill2.default)(product, ua);
-			// Send await callback
-			resolve(true);
+		}).catch(function (error) {
+			resolve(false);
 		});
 	});
-};
-
-/**  
- * wooGetURL
- * Get the next URL for Load More button
- *
- * @param {object} alm
- * @since 5.3.0 
- */
-function wooGetURL(alm) {
-	if (!alm || !alm.trigger) {
-		return false;
-	}
-
-	// Get Button
-	var button = alm.trigger.querySelector('button');
-	var url = button.dataset.url;
-
-	return url ? url : '';
 }
 
-/**  
- *  almWooCommerceResultsText 
+/**
+ * Get the content, title and results text from the Ajax response
+ *
+ * @param {object} alm
+ * @since 5.3.0
+ */
+function wooGetContent(response, alm) {
+	var data = {
+		html: '',
+		meta: {
+			postcount: 1,
+			totalposts: alm.localize.total_posts,
+			debug: 'WooCommerce Query'
+		}
+	};
+	if (response.status === 200 && response.data) {
+		var div = document.createElement('div');
+		div.innerHTML = response.data;
+
+		// Get Page Title
+		var title = div.querySelector('title').innerHTML;
+		data.pageTitle = title;
+
+		// Get Products HTML
+		var products = div.querySelector(alm.addons.woocommerce_settings.container);
+		data.html = products ? products.innerHTML : '';
+
+		// Results Text
+		almWooCommerceResultsText(div, alm);
+	}
+
+	return data;
+}
+
+/**
  *  Set results text for WooCommerce Add-on.
- * 
+ *
  *  @param {HTMLElement} target
  *  @param {Object} alm
  *  @since 5.3
@@ -802,42 +959,59 @@ function almWooCommerceResultsText() {
 	var target = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
 	var alm = arguments[1];
 
-	if (target && alm && alm.addons.woocommerce_results_text) {
-		var currentResults = target.querySelector(alm.addons.woocommerce_classes.results);
-		if (currentResults) {
-			var resultText = currentResults.innerHTML;
-			alm.addons.woocommerce_results_text.forEach(function (element) {
-				if (alm.localize.woocommerce.settings.previous_page_link) {
-					resultText = resultText + alm.localize.woocommerce.settings.previous_page_link;
+	if (target && alm && alm.addons.woocommerce_settings.results_text) {
+		var currentResults = target.querySelector(alm.addons.woocommerce_settings.results);
+		var link = alm.addons.woocommerce_settings.settings.previous_page_link;
+		var label = alm.addons.woocommerce_settings.settings.previous_page_label;
+		var sep = alm.addons.woocommerce_settings.settings.previous_page_sep;
+
+		if (alm.addons.woocommerce_settings.results_text) {
+			alm.addons.woocommerce_settings.results_text.forEach(function (element) {
+				if (link && label) {
+					element.innerHTML = returnButton(currentResults, link, label, sep);
+				} else {
+					element.innerHTML = currentResults.innerHTML;
 				}
-				element.innerHTML = resultText;
 			});
 		}
 	}
 }
 
-/**  
- *  almWooCommerceResultsTextInit 
+/**
  *  Initiate Results text.
- * 
+ *
  *  @param {Object} alm
  *  @since 5.3
  */
 function almWooCommerceResultsTextInit(alm) {
-	if (alm && alm.addons.woocommerce_results_text) {
-		var results = document.querySelectorAll(alm.addons.woocommerce_classes.results);
+	if (alm && alm.addons.woocommerce_settings.results_text) {
+		var results = document.querySelectorAll(alm.addons.woocommerce_settings.results);
 		if (results.length < 1) {
 			return false;
 		}
+		var link = alm.addons.woocommerce_settings.settings.previous_page_link;
+		var label = alm.addons.woocommerce_settings.settings.previous_page_label;
+		var sep = alm.addons.woocommerce_settings.settings.previous_page_sep;
 		// Loop all result text elements
 		results.forEach(function (element) {
-			if (alm.localize.woocommerce.settings.previous_page_link) {
-				var newText = element.innerHTML;
-				newText = newText + alm.localize.woocommerce.settings.previous_page_link;
-				element.innerHTML = newText;
+			if (link && label) {
+				element.innerHTML = returnButton(element, link, label, sep);
 			}
 		});
 	}
+}
+
+/**
+ * Create button text for returning to the first page
+ *
+ * @param {*} text
+ * @param {*} link
+ * @param {*} label
+ * @param {*} seperator
+ */
+function returnButton(text, link, label, seperator) {
+	var button = ' ' + seperator + ' <a href="' + link + '">' + label + '</a>';
+	return text.innerHTML + button;
 }
 
 /***/ }),
@@ -855,7 +1029,7 @@ function almWooCommerceResultsTextInit(alm) {
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.render = exports.getOffset = exports.almScroll = exports.start = exports.tracking = exports.tab = exports.filter = undefined;
+exports.render = exports.getOffset = exports.almScroll = exports.start = exports.tracking = exports.tab = exports.reset = exports.filter = undefined;
 
 var _axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 
@@ -913,6 +1087,10 @@ var _setFocus = __webpack_require__(/*! ./modules/setFocus */ "./core/src/js/mod
 
 var _setFocus2 = _interopRequireDefault(_setFocus);
 
+var _getButtonURL = __webpack_require__(/*! ./modules/getButtonURL */ "./core/src/js/modules/getButtonURL.js");
+
+var _getButtonURL2 = _interopRequireDefault(_getButtonURL);
+
 var _masonry = __webpack_require__(/*! ./modules/masonry */ "./core/src/js/modules/masonry.js");
 
 var _masonry2 = _interopRequireDefault(_masonry);
@@ -952,6 +1130,8 @@ var _singleposts = __webpack_require__(/*! ./addons/singleposts */ "./core/src/j
 var _cache = __webpack_require__(/*! ./addons/cache */ "./core/src/js/addons/cache.js");
 
 var _woocommerce = __webpack_require__(/*! ./addons/woocommerce */ "./core/src/js/addons/woocommerce.js");
+
+var _elementor = __webpack_require__(/*! ./addons/elementor */ "./core/src/js/addons/elementor.js");
 
 var _filters = __webpack_require__(/*! ./addons/filters */ "./core/src/js/addons/filters.js");
 
@@ -1115,11 +1295,14 @@ var alm_is_filtering = false;
 
 		alm.button_label = alm.listing.dataset.buttonLabel;
 		alm.button_loading_label = alm.listing.dataset.buttonLoadingLabel;
+		alm.button_done_label = alm.listing.dataset.buttonDoneLabel;
+
 		alm.placeholder = alm.main.querySelector('.alm-placeholder');
 
 		alm.scroll_distance = alm.listing.dataset.scrollDistance;
 		alm.scroll_distance = alm.scroll_distance ? alm.scroll_distance : 100;
 		alm.scroll_container = alm.listing.dataset.scrollContainer;
+		alm.scroll_direction = alm.listing.dataset.scrollDirection;
 		alm.max_pages = alm.listing.dataset.maxPages ? parseInt(alm.listing.dataset.maxPages) : 0;
 		alm.pause_override = alm.listing.dataset.pauseOverride; // true | false
 		alm.pause = alm.listing.dataset.pause ? alm.listing.dataset.pause : false; // true | false
@@ -1134,23 +1317,33 @@ var alm_is_filtering = false;
 		alm.offset = alm.listing.dataset.offset ? parseInt(alm.listing.dataset.offset) : 0;
 		alm.integration.woocommerce = alm.listing.dataset.woocommerce ? alm.listing.dataset.woocommerce : false;
 		alm.integration.woocommerce = alm.integration.woocommerce === 'true' ? true : false;
+		alm.is_search = alm.is_search === undefined ? false : alm.is_search;
+		alm.search_value = alm.is_search === 'true' ? alm.slug : ''; // Convert to value of slug for appending to seo url
 
 		// Addon Shortcode Params
 
-		// Woocommerce add-on
-		alm.addons.woocommerce = alm.localize && alm.localize.woocommerce ? true : false;
-		if (alm.addons.woocommerce) {
-			alm.addons.woocommerce_columns = alm.localize.woocommerce.columns ? parseInt(alm.localize.woocommerce.columns) : 3; // Woocommerce columns
-			alm.addons.woocommerce_paged = alm.localize.woocommerce.paged ? parseInt(alm.localize.woocommerce.paged) : 1; // Woocommerce Paged
-			alm.addons.woocommerce_paged_urls = alm.localize.woocommerce.paged_urls;
-			alm.addons.woocommerce_pages = parseInt(alm.localize.woocommerce.pages);
-			alm.addons.woocommerce_classes = {};
-			alm.addons.woocommerce_classes.container = alm.localize.woocommerce.container;
-			alm.addons.woocommerce_classes.products = alm.localize.woocommerce.products;
-			alm.addons.woocommerce_classes.results = alm.localize.woocommerce.results;
-			alm.addons.woocommerce_results_text = document.querySelectorAll(alm.addons.woocommerce_classes.results);
-			alm.addons.woocommerce_settings = alm.localize.woocommerce.settings;
-			alm.page = parseInt(alm.page) + alm.addons.woocommerce_paged;
+		// Elementor add-on
+		alm.addons.elementor = alm.localize && alm.localize.elementor ? true : false;
+		if (alm.addons.elementor) {
+			alm.addons.elementor = {};
+			alm.addons.elementor_type = 'posts';
+			alm.addons.elementor_target = alm.localize.elementor.target;
+			alm.addons.elementor_target_element = alm.addons.elementor_target ? document.querySelector('.elementor-widget-wrap ' + alm.addons.elementor_target) : '';
+			alm.addons.elementor_paged = alm.localize.elementor.paged ? parseInt(alm.localize.elementor.paged) : 1;
+			alm.addons.elementor_container_class = alm.localize.elementor.container_class;
+			alm.addons.elementor_item_class = alm.localize.elementor.item_class;
+			alm.addons.elementor_pagination_class = alm.localize.elementor.pagination_class;
+			alm.addons.elementor_pagination_item = alm.localize.elementor.pagination_item;
+			alm.addons.elementor_pages = (0, _elementor.elementorGetPages)(alm.addons.elementor_pagination_class, alm.addons.elementor_pagination_item, alm.addons.elementor_target_element);
+			alm.page = parseInt(alm.page) + alm.addons.elementor_paged;
+		}
+
+		// WooCommerce add-on
+		alm.addons.woocommerce = alm.listing.dataset.woo && alm.listing.dataset.woo === 'true' ? true : false;
+		if (alm.addons.woocommerce && alm.listing.dataset.wooSettings) {
+			alm.addons.woocommerce_settings = JSON.parse(alm.listing.dataset.wooSettings);
+			alm.addons.woocommerce_settings.results_text = document.querySelectorAll(alm.addons.woocommerce_settings.results); // Add Results Text
+			alm.page = parseInt(alm.page) + parseInt(alm.addons.woocommerce_settings.paged);
 		}
 
 		// Cache add-on
@@ -1164,7 +1357,7 @@ var alm_is_filtering = false;
 		}
 
 		// CTA add-on
-		alm.addons.cta = alm.listing.dataset.cta;
+		alm.addons.cta = alm.listing.dataset.cta ? alm.listing.dataset.cta : false;
 		if (alm.addons.cta === 'true') {
 			alm.addons.cta_position = alm.listing.dataset.ctaPosition;
 			alm.addons.cta_repeater = alm.listing.dataset.ctaRepeater;
@@ -1194,7 +1387,7 @@ var alm_is_filtering = false;
 		}
 
 		// Comments add-on
-		alm.addons.comments = alm.listing.dataset.comments;
+		alm.addons.comments = alm.listing.dataset.comments ? alm.listing.dataset.comments : false;
 		if (alm.addons.comments === 'true') {
 			alm.addons.comments_post_id = alm.listing.dataset.comments_post_id; // current post id
 			alm.addons.comments_per_page = alm.listing.dataset.comments_per_page;
@@ -1355,13 +1548,13 @@ var alm_is_filtering = false;
 		/* SEO */
 		alm.addons.seo = alm.addons.seo === undefined ? false : alm.addons.seo;
 		alm.addons.seo = alm.addons.seo === 'true' ? true : alm.addons.seo;
-		alm.is_search = alm.is_search === undefined ? false : alm.is_search;
-		alm.search_value = alm.is_search === 'true' ? alm.slug : ''; // Convert to value of slug for appending to seo url
 
-		alm.addons.seo_permalink = alm.listing.dataset.seoPermalink;
-		alm.addons.seo_pageview = alm.listing.dataset.seoPageview;
-		alm.addons.seo_trailing_slash = alm.listing.dataset.seoTrailingSlash === 'false' ? '' : '/';
-		alm.addons.seo_leading_slash = alm.listing.dataset.seoLeadingSlash === 'true' ? '/' : '';
+		if (alm.addons.seo) {
+			alm.addons.seo_permalink = alm.listing.dataset.seoPermalink;
+			alm.addons.seo_pageview = alm.listing.dataset.seoPageview;
+			alm.addons.seo_trailing_slash = alm.listing.dataset.seoTrailingSlash === 'false' ? '' : '/';
+			alm.addons.seo_leading_slash = alm.listing.dataset.seoLeadingSlash === 'true' ? '/' : '';
+		}
 		alm.start_page = alm.listing.dataset.seoStartPage;
 
 		if (alm.start_page) {
@@ -1386,27 +1579,28 @@ var alm_is_filtering = false;
 		if (alm.addons.nextpage === 'true') {
 			alm.addons.nextpage = true;
 			alm.posts_per_page = 1;
+
+			if (alm.addons.nextpage_urls === undefined) {
+				alm.addons.nextpage_urls = 'true';
+			}
+			if (alm.addons.nextpage_scroll === undefined) {
+				alm.addons.nextpage_scroll = 'false:30';
+			}
+			if (alm.addons.nextpage_pageviews === undefined) {
+				alm.addons.nextpage_pageviews = 'true';
+			}
+			if (alm.addons.nextpage_post_id === undefined) {
+				alm.addons.nextpage = false;
+				alm.addons.nextpage_post_id = null;
+			}
+			if (alm.addons.nextpage_startpage === undefined) {
+				alm.addons.nextpage_startpage = 1;
+			}
+			if (alm.addons.nextpage_startpage > 1) {
+				alm.isPaged = true;
+			}
 		} else {
 			alm.addons.nextpage = false;
-		}
-		if (alm.addons.nextpage_urls === undefined) {
-			alm.addons.nextpage_urls = 'true';
-		}
-		if (alm.addons.nextpage_scroll === undefined) {
-			alm.addons.nextpage_scroll = 'false:30';
-		}
-		if (alm.addons.nextpage_pageviews === undefined) {
-			alm.addons.nextpage_pageviews = 'true';
-		}
-		if (alm.addons.nextpage_post_id === undefined) {
-			alm.addons.nextpage = false;
-			alm.addons.nextpage_post_id = null;
-		}
-		if (alm.addons.nextpage_startpage === undefined) {
-			alm.addons.nextpage_startpage = 1;
-		}
-		if (alm.addons.nextpage_startpage > 1) {
-			alm.isPaged = true;
 		}
 		/* End Nextpage  */
 
@@ -1416,26 +1610,26 @@ var alm_is_filtering = false;
 			alm.addons.single_post_permalink = '';
 			alm.addons.single_post_title = '';
 			alm.addons.single_post_slug = '';
+			alm.addons.single_post_order = alm.addons.single_post_order === undefined ? 'previous' : alm.addons.single_post_order;
+			alm.addons.single_post_taxonomy = alm.addons.single_post_taxonomy === undefined ? '' : alm.addons.single_post_taxonomy;
+			alm.addons.single_post_excluded_terms = alm.addons.single_post_excluded_terms === undefined ? '' : alm.addons.single_post_excluded_terms;
+			alm.addons.single_post_progress_bar = alm.addons.single_post_progress_bar === undefined ? '' : alm.addons.single_post_progress_bar;
+			alm.addons.single_post_target = alm.addons.single_post_target === undefined ? '' : alm.addons.single_post_target;
+			alm.addons.single_post_title_template = alm.listing.dataset.singlePostTitleTemplate;
+			alm.addons.single_post_siteTitle = alm.listing.dataset.singlePostSiteTitle;
+			alm.addons.single_post_siteTagline = alm.listing.dataset.singlePostSiteTagline;
+			alm.addons.single_post_pageview = alm.listing.dataset.singlePostPageview;
+			alm.addons.single_post_scroll = alm.listing.dataset.singlePostScroll;
+			alm.addons.single_post_scroll_speed = alm.listing.dataset.singlePostScrollSpeed;
+			alm.addons.single_post_scroll_top = alm.listing.dataset.singlePostScrolltop;
+			alm.addons.single_post_controls = alm.listing.dataset.singlePostControls;
 		} else {
 			alm.addons.single_post = false;
 		}
-		if (alm.addons.single_post_id === undefined) {
+		if (alm.addons.single_post && alm.addons.single_post_id === undefined) {
 			alm.addons.single_post_id = '';
 			alm.addons.single_post_init_id = '';
 		}
-		alm.addons.single_post_order = alm.addons.single_post_order === undefined ? 'previous' : alm.addons.single_post_order;
-		alm.addons.single_post_taxonomy = alm.addons.single_post_taxonomy === undefined ? '' : alm.addons.single_post_taxonomy;
-		alm.addons.single_post_excluded_terms = alm.addons.single_post_excluded_terms === undefined ? '' : alm.addons.single_post_excluded_terms;
-		alm.addons.single_post_progress_bar = alm.addons.single_post_progress_bar === undefined ? '' : alm.addons.single_post_progress_bar;
-		alm.addons.single_post_target = alm.addons.single_post_target === undefined ? '' : alm.addons.single_post_target;
-		alm.addons.single_post_title_template = alm.listing.dataset.singlePostTitleTemplate;
-		alm.addons.single_post_siteTitle = alm.listing.dataset.singlePostSiteTitle;
-		alm.addons.single_post_siteTagline = alm.listing.dataset.singlePostSiteTagline;
-		alm.addons.single_post_pageview = alm.listing.dataset.singlePostPageview;
-		alm.addons.single_post_scroll = alm.listing.dataset.singlePostScroll;
-		alm.addons.single_post_scroll_speed = alm.listing.dataset.singlePostScrollSpeed;
-		alm.addons.single_post_scroll_top = alm.listing.dataset.singlePostScrolltop;
-		alm.addons.single_post_controls = alm.listing.dataset.singlePostControls;
 		/* End Single Post */
 
 		/* Pause */
@@ -1478,6 +1672,9 @@ var alm_is_filtering = false;
 		/* Scroll Container */
 		alm.scroll_container = alm.scroll_container === undefined ? '' : alm.scroll_container;
 
+		/* Scroll Direction */
+		alm.scroll_direction = alm.scroll_direction === undefined ? 'vertical' : alm.scroll_direction;
+
 		/* Transition */
 		alm.transition = alm.transition === undefined ? 'fade' : alm.transition;
 
@@ -1489,7 +1686,7 @@ var alm_is_filtering = false;
 		if (alm.transition === 'masonry') {
 			alm.masonry_init = true;
 			if (alm.msnry) {
-				alm.msnry.destroy(); // destroy masonry if currently exists
+				alm.msnry.destroy(); // destroy masonry if it currently exists
 			} else {
 				alm.msnry = '';
 			}
@@ -1519,6 +1716,7 @@ var alm_is_filtering = false;
 		/* Button Labels */
 		alm.button_label = alm.button_label === undefined ? 'Older Posts' : alm.button_label;
 		alm.button_loading_label = alm.button_loading_label === undefined ? false : alm.button_loading_label;
+		alm.button_done_label = alm.button_done_label === undefined ? false : alm.button_done_label;
 
 		/* Paging */
 		if (alm.addons.paging) {
@@ -1777,13 +1975,19 @@ var alm_is_filtering = false;
 			// Single Posts Add-on
 			// If has `single_post_target`, adjust the Ajax URL to the post URL.
 			if (alm.addons.single_post && alm.addons.single_post_target) {
-				ajaxURL = alm.addons.single_post_permalink;
+				ajaxURL = alm.addons.single_post_permalink + '?id=' + alm.addons.single_post_id + '&alm_page=' + (parseInt(alm.page) + 1);
 				params = '';
 			}
 
 			// WooCommerce Add-on
 			if (alm.addons.woocommerce) {
-				ajaxURL = (0, _woocommerce.wooGetURL)(alm);
+				ajaxURL = (0, _getButtonURL2.default)(alm);
+				params = '';
+			}
+
+			// Elementor Add-on
+			if (alm.addons.elementor && alm.addons.elementor_type && alm.addons.elementor_type === 'posts') {
+				ajaxURL = (0, _getButtonURL2.default)(alm);
 				params = '';
 			}
 
@@ -1800,6 +2004,10 @@ var alm_is_filtering = false;
 					// WooCommerce
 					data = (0, _woocommerce.wooGetContent)(response, alm);
 					(0, _cache.createCacheFile)(alm, data.html, 'woocommerce');
+				} else if (alm.addons.elementor) {
+					// Elementor
+					data = (0, _elementor.elementorGetContent)(response, alm);
+					(0, _cache.createCacheFile)(alm, data.html, 'elementor');
 				} else {
 					// Get data from response
 					data = response.data;
@@ -2239,7 +2447,7 @@ var alm_is_filtering = false;
 											// Set button data attributes
 
 											alm.button.dataset.page = nextPageNum; // Page
-											nextPage = alm.addons.woocommerce_paged_urls[nextPageNum - 1]; // URL
+											nextPage = alm.addons.woocommerce_settings.paged_urls[nextPageNum - 1]; // URL
 
 											alm.button.dataset.url = nextPage ? nextPage : '';
 
@@ -2251,7 +2459,7 @@ var alm_is_filtering = false;
 											}
 
 											// ALM Done
-											if (nextPageNum > parseInt(alm.addons.woocommerce_pages)) {
+											if (nextPageNum > parseInt(alm.addons.woocommerce_settings.pages)) {
 												alm.AjaxLoadMore.triggerDone();
 											}
 
@@ -2264,6 +2472,55 @@ var alm_is_filtering = false;
 						}))().catch(function (e) {
 							console.log(e);
 							console.log('There was an error loading woocommerce products');
+						});
+
+						alm.init = false;
+
+						return;
+					}
+
+					// Elementor Add-on
+					if (alm.addons.elementor) {
+						_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+							var nextPageNum, nextPage;
+							return regeneratorRuntime.wrap(function _callee3$(_context3) {
+								while (1) {
+									switch (_context3.prev = _context3.next) {
+										case 0:
+											_context3.next = 2;
+											return (0, _elementor.elementor)(reveal, alm, data.pageTitle);
+
+										case 2:
+											nextPageNum = alm.page + 1;
+
+											// Set button data attributes
+
+											alm.button.dataset.page = nextPageNum; // Page
+											nextPage = alm.addons.elementor_pages[nextPageNum - 1]; // URL
+
+											alm.button.dataset.url = nextPage ? nextPage : '';
+
+											alm.AjaxLoadMore.transitionEnd();
+
+											// almComplete
+											if (typeof almComplete === 'function' && alm.transition !== 'masonry') {
+												window.almComplete(alm);
+											}
+
+											// ALM Done
+											if (nextPageNum > parseInt(alm.addons.elementor_pages.length)) {
+												alm.AjaxLoadMore.triggerDone();
+											}
+
+										case 9:
+										case 'end':
+											return _context3.stop();
+									}
+								}
+							}, _callee3, this);
+						}))().catch(function (e) {
+							console.log(e);
+							console.log('There was an error loading Elementor Post Widget items');
 						});
 
 						alm.init = false;
@@ -2306,16 +2563,17 @@ var alm_is_filtering = false;
 						alm.el = alm.listing;
 
 						// Wrap almMasonry in anonymous async/await function
-						_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
-							return regeneratorRuntime.wrap(function _callee3$(_context3) {
+						_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+							return regeneratorRuntime.wrap(function _callee4$(_context4) {
 								while (1) {
-									switch (_context3.prev = _context3.next) {
+									switch (_context4.prev = _context4.next) {
 										case 0:
-											_context3.next = 2;
+											_context4.next = 2;
 											return (0, _masonry2.default)(alm, alm.init, alm_is_filtering);
 
 										case 2:
 											alm.masonry_init = false;
+
 											alm.AjaxLoadMore.triggerWindowResize();
 											alm.AjaxLoadMore.transitionEnd();
 											if (typeof almComplete === 'function') {
@@ -2324,10 +2582,10 @@ var alm_is_filtering = false;
 
 										case 6:
 										case 'end':
-											return _context3.stop();
+											return _context4.stop();
 									}
 								}
-							}, _callee3, this);
+							}, _callee4, this);
 						}))().catch(function (e) {
 							console.log('There was an error with ALM Masonry');
 						});
@@ -2432,8 +2690,8 @@ var alm_is_filtering = false;
 							// Filters Add-on
 							window.almFiltersAddonComplete(el);
 						}
-						alm_is_filtering = false;
 					}
+					alm_is_filtering = false;
 
 					// Tabs Complete
 					if (alm.addons.tabs) {
@@ -2763,7 +3021,7 @@ var alm_is_filtering = false;
 		};
 
 		/**
-   * triggerDone
+   * ALM Done
    *
    * Fires the almDone() function (if available).
    * @since 2.11.3
@@ -2771,15 +3029,25 @@ var alm_is_filtering = false;
 		alm.AjaxLoadMore.triggerDone = function () {
 			alm.loading = false;
 			alm.finished = true;
+			(0, _placeholder.hidePlaceholder)(alm);
+
 			if (!alm.addons.paging) {
+				// Update button text
+				if (alm.button_done_label !== false) {
+					setTimeout(function () {
+						alm.button.innerHTML = alm.button_done_label;
+					}, 75);
+				}
+
 				alm.button.classList.add('done');
 				alm.button.disabled = true;
 			}
+
+			// almDone
 			if (typeof almDone === 'function') {
 				// Delay done until animations complete
 				setTimeout(function () {
 					window.almDone(alm);
-					(0, _placeholder.hidePlaceholder)(alm);
 				}, alm.speed + 10);
 			}
 		};
@@ -2857,6 +3125,7 @@ var alm_is_filtering = false;
 				alm.page++;
 				alm.AjaxLoadMore.loadPosts();
 			}
+			button.blur(); // Remove button focus
 		};
 
 		/**
@@ -2871,13 +3140,11 @@ var alm_is_filtering = false;
 		}
 
 		/**
-   * Window Resize
-   * Add resize function for Paging, Scroll Distance Percentage & Tabs.
-   *
+   * Window resize functions for Paging, Scroll Distance Percentage, Tabs etc.
    * @since 2.1.2
    * @updated 5.2
    */
-		if (alm.addons.paging || alm.addons.tabs || alm.scroll_distance_perc) {
+		if (alm.addons.paging || alm.addons.tabs || alm.scroll_distance_perc || alm.scroll_direction === 'horizontal') {
 			var resize = void 0;
 			alm.window.onresize = function () {
 				clearTimeout(resize);
@@ -2897,14 +3164,15 @@ var alm_is_filtering = false;
 					if (alm.scroll_distance_perc) {
 						alm.scroll_distance = (0, _getScrollPercentage2.default)(alm);
 					}
+					if (alm.scroll_direction === 'horizontal') {
+						alm.AjaxLoadMore.horizontal();
+					}
 				}, alm.speed);
 			};
 		}
 
 		/**
-   * isVisible
    * Check to see if element is visible before loading posts
-   *
    * @since 2.1.2
    */
 		alm.AjaxLoadMore.isVisible = function () {
@@ -2914,9 +3182,7 @@ var alm_is_filtering = false;
 		};
 
 		/**
-   * triggerWindowResize
    * Trigger a window resize browser function
-   *
    * @since 5.3.1
    */
 		alm.AjaxLoadMore.triggerWindowResize = function () {
@@ -2932,9 +3198,7 @@ var alm_is_filtering = false;
 		};
 
 		/**
-   * scroll
    * Load posts as user scrolls the page
-   *
    * @since 1.0
    * @updated 4.2.0
    */
@@ -2952,10 +3216,20 @@ var alm_is_filtering = false;
 
 					// Scroll Container
 					if (alm.window !== window) {
-						var scrollInstance = alm.window.querySelector('.ajax-load-more-wrap'); // ALM inside the container
-						var scrollHeight = scrollInstance.offsetHeight; // ALM height
-						var scrollPosition = Math.round(alm.window.scrollTop + alm.window.offsetHeight - alm.scroll_distance); // How far user has scrolled
-						scrollTrigger = scrollHeight <= scrollPosition ? true : false;
+						var scrollHeight = alm.main.offsetHeight; // ALM height
+						var scrollWidth = alm.main.offsetWidth; // ALM Width
+						var scrollPosition = '';
+
+						if (alm.scroll_direction === 'horizontal') {
+							// Left/Right
+							alm.AjaxLoadMore.horizontal();
+							scrollPosition = Math.round(alm.window.scrollLeft + alm.window.offsetWidth - alm.scroll_distance); // How far user has scrolled
+							scrollTrigger = scrollWidth <= scrollPosition ? true : false;
+						} else {
+							// Up/Down
+							scrollPosition = Math.round(alm.window.scrollTop + alm.window.offsetHeight - alm.scroll_distance); // How far user has scrolled
+							scrollTrigger = scrollHeight <= scrollPosition ? true : false;
+						}
 					}
 
 					// If Pause && Pause Override
@@ -2973,12 +3247,16 @@ var alm_is_filtering = false;
 			}, 25);
 		};
 
-		// Add scroll eventlisteners, only when needed
+		/**
+   * Add scroll eventlisteners, only when needed
+   * @since 5.2.0
+   */
 		alm.AjaxLoadMore.scrollSetup = function () {
 			if (alm.scroll && !alm.addons.paging) {
 				if (alm.scroll_container !== '') {
 					// Scroll Container
 					alm.window = document.querySelector(alm.scroll_container) ? document.querySelector(alm.scroll_container) : alm.window;
+					alm.AjaxLoadMore.horizontal();
 				}
 				alm.window.addEventListener('scroll', alm.AjaxLoadMore.scroll); // Scroll
 				alm.window.addEventListener('touchstart', alm.AjaxLoadMore.scroll); // Touch Devices
@@ -3003,9 +3281,17 @@ var alm_is_filtering = false;
 		};
 
 		/**
-   * destroyed
+   * Configure horizontal scroll settings
+   * @since 5.3.6
+   */
+		alm.AjaxLoadMore.horizontal = function () {
+			if (alm.scroll_direction === 'horizontal') {
+				alm.main.style.width = alm.listing.offsetWidth + 'px';
+			}
+		};
+
+		/**
    * Destroy Ajax Load More functionality
-   *
    * @since 3.4.2
    */
 		alm.AjaxLoadMore.destroyed = function () {
@@ -3020,9 +3306,7 @@ var alm_is_filtering = false;
 		};
 
 		/**
-   * transitionEnd
    * Set variables after loading transiton completes
-   *
    * @since 3.5
    */
 		alm.AjaxLoadMore.transitionEnd = function () {
@@ -3036,14 +3320,12 @@ var alm_is_filtering = false;
 						alm.loading = false; // Delay to prevent loading to fast
 					}, alm.speed * 3);
 				}
-			}, 100);
+			}, 50);
 			(0, _placeholder.hidePlaceholder)(alm);
 		};
 
 		/**
-   * setLocalizedVar
    * Set induvidual localized variable
-   *
    * @param {string} name
    * @param {string} value
    * @since 4.1
@@ -3172,13 +3454,19 @@ var alm_is_filtering = false;
 				// Initiate WooCommerce
 				(0, _woocommerce.wooInit)(alm);
 
-				// Set Results Text
-				if (alm.resultsText) {}
-				//resultsText.almInitResultsText(alm, 'woocommerce');
+				// Trigger `Done` if `paged is less than `pages`
+				if (alm.addons.woocommerce_settings.paged >= parseInt(alm.addons.woocommerce_settings.pages)) {
+					alm.AjaxLoadMore.triggerDone();
+				}
+			}
 
+			// Elementor Add-on
+			if (alm.addons.elementor && alm.addons.elementor_type && alm.addons.elementor_type === 'posts') {
+				// Initiate Elementor
+				(0, _elementor.elementorInit)(alm);
 
-				// Trigger Done if productsLoaded is less than woocommerce_total_posts
-				if (alm.addons.woocommerce_paged >= parseInt(alm.addons.woocommerce_pages)) {
+				// Trigger `Done` if `paged is less than `pages`
+				if (alm.addons.elementor_paged > parseInt(alm.addons.elementor_pages.length)) {
 					alm.AjaxLoadMore.triggerDone();
 				}
 			}
@@ -3187,12 +3475,12 @@ var alm_is_filtering = false;
 			alm.window.addEventListener('load', function () {
 				if (alm.is_masonry_preloaded) {
 					// Wrap almMasonry in anonymous async/await function
-					_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
-						return regeneratorRuntime.wrap(function _callee4$(_context4) {
+					_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
+						return regeneratorRuntime.wrap(function _callee5$(_context5) {
 							while (1) {
-								switch (_context4.prev = _context4.next) {
+								switch (_context5.prev = _context5.next) {
 									case 0:
-										_context4.next = 2;
+										_context5.next = 2;
 										return (0, _masonry2.default)(alm, true, false);
 
 									case 2:
@@ -3200,10 +3488,10 @@ var alm_is_filtering = false;
 
 									case 3:
 									case 'end':
-										return _context4.stop();
+										return _context5.stop();
 								}
 							}
-						}, _callee4, this);
+						}, _callee5, this);
 					}))().catch(function (e) {
 						console.log('There was an error with ALM Masonry');
 					});
@@ -3331,7 +3619,6 @@ var alm_is_filtering = false;
 })();
 
 /**
- * filter
  * Filter an Ajax Load More instance
  *
  * @since 5.0
@@ -3353,7 +3640,62 @@ var filter = function filter() {
 exports.filter = filter;
 
 /**
- * tab
+ * Reset an Ajax Load More instance
+ *
+ * @since 5.3.8
+ * @param {*} target
+ */
+
+var reset = function reset() {
+	var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+	var data = {};
+	alm_is_filtering = true;
+
+	if (props && props.target) {
+		data = {
+			target: target
+		};
+	}
+
+	if (props && props.type === 'woocommerce') {
+		// WooCommerce
+		_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
+			var instance, settings;
+			return regeneratorRuntime.wrap(function _callee6$(_context6) {
+				while (1) {
+					switch (_context6.prev = _context6.next) {
+						case 0:
+							instance = document.querySelector('.ajax-load-more-wrap .alm-listing[data-woo="true"]'); // Get ALM instance
+
+							_context6.next = 3;
+							return (0, _woocommerce.wooReset)();
+
+						case 3:
+							settings = _context6.sent;
+							// Get WooCommerce `settings` via Ajax
+							if (settings) {
+								instance.dataset.wooSettings = settings; // Update data atts
+								(0, _filtering2.default)('fade', '100', data, 'filter');
+							}
+
+						case 5:
+						case 'end':
+							return _context6.stop();
+					}
+				}
+			}, _callee6, this);
+		}))().catch(function (e) {
+			console.log('There was an resetting the Ajax Load More instance.');
+		});
+	} else {
+		// Standard ALM
+		(0, _filtering2.default)('fade', '200', data, 'filter');
+	}
+};
+exports.reset = reset;
+
+/**
  * Tabbed content for Ajax Load More instance
  *
  * @since 5.2
@@ -3378,7 +3720,6 @@ var tab = function tab() {
 exports.tab = tab;
 
 /**
- * tracking
  * Track Page Views in Google Analytics
  *
  * @since 5.0
@@ -3701,10 +4042,16 @@ var getCacheUrl = function getCacheUrl(alm) {
 					cache_url = path + '/' + alm.addons.single_post_id + ext;
 				}
 
-				// Standard URL request
-				else {
-						cache_url = path + '/page-' + (alm.page + 1) + ext;
+				// Comments & Preloaded
+				else if (alm.addons.comments === 'true' && alm.addons.preloaded === 'true') {
+						// When using comments we need to increase the current page by 2
+						cache_url = path + '/page-' + (alm.page + 2) + ext;
 					}
+
+					// Standard URL request
+					else {
+							cache_url = path + '/page-' + (alm.page + 1) + ext;
+						}
 
 	return cache_url;
 };
@@ -4712,7 +5059,7 @@ function _toConsumableArray(arr) {
  */
 
 var almFilter = function almFilter(transition, speed, data) {
-	var type = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "filter";
+	var type = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'filter';
 
 	if (data.target) {
 		// if a target has been specified
@@ -4746,7 +5093,6 @@ exports.default = almFilter;
  */
 
 var almFilterTransition = function almFilterTransition(transition, speed, data, el, type) {
-
 	if (transition === 'fade' || transition === 'masonry') {
 		// Fade, Masonry transition
 
@@ -4777,10 +5123,10 @@ var almFilterTransition = function almFilterTransition(transition, speed, data, 
 	}
 };
 
-/**  
+/**
  * almCompleteFilterTransition
  * Complete the filter transition
- * 
+ *
  * @param {*} speed number;
  * @param {*} data obj;
  * @param {*} el element;
@@ -4788,7 +5134,6 @@ var almFilterTransition = function almFilterTransition(transition, speed, data, 
  * @since 3.3
  */
 var almCompleteFilterTransition = function almCompleteFilterTransition(speed, data, el, type) {
-
 	// Get `.alm-btn-wrap` element
 	var btnWrap = el.querySelector('.alm-btn-wrap');
 
@@ -4803,7 +5148,7 @@ var almCompleteFilterTransition = function almCompleteFilterTransition(speed, da
 	// Get Load More button
 	var button = btnWrap.querySelector('.alm-load-more-btn');
 	if (button) {
-		button.classList.remove('done'); // Reset Button 
+		button.classList.remove('done'); // Reset Button
 	}
 
 	// Clear paging navigation
@@ -4906,9 +5251,8 @@ var almSetFilters = function almSetFilters() {
 	}
 
 	switch (type) {
-
 		case 'filter':
-			// Filters Complete (not the add-on)           
+			// Filters Complete (not the add-on)
 			if (typeof almFilterComplete === 'function') {
 				// Standard Filtering
 				almFilterComplete();
@@ -4916,15 +5260,48 @@ var almSetFilters = function almSetFilters() {
 			break;
 
 		case 'tab':
-			// Tabs Complete            
+			// Tabs Complete
 			if (typeof almTabsComplete === 'function') {
 				// Standard Filtering
 				almTabsComplete();
 			}
 			break;
-
 	}
 };
+
+/***/ }),
+
+/***/ "./core/src/js/modules/getButtonURL.js":
+/*!*********************************************!*\
+  !*** ./core/src/js/modules/getButtonURL.js ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * wooGetURL
+ * Get the next URL for Load More button
+ *
+ * @param {object} alm
+ * @since 5.4.0
+ */
+
+var getButtonURL = function getButtonURL(alm) {
+  if (!alm || !alm.trigger) {
+    return false;
+  }
+  var button = alm.trigger.querySelector('button');
+  var url = button ? button.dataset.url : '';
+
+  return url ? url : '';
+};
+exports.default = getButtonURL;
 
 /***/ }),
 
@@ -5053,6 +5430,187 @@ exports.default = insertScript;
 
 /***/ }),
 
+/***/ "./core/src/js/modules/loadImage.js":
+/*!******************************************!*\
+  !*** ./core/src/js/modules/loadImage.js ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _srcsetPolyfill = __webpack_require__(/*! ../helpers/srcsetPolyfill */ "./core/src/js/helpers/srcsetPolyfill.js");
+
+var _srcsetPolyfill2 = _interopRequireDefault(_srcsetPolyfill);
+
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
+
+var imagesLoaded = __webpack_require__(/*! imagesloaded */ "./node_modules/imagesloaded/imagesloaded.js");
+
+/**
+ * Load the image with imagesLoaded
+ *
+ * @param {HTMLElement} container
+ * @param {HTMLElement} item
+ * @param {String} ua
+ */
+var loadImage = function loadImage(container, item, ua) {
+	return new Promise(function (resolve) {
+		imagesLoaded(item, function () {
+			// Add CSS transition
+			item.style.transition = 'all 0.4s ease';
+			// Append to container
+			container.appendChild(item);
+			// Run srcset fix
+			(0, _srcsetPolyfill2.default)(item, ua);
+			// Send await callback
+			resolve(true);
+		});
+	});
+};
+exports.default = loadImage;
+
+/***/ }),
+
+/***/ "./core/src/js/modules/loadItems.js":
+/*!******************************************!*\
+  !*** ./core/src/js/modules/loadItems.js ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _loadImage = __webpack_require__(/*! ./loadImage */ "./core/src/js/modules/loadImage.js");
+
+var _loadImage2 = _interopRequireDefault(_loadImage);
+
+var _setFocus = __webpack_require__(/*! ./setFocus */ "./core/src/js/modules/setFocus.js");
+
+var _setFocus2 = _interopRequireDefault(_setFocus);
+
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
+
+function _asyncToGenerator(fn) {
+	return function () {
+		var gen = fn.apply(this, arguments);return new Promise(function (resolve, reject) {
+			function step(key, arg) {
+				try {
+					var info = gen[key](arg);var value = info.value;
+				} catch (error) {
+					reject(error);return;
+				}if (info.done) {
+					resolve(value);
+				} else {
+					return Promise.resolve(value).then(function (value) {
+						step("next", value);
+					}, function (err) {
+						step("throw", err);
+					});
+				}
+			}return step("next");
+		});
+	};
+}
+
+/**
+ * Load all items
+ *
+ * @param {HTMLElement} container
+ * @param {HTMLElement} items
+ * @param {Object} alm
+ * @param {String} pageTitle
+ * @param {String} url
+ * @param {String} className
+ */
+var loadItems = function loadItems(container, items, alm, pageTitle) {
+	var url = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : window.location;
+	var className = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : '';
+
+	return new Promise(function (resolve) {
+		var total = items.length;
+		var index = 0;
+		var count = 1;
+
+		function loadItem() {
+			if (count <= total) {
+				_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+					return regeneratorRuntime.wrap(function _callee$(_context) {
+						while (1) {
+							switch (_context.prev = _context.next) {
+								case 0:
+									items[index].style.opacity = 0;
+
+									// First item only
+									if (count == 1) {
+										items[index].classList.add(className);
+
+										// Set URL
+										items[index].dataset.url = url;
+
+										// Set page num
+										items[index].dataset.page = alm.page + 1;
+
+										// Set page title
+										items[index].dataset.pageTitle = pageTitle;
+									}
+
+									_context.next = 4;
+									return (0, _loadImage2.default)(container, items[index], alm.ua);
+
+								case 4:
+
+									count++;
+									index++;
+
+									loadItem();
+
+								case 7:
+								case 'end':
+									return _context.stop();
+							}
+						}
+					}, _callee, this);
+				}))().catch(function (e) {
+					console.log('There was an error loading the items');
+				});
+			} else {
+				// Delay for effect only
+				setTimeout(function () {
+					items.map(function (item) {
+						item.style.opacity = 1;
+					});
+					if (items[0]) {
+						(0, _setFocus2.default)(alm, items[0], null, false);
+					}
+				}, 50);
+
+				resolve(true);
+			}
+		}
+
+		loadItem();
+	});
+};
+
+exports.default = loadItems;
+
+/***/ }),
+
 /***/ "./core/src/js/modules/masonry.js":
 /*!****************************************!*\
   !*** ./core/src/js/modules/masonry.js ***!
@@ -5087,6 +5645,8 @@ var _stripEmptyNodes = __webpack_require__(/*! ../helpers/stripEmptyNodes */ "./
 
 var _stripEmptyNodes2 = _interopRequireDefault(_stripEmptyNodes);
 
+var _filters = __webpack_require__(/*! ../addons/filters */ "./core/src/js/addons/filters.js");
+
 var _seo = __webpack_require__(/*! ../addons/seo */ "./core/src/js/addons/seo.js");
 
 var _setFocus = __webpack_require__(/*! ./setFocus */ "./core/src/js/modules/setFocus.js");
@@ -5102,17 +5662,15 @@ var imagesLoaded = __webpack_require__(/*! imagesloaded */ "./node_modules/image
 /**
  * almMasonry
  * Function to trigger built-in Ajax Load More Masonry
- * 
+ *
  * @param {object} alm
  * @param {boolean} init
- * @param {boolean} filtering 
+ * @param {boolean} filtering
  * @since 3.1
  * @updated 5.0.2
-*/
+ */
 var almMasonry = function almMasonry(alm, init, filtering) {
-
 	return new Promise(function (resolve) {
-
 		var container = alm.listing;
 		var html = alm.html;
 
@@ -5162,14 +5720,11 @@ var almMasonry = function almMasonry(alm, init, filtering) {
 		horizontalOrder = horizontalOrder === 'true' ? true : false;
 
 		if (!filtering) {
-
 			// First Run
 			if (masonry_init && init) {
-
-				(0, _srcsetPolyfill2.default)(container, alm.ua); // Run srcSet polyfill			
+				(0, _srcsetPolyfill2.default)(container, alm.ua); // Run srcSet polyfill
 
 				imagesLoaded(container, function () {
-
 					var defaults = {
 						itemSelector: selector,
 						transitionDuration: duration,
@@ -5182,38 +5737,48 @@ var almMasonry = function almMasonry(alm, init, filtering) {
 						visibleStyle: {
 							transform: visible,
 							opacity: 1
+						}
+					};
 
-							// Get custom Masonry options (https://masonry.desandro.com/options.html)
-						} };var alm_masonry_vars = window.alm_masonry_vars;
+					// Get custom Masonry options (https://masonry.desandro.com/options.html)
+					var alm_masonry_vars = window.alm_masonry_vars;
 					if (alm_masonry_vars) {
 						Object.keys(alm_masonry_vars).forEach(function (key) {
-							// Loop object	to create key:prop			
+							// Loop object	to create key:prop
 							defaults[key] = alm_masonry_vars[key];
 						});
 					}
 
-					// Create SEO URL, if available
 					var data = container.querySelectorAll(selector);
-					data = (0, _seo.createMasonrySEOPages)(alm, Array.prototype.slice.call(data));
+
+					// Create Filters URL, if required
+					if (alm.addons.filters) {
+						data = (0, _filters.createMasonryFiltersPages)(alm, Array.prototype.slice.call(data));
+					}
+
+					// Create SEO URL, if required
+					if (alm.addons.seo) {
+						data = (0, _seo.createMasonrySEOPages)(alm, Array.prototype.slice.call(data));
+					}
 
 					// Init Masonry, delay to allow time for items to be added to the page
 					setTimeout(function () {
 						alm.msnry = new Masonry(container, defaults);
+
 						// Fade In
-						(0, _fadeIn2.default)(container.parentNode, speed);
+						(0, _fadeIn2.default)(container.parentNode, 125);
+
 						resolve(true);
-					}, 25);
+					}, 1);
 				});
 			}
 
 			// Standard / Append content
 			else {
-
 					// Loop all items and create array of node elements
 					var data = (0, _stripEmptyNodes2.default)((0, _almDomParser2.default)(html, 'text/html'));
 
 					if (data) {
-
 						// Append elements listing
 						(0, _almAppendChildren2.default)(alm.listing, data, 'masonry');
 
@@ -5222,22 +5787,27 @@ var almMasonry = function almMasonry(alm, init, filtering) {
 
 						// imagesLoaded & append
 						imagesLoaded(container, function () {
-
 							alm.msnry.appended(data);
 
 							// Set Focus
 							(0, _setFocus2.default)(alm, data, data.length, false);
 
+							// Create Filters URL, if required
+							if (alm.addons.filters) {
+								(0, _filters.createMasonryFiltersPage)(alm, data[0]);
+							}
+
 							// Create SEO URL, if required
-							(0, _seo.createMasonrySEOPage)(alm, data[0]);
+							if (alm.addons.seo) {
+								(0, _seo.createMasonrySEOPage)(alm, data[0]);
+							}
 
 							resolve(true);
 						});
 					}
 				}
 		} else {
-
-			// Reset		
+			// Reset
 			container.parentNode.style.opacity = 0;
 			almMasonry(alm, true, false);
 			resolve(true);
@@ -5522,7 +6092,7 @@ Object.defineProperty(exports, "__esModule", {
 /**
  * setFocus
  * Set user focus to improve accessibility after load events
- * 
+ *
  * @param {Object} alm
  * @param {HTMLElement} preloaded
  * @param {Number} total
@@ -5540,7 +6110,7 @@ var setFocus = function setFocus(alm) {
 	}
 
 	// WooCommerce Add-on
-	if (alm.addons.woocommerce) {
+	if (alm.addons.woocommerce || alm.addons.elementor) {
 		moveFocus(false, false, element, false, alm.isSafari);
 		return;
 	}
@@ -5558,7 +6128,7 @@ var setFocus = function setFocus(alm) {
 			moveFocus(alm.init, alm.addons.preloaded, element, is_filtering, alm.isSafari);
 		}
 	} else if (!alm.transition_container) {
-		// Table Layout, no transition container 
+		// Table Layout, no transition container
 		moveFocus(alm.init, alm.addons.preloaded, element[0], is_filtering, alm.isSafari);
 	}
 };
@@ -5567,7 +6137,7 @@ exports.default = setFocus;
 /**
  * moveFocus
  * Move user focus to alm-reveal div
- * 
+ *
  * @param {Boolean} init
  * @param {String} preloaded
  * @param {HTMLElement} element
@@ -5592,9 +6162,9 @@ var moveFocus = function moveFocus() {
 	// Check if element is an array.
 	// If `transition_container="false"`, `element` will be an array.
 	/*
- let is_array = Array.isArray(element);
- element = (is_array) ? element[0] : element;
- */
+   let is_array = Array.isArray(element);
+   element = (is_array) ? element[0] : element;
+   */
 
 	// Set tabIndex and style on element
 	element.setAttribute('tabIndex', '-1');
@@ -5607,7 +6177,7 @@ var moveFocus = function moveFocus() {
 	// Scroll Container
 	var scrollContainer = parent.dataset.scrollContainer;
 
-	// If scroll container, move it, not the window.	
+	// If scroll container, move it, not the window.
 	if (scrollContainer) {
 		var container = document.querySelector(scrollContainer);
 		if (container) {
@@ -5615,7 +6185,7 @@ var moveFocus = function moveFocus() {
 			//let top = container.scrollTop;
 			//element.focus();
 			//container.scrollLeft = left;
-			//container.scrollTop = top;	
+			//container.scrollTop = top;
 			setTimeout(function () {
 				element.focus({ preventScroll: true });
 			}, 50);
@@ -5624,7 +6194,6 @@ var moveFocus = function moveFocus() {
 
 	// Move window
 	else {
-
 			setTimeout(function () {
 				element.focus({ preventScroll: true });
 			}, 50);
@@ -16750,7 +17319,13 @@ return EvEmitter;
       if (args && args.preventScroll) {
         var evScrollableElements = calcScrollableElements(this);
         this.nativeFocus();
-        restoreScrollPosition(evScrollableElements);
+        if (typeof setTimeout === 'function') {
+          setTimeout(function () {
+            restoreScrollPosition(evScrollableElements);
+          }, 0);
+        } else {
+          restoreScrollPosition(evScrollableElements);          
+        }
       }
       else {
         this.nativeFocus();

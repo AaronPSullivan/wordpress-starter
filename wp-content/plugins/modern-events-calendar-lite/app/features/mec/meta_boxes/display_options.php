@@ -3,9 +3,11 @@
 defined('MECEXEC') or die();
 
 // Fix conflict between ACF and niceSelect
-include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+include_once(ABSPATH . 'wp-admin/includes/plugin.php');
+
 if(is_plugin_active('advanced-custom-fields/acf.php')) remove_action('admin_footer', 'acf_enqueue_uploader', 5);
 if(is_plugin_active('advanced-custom-fields-pro/acf.php')) remove_action('admin_footer', 'acf_enqueue_uploader', 5);
+if(is_plugin_active('wp-recipe-maker/wp-recipe-maker.php')) remove_action('admin_footer', array('WPRM_Modal', 'add_modal_content'));
 
 // Skin Options
 $skins = $this->main->get_skins();
@@ -16,7 +18,7 @@ $sk_options = get_post_meta($post->ID, 'sk-options', true);
 $events = $this->main->get_events();
 ?>
 <div class="mec-calendar-metabox">
-    
+
     <!-- SKIN OPTIONS -->
     <div class="mec-meta-box-fields" id="mec_meta_box_calendar_skin_options">
         <div class="mec-form-row">
@@ -29,9 +31,9 @@ $events = $this->main->get_events();
                 <?php endforeach; ?>
             </select>
         </div>
-        
+
         <div class="mec-skins-options-container">
-            
+
             <!-- List View -->
             <div class="mec-skin-options-container mec-util-hidden" id="mec_list_skin_options_container">
                 <?php $sk_options_list = isset($sk_options['list']) ? $sk_options['list'] : array(); ?>
@@ -43,7 +45,7 @@ $events = $this->main->get_events();
                         <option value="modern" <?php if(isset($sk_options_list['style']) and $sk_options_list['style'] == 'modern') echo 'selected="selected"'; ?>><?php _e('Modern', 'modern-events-calendar-lite'); ?></option>
                         <option value="standard" <?php if(isset($sk_options_list['style']) and $sk_options_list['style'] == 'standard') echo 'selected="selected"'; ?>><?php _e('Standard', 'modern-events-calendar-lite'); ?></option>
                         <option value="accordion" <?php if(isset($sk_options_list['style']) and $sk_options_list['style'] == 'accordion') echo 'selected="selected"'; ?>><?php _e('Accordion', 'modern-events-calendar-lite'); ?></option>
-                        <?php do_action('mec_list_fluent' , $sk_options_list['style'] ); ?>
+                        <?php do_action('mec_list_fluent', $sk_options_list['style'] ); ?>
                     </select>
                 </div>
                 <div class="mec-form-row">
@@ -51,6 +53,8 @@ $events = $this->main->get_events();
                     <select class="mec-col-4 wn-mec-select" name="mec[sk-options][list][start_date_type]" id="mec_skin_list_start_date_type" onchange="if(this.value === 'date') jQuery('#mec_skin_list_start_date_container').show(); else jQuery('#mec_skin_list_start_date_container').hide();">
                         <option value="today" <?php if(isset($sk_options_list['start_date_type']) and $sk_options_list['start_date_type'] == 'today') echo 'selected="selected"'; ?>><?php _e('Today', 'modern-events-calendar-lite'); ?></option>
                         <option value="tomorrow" <?php if(isset($sk_options_list['start_date_type']) and $sk_options_list['start_date_type'] == 'tomorrow') echo 'selected="selected"'; ?>><?php _e('Tomorrow', 'modern-events-calendar-lite'); ?></option>
+                        <option value="yesterday" <?php if(isset($sk_options_list['start_date_type']) and $sk_options_list['start_date_type'] == 'yesterday') echo 'selected="selected"'; ?>><?php _e('Yesterday', 'modern-events-calendar-lite'); ?></option>
+                        <option value="start_last_month" <?php if(isset($sk_options_list['start_date_type']) and $sk_options_list['start_date_type'] == 'start_last_month') echo 'selected="selected"'; ?>><?php _e('Start of Last Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_current_month" <?php if(isset($sk_options_list['start_date_type']) and $sk_options_list['start_date_type'] == 'start_current_month') echo 'selected="selected"'; ?>><?php _e('Start of Current Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_next_month" <?php if(isset($sk_options_list['start_date_type']) and $sk_options_list['start_date_type'] == 'start_next_month') echo 'selected="selected"'; ?>><?php _e('Start of Next Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="date" <?php if(isset($sk_options_list['start_date_type']) and $sk_options_list['start_date_type'] == 'date') echo 'selected="selected"'; ?>><?php _e('On a certain date', 'modern-events-calendar-lite'); ?></option>
@@ -81,7 +85,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default value is "M d Y"', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/list-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                     
+                    </span>
                 </div>
                 <div class="mec-form-row mec-skin-list-date-format-container <?php if(isset($sk_options_list['style']) and $sk_options_list['style'] != 'M d Y') echo 'mec-util-hidden'; ?>" id="mec_skin_list_date_format_minimal_container">
                     <label class="mec-col-4" for="mec_skin_list_minimal_date_format1"><?php _e('Date Formats', 'modern-events-calendar-lite'); ?></label>
@@ -94,7 +98,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default values are d, M and l', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/list-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row mec-skin-list-date-format-container <?php if(isset($sk_options_list['style']) and $sk_options_list['style'] != 'modern') echo 'mec-util-hidden'; ?>" id="mec_skin_list_date_format_modern_container">
                     <label class="mec-col-4" for="mec_skin_list_modern_date_format1"><?php _e('Date Formats', 'modern-events-calendar-lite'); ?></label>
@@ -107,7 +111,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default values are d, F and l', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/list-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row mec-skin-list-date-format-container <?php if(isset($sk_options_list['style']) and $sk_options_list['style'] != 'standard') echo 'mec-util-hidden'; ?>" id="mec_skin_list_date_format_standard_container">
                     <label class="mec-col-4" for="mec_skin_list_standard_date_format1"><?php _e('Date Formats', 'modern-events-calendar-lite'); ?></label>
@@ -118,7 +122,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default value is "M d"', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/list-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row mec-skin-list-date-format-container <?php if(isset($sk_options_list['style']) and $sk_options_list['style'] != 'accordion') echo 'mec-util-hidden'; ?>" id="mec_skin_list_date_format_accordion_container">
                     <label class="mec-col-4" for="mec_skin_list_accordion_date_format1"><?php _e('Date Formats', 'modern-events-calendar-lite'); ?></label>
@@ -130,7 +134,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('TDefault values are d and F', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/list-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row">
                     <label class="mec-col-4" for="mec_skin_list_limit"><?php _e('Limit', 'modern-events-calendar-lite'); ?></label>
@@ -204,6 +208,18 @@ $events = $this->main->get_events();
                     </div>
                 </div>
                 <!-- End Display Reason for Cancellation -->
+                <!-- Start Display Categories -->
+                <div class="mec-form-row mec-switcher" id="mec_skin_list_display_categories_wp">
+                    <div class="mec-col-4">
+                        <label for="mec_skin_list_display_categories"><?php _e('Display Categories', 'modern-events-calendar-lite'); ?></label>
+                    </div>
+                    <div class="mec-col-4">
+                        <input type="hidden" name="mec[sk-options][list][display_categories]" value="0" />
+                        <input type="checkbox" name="mec[sk-options][list][display_categories]" id="mec_skin_list_display_categories" value="1" <?php if(isset($sk_options_list['display_categories']) and trim($sk_options_list['display_categories'])) echo 'checked="checked"'; ?> />
+                        <label for="mec_skin_list_display_categories"></label>
+                    </div>
+                </div>
+                <!-- End Display Categories -->
                 <div class="mec-form-row mec-switcher">
 					<div class="mec-col-4">
 						<label for="mec_skin_list_map_on_top"><?php _e('Show Map on top', 'modern-events-calendar-lite'); ?></label>
@@ -242,6 +258,7 @@ $events = $this->main->get_events();
                     </div>
                 </div>
                 <!-- End Set Map Geolocation -->
+                <?php echo $this->booking_button_field('list', (isset($sk_options_list['booking_button']) ? $sk_options_list['booking_button'] : 0)); ?>
                 <div class="mec-sed-methode-container">
                     <?php echo $this->sed_method_field('list', (isset($sk_options_list['sed_method']) ? $sk_options_list['sed_method'] : 0), (isset($sk_options_list['image_popup']) ? $sk_options_list['image_popup'] : 0)); ?>
                 </div>
@@ -257,7 +274,7 @@ $events = $this->main->get_events();
                 </div>
                 <?php do_action('mec_skin_options_list_end', $sk_options_list); ?>
             </div>
-            
+
             <!-- Grid View -->
             <div class="mec-skin-options-container mec-util-hidden" id="mec_grid_skin_options_container">
                 <?php $sk_options_grid = isset($sk_options['grid']) ? $sk_options['grid'] : array(); ?>
@@ -271,7 +288,7 @@ $events = $this->main->get_events();
                         <option value="simple" <?php if(isset($sk_options_grid['style']) and $sk_options_grid['style'] == 'simple') echo 'selected="selected"'; ?>><?php _e('Simple', 'modern-events-calendar-lite'); ?></option>
                         <option value="colorful" <?php if(isset($sk_options_grid['style']) and $sk_options_grid['style'] == 'colorful') echo 'selected="selected"'; ?>><?php _e('Colorful', 'modern-events-calendar-lite'); ?></option>
                         <option value="novel" <?php if(isset($sk_options_grid['style']) and $sk_options_grid['style'] == 'novel') echo 'selected="selected"'; ?>><?php _e('Novel', 'modern-events-calendar-lite'); ?></option>
-                        <?php do_action('mec_grid_fluent' , $sk_options_grid['style'] ); ?>
+                        <?php do_action('mec_grid_fluent', $sk_options_grid['style'] ); ?>
                     </select>
                 </div>
                 <div class="mec-form-row">
@@ -279,6 +296,8 @@ $events = $this->main->get_events();
                     <select class="mec-col-4 wn-mec-select" name="mec[sk-options][grid][start_date_type]" id="mec_skin_grid_start_date_type" onchange="if(this.value === 'date') jQuery('#mec_skin_grid_start_date_container').show(); else jQuery('#mec_skin_grid_start_date_container').hide();">
                         <option value="today" <?php if(isset($sk_options_grid['start_date_type']) and $sk_options_grid['start_date_type'] == 'today') echo 'selected="selected"'; ?>><?php _e('Today', 'modern-events-calendar-lite'); ?></option>
                         <option value="tomorrow" <?php if(isset($sk_options_grid['start_date_type']) and $sk_options_grid['start_date_type'] == 'tomorrow') echo 'selected="selected"'; ?>><?php _e('Tomorrow', 'modern-events-calendar-lite'); ?></option>
+                        <option value="yesterday" <?php if(isset($sk_options_grid['start_date_type']) and $sk_options_grid['start_date_type'] == 'yesterday') echo 'selected="selected"'; ?>><?php _e('Yesterday', 'modern-events-calendar-lite'); ?></option>
+                        <option value="start_last_month" <?php if(isset($sk_options_grid['start_date_type']) and $sk_options_grid['start_date_type'] == 'start_last_month') echo 'selected="selected"'; ?>><?php _e('Start of Last Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_current_month" <?php if(isset($sk_options_grid['start_date_type']) and $sk_options_grid['start_date_type'] == 'start_current_month') echo 'selected="selected"'; ?>><?php _e('Start of Current Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_next_month" <?php if(isset($sk_options_grid['start_date_type']) and $sk_options_grid['start_date_type'] == 'start_next_month') echo 'selected="selected"'; ?>><?php _e('Start of Next Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="date" <?php if(isset($sk_options_grid['start_date_type']) and $sk_options_grid['start_date_type'] == 'date') echo 'selected="selected"'; ?>><?php _e('On a certain date', 'modern-events-calendar-lite'); ?></option>
@@ -309,7 +328,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default value is "d F Y', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/grid-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row mec-skin-grid-date-format-container <?php if(isset($sk_options_grid['style']) and $sk_options_grid['style'] != 'clean') echo 'mec-util-hidden'; ?>" id="mec_skin_grid_date_format_clean_container">
                     <label class="mec-col-4" for="mec_skin_grid_clean_date_format1"><?php _e('Date Formats', 'modern-events-calendar-lite'); ?></label>
@@ -321,7 +340,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default values are d and F', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/grid-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row mec-skin-grid-date-format-container <?php if(isset($sk_options_grid['style']) and $sk_options_grid['style'] != 'minimal') echo 'mec-util-hidden'; ?>" id="mec_skin_grid_date_format_minimal_container">
                     <label class="mec-col-4" for="mec_skin_grid_minimal_date_format1"><?php _e('Date Formats', 'modern-events-calendar-lite'); ?></label>
@@ -333,7 +352,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default values are d and M', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/grid-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row mec-skin-grid-date-format-container <?php if(isset($sk_options_grid['style']) and $sk_options_grid['style'] != 'modern') echo 'mec-util-hidden'; ?>" id="mec_skin_grid_date_format_modern_container">
                     <label class="mec-col-4" for="mec_skin_grid_modern_date_format1"><?php _e('Date Formats', 'modern-events-calendar-lite'); ?></label>
@@ -346,7 +365,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default values are d, F and l', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/grid-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row mec-skin-grid-date-format-container <?php if(isset($sk_options_grid['style']) and $sk_options_grid['style'] != 'simple') echo 'mec-util-hidden'; ?>" id="mec_skin_grid_date_format_simple_container">
                     <label class="mec-col-4" for="mec_skin_grid_simple_date_format1"><?php _e('Date Formats', 'modern-events-calendar-lite'); ?></label>
@@ -357,7 +376,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default value is "M d Y"', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/grid-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row mec-skin-grid-date-format-container <?php if(isset($sk_options_grid['style']) and $sk_options_grid['style'] != 'colorful') echo 'mec-util-hidden'; ?>" id="mec_skin_grid_date_format_colorful_container">
                     <label class="mec-col-4" for="mec_skin_grid_colorful_date_format1"><?php _e('Date Formats', 'modern-events-calendar-lite'); ?></label>
@@ -370,7 +389,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default values are d, F and l', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/grid-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row mec-skin-grid-date-format-container <?php if(isset($sk_options_grid['style']) and $sk_options_grid['style'] != 'novel') echo 'mec-util-hidden'; ?>" id="mec_skin_grid_date_format_novel_container">
                     <label class="mec-col-4" for="mec_skin_grid_novel_date_format1"><?php _e('Date Formats', 'modern-events-calendar-lite'); ?></label>
@@ -381,7 +400,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default value is "d F Y"', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/grid-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row">
                     <label class="mec-col-4" for="mec_skin_grid_count"><?php _e('Count in row', 'modern-events-calendar-lite'); ?></label>
@@ -456,6 +475,18 @@ $events = $this->main->get_events();
                     </div>
                 </div>
                 <!-- End Display Reason for Cancellation -->
+                <!-- Start Display Categories -->
+                <div class="mec-form-row mec-switcher" id="mec_skin_grid_display_categories_wp">
+                    <div class="mec-col-4">
+                        <label for="mec_skin_grid_display_categories"><?php _e('Display Categories', 'modern-events-calendar-lite'); ?></label>
+                    </div>
+                    <div class="mec-col-4">
+                        <input type="hidden" name="mec[sk-options][grid][display_categories]" value="0" />
+                        <input type="checkbox" name="mec[sk-options][grid][display_categories]" id="mec_skin_grid_display_categories" value="1" <?php if(isset($sk_options_grid['display_categories']) and trim($sk_options_grid['display_categories'])) echo 'checked="checked"'; ?> />
+                        <label for="mec_skin_grid_display_categories"></label>
+                    </div>
+                </div>
+                <!-- End Display Categories -->
                 <div class="mec-form-row mec-switcher">
 					<div class="mec-col-4">
 						<label for="mec_skin_grid_map_on_top"><?php _e('Show Map on top', 'modern-events-calendar-lite'); ?></label>
@@ -494,6 +525,7 @@ $events = $this->main->get_events();
                     </div>
                 </div>
                 <!-- End Set Map Geolocation -->
+                <?php echo $this->booking_button_field('grid', (isset($sk_options_grid['booking_button']) ? $sk_options_grid['booking_button'] : 0)); ?>
                 <?php echo $this->sed_method_field('grid', (isset($sk_options_grid['sed_method']) ? $sk_options_grid['sed_method'] : 0), (isset($sk_options_grid['image_popup']) ? $sk_options_grid['image_popup'] : 0)); ?>
                 <?php do_action('mec_skin_options_grid_end', $sk_options_grid); ?>
             </div>
@@ -510,7 +542,7 @@ $events = $this->main->get_events();
                     <label class="mec-col-4" for="mec_skin_agenda_style"><?php _e('Style', 'modern-events-calendar-lite'); ?></label>
                     <select class="mec-col-4 wn-mec-select" name="mec[sk-options][agenda][style]" id="mec_skin_agenda_style" onchange="mec_skin_style_changed('agenda', this.value);">
                         <option value="clean" <?php if(isset($sk_options_agenda['style']) and $sk_options_agenda['style'] == 'clean') echo 'selected="selected"'; ?>><?php _e('Clean', 'modern-events-calendar-lite'); ?></option>
-                        <?php do_action('mec_agenda_fluent' , $sk_options_agenda['style'] ); ?>
+                        <?php do_action('mec_agenda_fluent', $sk_options_agenda['style'] ); ?>
                     </select>
                 </div>
                 <div class="mec-form-row">
@@ -518,6 +550,8 @@ $events = $this->main->get_events();
                     <select class="mec-col-4 wn-mec-select" name="mec[sk-options][agenda][start_date_type]" id="mec_skin_agenda_start_date_type" onchange="if(this.value == 'date') jQuery('#mec_skin_agenda_start_date_container').show(); else jQuery('#mec_skin_agenda_start_date_container').hide();">
                         <option value="today" <?php if(isset($sk_options_agenda['start_date_type']) and $sk_options_agenda['start_date_type'] == 'today') echo 'selected="selected"'; ?>><?php _e('Today', 'modern-events-calendar-lite'); ?></option>
                         <option value="tomorrow" <?php if(isset($sk_options_agenda['start_date_type']) and $sk_options_agenda['start_date_type'] == 'tomorrow') echo 'selected="selected"'; ?>><?php _e('Tomorrow', 'modern-events-calendar-lite'); ?></option>
+                        <option value="yesterday" <?php if(isset($sk_options_agenda['start_date_type']) and $sk_options_agenda['start_date_type'] == 'yesterday') echo 'selected="selected"'; ?>><?php _e('Yesterday', 'modern-events-calendar-lite'); ?></option>
+                        <option value="start_last_month" <?php if(isset($sk_options_agenda['start_date_type']) and $sk_options_agenda['start_date_type'] == 'start_last_month') echo 'selected="selected"'; ?>><?php _e('Start of Last Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_current_month" <?php if(isset($sk_options_agenda['start_date_type']) and $sk_options_agenda['start_date_type'] == 'start_current_month') echo 'selected="selected"'; ?>><?php _e('Start of Current Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_next_month" <?php if(isset($sk_options_agenda['start_date_type']) and $sk_options_agenda['start_date_type'] == 'start_next_month') echo 'selected="selected"'; ?>><?php _e('Start of Next Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="date" <?php if(isset($sk_options_agenda['start_date_type']) and $sk_options_agenda['start_date_type'] == 'date') echo 'selected="selected"'; ?>><?php _e('On a certain date', 'modern-events-calendar-lite'); ?></option>
@@ -549,7 +583,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default values are l and F j', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/agenda-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row">
                     <label class="mec-col-4" for="mec_skin_agenda_limit"><?php _e('Limit', 'modern-events-calendar-lite'); ?></label>
@@ -611,10 +645,11 @@ $events = $this->main->get_events();
                         <label for="mec_skin_agenda_month_divider"></label>
                     </div>
                 </div>
+                <?php echo $this->booking_button_field('agenda', (isset($sk_options_agenda['booking_button']) ? $sk_options_agenda['booking_button'] : 0)); ?>
                 <?php echo $this->sed_method_field('agenda', (isset($sk_options_agenda['sed_method']) ? $sk_options_agenda['sed_method'] : 0), (isset($sk_options_agenda['image_popup']) ? $sk_options_agenda['image_popup'] : 0)); ?>
                 <?php do_action('mec_skin_options_agenda_end', $sk_options_agenda); ?>
             </div>
-            
+
             <!-- Full Calendar -->
             <div class="mec-skin-options-container mec-util-hidden" id="mec_full_calendar_skin_options_container">
                 <?php $sk_options_full_calendar = isset($sk_options['full_calendar']) ? $sk_options['full_calendar'] : array(); ?>
@@ -623,6 +658,7 @@ $events = $this->main->get_events();
                     <label class="mec-col-4" for="mec_skin_full_calendar_start_date_type"><?php _e('Start Date', 'modern-events-calendar-lite'); ?></label>
                     <select class="mec-col-4 wn-mec-select" name="mec[sk-options][full_calendar][start_date_type]" id="mec_skin_full_calendar_start_date_type" onchange="if(this.value == 'date') jQuery('#mec_skin_full_calendar_start_date_container').show(); else jQuery('#mec_skin_full_calendar_start_date_container').hide();">
                         <option value="today" <?php if(isset($sk_options_full_calendar['start_date_type']) and $sk_options_full_calendar['start_date_type'] == 'today') echo 'selected="selected"'; ?>><?php _e('Today', 'modern-events-calendar-lite'); ?></option>
+                        <option value="start_last_month" <?php if(isset($sk_options_full_calendar['start_date_type']) and $sk_options_full_calendar['start_date_type'] == 'start_last_month') echo 'selected="selected"'; ?>><?php _e('Start of Last Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_current_month" <?php if(isset($sk_options_full_calendar['start_date_type']) and $sk_options_full_calendar['start_date_type'] == 'start_current_month') echo 'selected="selected"'; ?>><?php _e('Start of Current Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_next_month" <?php if(isset($sk_options_full_calendar['start_date_type']) and $sk_options_full_calendar['start_date_type'] == 'start_next_month') echo 'selected="selected"'; ?>><?php _e('Start of Next Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="date" <?php if(isset($sk_options_full_calendar['start_date_type']) and $sk_options_full_calendar['start_date_type'] == 'date') echo 'selected="selected"'; ?>><?php _e('On a certain date', 'modern-events-calendar-lite'); ?></option>
@@ -668,7 +704,7 @@ $events = $this->main->get_events();
                     </div>
                     <?php
                         $date_format_list = 'd M';
-                            
+
                         if(isset($sk_options_full_calendar['date_format_list']) and trim($sk_options_full_calendar['date_format_list']) != '') $date_format_list = trim(trim($sk_options_full_calendar['date_format_list']));
                         elseif(isset($sk_options_list['standard_date_format1']) and trim($sk_options_list['standard_date_format1']) != '') $date_format_list = trim($sk_options_list['standard_date_format1']);
                     ?>
@@ -710,7 +746,7 @@ $events = $this->main->get_events();
                                     if(isset($sk_options_full_calendar['yearly']) and $sk_options_full_calendar['yearly']) echo 'checked="checked"';
                                 } else {
                                     echo '<input type="checkbox" name="mec[sk-options][full_calendar][yearly]" id="mec_skin_full_calendar_yearly" value="0"';
-                                }                       
+                                }
                             ?> />
                             <label for="mec_skin_full_calendar_yearly"></label>
                         </div>
@@ -802,6 +838,7 @@ $events = $this->main->get_events();
                     </div>
                 </div>
                 <!-- End Display Reason for Cancellation -->
+                <?php echo $this->booking_button_field('full_calendar', (isset($sk_options_full_calendar['booking_button']) ? $sk_options_full_calendar['booking_button'] : 0)); ?>
                 <?php echo $this->sed_method_field('full_calendar', (isset($sk_options_full_calendar['sed_method']) ? $sk_options_full_calendar['sed_method'] : 0), (isset($sk_options_full_calendar['image_popup']) ? $sk_options_full_calendar['image_popup'] : 0)); ?>
                 <?php do_action('mec_skin_options_full_calendar_end', $sk_options_full_calendar); ?>
             </div>
@@ -818,7 +855,7 @@ $events = $this->main->get_events();
                     <label class="mec-col-4" for="mec_skin_yearly_view_style"><?php _e('Style', 'modern-events-calendar-lite'); ?></label>
                     <select class="mec-col-4 wn-mec-select" name="mec[sk-options][yearly_view][style]" id="mec_skin_yearly_view_style" onchange="mec_skin_style_changed('yearly_view', this.value);">
                         <option value="modern" <?php if(isset($sk_options_yearly_view['style']) and $sk_options_yearly_view['style'] == 'modern') echo 'selected="selected"'; ?>><?php _e('Modern', 'modern-events-calendar-lite'); ?></option>
-                        <?php do_action('mec_yearly_fluent' , $sk_options_yearly_view['style'] ); ?>
+                        <?php do_action('mec_yearly_fluent', $sk_options_yearly_view['style'] ); ?>
                     </select>
                 </div>
                 <div class="mec-form-row">
@@ -826,6 +863,7 @@ $events = $this->main->get_events();
                     <select class="mec-col-4 wn-mec-select" name="mec[sk-options][yearly_view][start_date_type]" id="mec_skin_yearly_view_start_date_type" onchange="if(this.value == 'date') jQuery('#mec_skin_yearly_view_start_date_container').show(); else jQuery('#mec_skin_yearly_view_start_date_container').hide();">
                         <option value="start_current_year" <?php if(isset($sk_options_yearly_view['start_date_type']) and $sk_options_yearly_view['start_date_type'] == 'start_current_year') echo 'selected="selected"'; ?>><?php _e('Start of Current Year', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_next_year" <?php if(isset($sk_options_yearly_view['start_date_type']) and $sk_options_yearly_view['start_date_type'] == 'start_next_year') echo 'selected="selected"'; ?>><?php _e('Start of Next Year', 'modern-events-calendar-lite'); ?></option>
+                        <option value="start_last_year" <?php if(isset($sk_options_yearly_view['start_date_type']) and $sk_options_yearly_view['start_date_type'] == 'start_last_year') echo 'selected="selected"'; ?>><?php _e('Start of Last Year', 'modern-events-calendar-lite'); ?></option>
                         <option value="date" <?php if(isset($sk_options_yearly_view['start_date_type']) and $sk_options_yearly_view['start_date_type'] == 'date') echo 'selected="selected"'; ?>><?php _e('On a certain date', 'modern-events-calendar-lite'); ?></option>
                     </select>
                     <div class="mec-col-4 <?php if(!isset($sk_options_yearly_view['start_date_type']) or (isset($sk_options_yearly_view['start_date_type']) and $sk_options_yearly_view['start_date_type'] != 'date')) echo 'mec-util-hidden'; ?>" id="mec_skin_yearly_view_start_date_container">
@@ -842,7 +880,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default values are l and F j', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/yearly-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row mec-not-yearly_view-fluent">
                     <label class="mec-col-4" for="mec_skin_yearly_view_limit"><?php _e('Events per day', 'modern-events-calendar-lite'); ?></label>
@@ -895,6 +933,7 @@ $events = $this->main->get_events();
                 </div>
                 <!-- End Display Reason for Cancellation -->
                 <p class="description"><?php _e('For showing next/previous year navigation.', 'modern-events-calendar-lite'); ?></p>
+                <?php echo $this->booking_button_field('yearly_view', (isset($sk_options_yearly_view['booking_button']) ? $sk_options_yearly_view['booking_button'] : 0)); ?>
                 <?php echo $this->sed_method_field('yearly_view', (isset($sk_options_yearly_view['sed_method']) ? $sk_options_yearly_view['sed_method'] : 0), (isset($sk_options_yearly_view['image_popup']) ? $sk_options_yearly_view['image_popup'] : 0)); ?>
                 <?php do_action('mec_skin_options_yearly_view_end', $sk_options_yearly_view); ?>
             </div>
@@ -910,7 +949,7 @@ $events = $this->main->get_events();
                         <option value="modern" <?php if(isset($sk_options_monthly_view['style']) and $sk_options_monthly_view['style'] == 'modern') echo 'selected="selected"'; ?>><?php _e('Modern', 'modern-events-calendar-lite'); ?></option>
                         <option value="novel" <?php if(isset($sk_options_monthly_view['style']) and $sk_options_monthly_view['style'] == 'novel') echo 'selected="selected"'; ?>><?php _e('Novel', 'modern-events-calendar-lite'); ?></option>
                         <option value="simple" <?php if(isset($sk_options_monthly_view['style']) and $sk_options_monthly_view['style'] == 'simple') echo 'selected="selected"'; ?>><?php _e('Simple', 'modern-events-calendar-lite'); ?></option>
-                        <?php do_action('mec_monthly_fluent' , $sk_options_monthly_view['style'] ); ?>
+                        <?php do_action('mec_monthly_fluent', $sk_options_monthly_view['style'] ); ?>
                     </select>
                 </div>
                 <div class="mec-form-row">
@@ -918,6 +957,7 @@ $events = $this->main->get_events();
                     <select class="mec-col-4 wn-mec-select" name="mec[sk-options][monthly_view][start_date_type]" id="mec_skin_monthly_view_start_date_type" onchange="if(this.value == 'date') jQuery('#mec_skin_monthly_view_start_date_container').show(); else jQuery('#mec_skin_monthly_view_start_date_container').hide();">
                         <option value="start_current_month" <?php if(isset($sk_options_monthly_view['start_date_type']) and $sk_options_monthly_view['start_date_type'] == 'start_current_month') echo 'selected="selected"'; ?>><?php _e('Start of Current Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_next_month" <?php if(isset($sk_options_monthly_view['start_date_type']) and $sk_options_monthly_view['start_date_type'] == 'start_next_month') echo 'selected="selected"'; ?>><?php _e('Start of Next Month', 'modern-events-calendar-lite'); ?></option>
+                        <option value="start_last_month" <?php if(isset($sk_options_monthly_view['start_date_type']) and $sk_options_monthly_view['start_date_type'] == 'start_last_month') echo 'selected="selected"'; ?>><?php _e('Start of Last Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="date" <?php if(isset($sk_options_monthly_view['start_date_type']) and $sk_options_monthly_view['start_date_type'] == 'date') echo 'selected="selected"'; ?>><?php _e('On a certain date', 'modern-events-calendar-lite'); ?></option>
                     </select>
                     <div class="mec-col-4 <?php if(!isset($sk_options_monthly_view['start_date_type']) or (isset($sk_options_monthly_view['start_date_type']) and $sk_options_monthly_view['start_date_type'] != 'date')) echo 'mec-util-hidden'; ?>" id="mec_skin_monthly_view_start_date_container">
@@ -985,10 +1025,11 @@ $events = $this->main->get_events();
 					</div>
 				</div> -->
                 <p class="description"><?php _e('For showing next/previous month navigation.', 'modern-events-calendar-lite'); ?></p>
+                <?php echo $this->booking_button_field('monthly_view', (isset($sk_options_monthly_view['booking_button']) ? $sk_options_monthly_view['booking_button'] : 0)); ?>
                 <?php echo $this->sed_method_field('monthly_view', (isset($sk_options_monthly_view['sed_method']) ? $sk_options_monthly_view['sed_method'] : 0), (isset($sk_options_monthly_view['image_popup']) ? $sk_options_monthly_view['image_popup'] : 0)); ?>
                 <?php do_action('mec_skin_options_monthly_view_end', $sk_options_monthly_view); ?>
             </div>
-            
+
             <!-- Map Skin -->
             <div class="mec-skin-options-container mec-util-hidden" id="mec_map_skin_options_container">
 
@@ -1002,6 +1043,8 @@ $events = $this->main->get_events();
                     <select class="mec-col-4 wn-mec-select" name="mec[sk-options][map][start_date_type]" id="mec_skin_map_start_date_type" onchange="if(this.value == 'date') jQuery('#mec_skin_map_start_date_container').show(); else jQuery('#mec_skin_map_start_date_container').hide();">
                         <option value="today" <?php if(isset($sk_options_map['start_date_type']) and $sk_options_map['start_date_type'] == 'today') echo 'selected="selected"'; ?>><?php _e('Today', 'modern-events-calendar-lite'); ?></option>
                         <option value="tomorrow" <?php if(isset($sk_options_map['start_date_type']) and $sk_options_map['start_date_type'] == 'tomorrow') echo 'selected="selected"'; ?>><?php _e('Tomorrow', 'modern-events-calendar-lite'); ?></option>
+                        <option value="yesterday" <?php if(isset($sk_options_map['start_date_type']) and $sk_options_map['start_date_type'] == 'yesterday') echo 'selected="selected"'; ?>><?php _e('Yesterday', 'modern-events-calendar-lite'); ?></option>
+                        <option value="start_last_month" <?php if(isset($sk_options_map['start_date_type']) and $sk_options_map['start_date_type'] == 'start_last_month') echo 'selected="selected"'; ?>><?php _e('Start of Last Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_current_month" <?php if(isset($sk_options_map['start_date_type']) and $sk_options_map['start_date_type'] == 'start_current_month') echo 'selected="selected"'; ?>><?php _e('Start of Current Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_next_month" <?php if(isset($sk_options_map['start_date_type']) and $sk_options_map['start_date_type'] == 'start_next_month') echo 'selected="selected"'; ?>><?php _e('Start of Next Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="date" <?php if(isset($sk_options_map['start_date_type']) and $sk_options_map['start_date_type'] == 'date') echo 'selected="selected"'; ?>><?php _e('On a certain date', 'modern-events-calendar-lite'); ?></option>
@@ -1035,9 +1078,9 @@ $events = $this->main->get_events();
                     </div>
                 </div>
                 <p class="description"><?php _e('The geolocation feature works only in secure (https) websites.', 'modern-events-calendar-lite'); ?></p>
-                <?php do_action( 'mec_location_shortcode_filter', $post ); ?>
+                <?php do_action('mec_location_shortcode_filter', $post); ?>
             </div>
-            
+
             <!-- Daily View -->
             <div class="mec-skin-options-container mec-util-hidden" id="mec_daily_view_skin_options_container">
                 <?php $sk_options_daily_view = isset($sk_options['daily_view']) ? $sk_options['daily_view'] : array(); ?>
@@ -1047,11 +1090,13 @@ $events = $this->main->get_events();
                     <select class="mec-col-4 wn-mec-select" name="mec[sk-options][daily_view][start_date_type]" id="mec_skin_daily_view_start_date_type" onchange="if(this.value == 'date') jQuery('#mec_skin_daily_view_start_date_container').show(); else jQuery('#mec_skin_daily_view_start_date_container').hide();">
                         <option value="today" <?php if(isset($sk_options_daily_view['start_date_type']) and $sk_options_daily_view['start_date_type'] == 'today') echo 'selected="selected"'; ?>><?php _e('Today', 'modern-events-calendar-lite'); ?></option>
                         <option value="tomorrow" <?php if(isset($sk_options_daily_view['start_date_type']) and $sk_options_daily_view['start_date_type'] == 'tomorrow') echo 'selected="selected"'; ?>><?php _e('Tomorrow', 'modern-events-calendar-lite'); ?></option>
+                        <option value="yesterday" <?php if(isset($sk_options_daily_view['start_date_type']) and $sk_options_daily_view['start_date_type'] == 'yesterday') echo 'selected="selected"'; ?>><?php _e('Yesterday', 'modern-events-calendar-lite'); ?></option>
+                        <option value="start_last_month" <?php if(isset($sk_options_daily_view['start_date_type']) and $sk_options_daily_view['start_date_type'] == 'start_last_month') echo 'selected="selected"'; ?>><?php _e('Start of Last Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_current_month" <?php if(isset($sk_options_daily_view['start_date_type']) and $sk_options_daily_view['start_date_type'] == 'start_current_month') echo 'selected="selected"'; ?>><?php _e('Start of Current Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_next_month" <?php if(isset($sk_options_daily_view['start_date_type']) and $sk_options_daily_view['start_date_type'] == 'start_next_month') echo 'selected="selected"'; ?>><?php _e('Start of Next Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="date" <?php if(isset($sk_options_daily_view['start_date_type']) and $sk_options_daily_view['start_date_type'] == 'date') echo 'selected="selected"'; ?>><?php _e('On a certain date', 'modern-events-calendar-lite'); ?></option>
                     </select>
-                
+
                     <div class="mec-col-4 <?php if(!isset($sk_options_daily_view['start_date_type']) or (isset($sk_options_daily_view['start_date_type']) and $sk_options_daily_view['start_date_type'] != 'date')) echo 'mec-util-hidden'; ?>" id="mec_skin_daily_view_start_date_container">
                         <input class="mec_date_picker" type="text" name="mec[sk-options][daily_view][start_date]" id="mec_skin_daily_view_start_date" placeholder="<?php echo sprintf(__('eg. %s', 'modern-events-calendar-lite'), date('Y-n-d')); ?>" value="<?php if(isset($sk_options_daily_view['start_date'])) echo $sk_options_daily_view['start_date']; ?>" />
                     </div>
@@ -1106,11 +1151,24 @@ $events = $this->main->get_events();
                     </div>
                 </div>
                 <!-- End Display Reason for Cancellation -->
+                <!-- Start Display Categories -->
+                <div class="mec-form-row mec-switcher" id="mec_skin_daily_view_display_categories_wp">
+                    <div class="mec-col-4">
+                        <label for="mec_skin_daily_view_display_categories"><?php _e('Display Categories', 'modern-events-calendar-lite'); ?></label>
+                    </div>
+                    <div class="mec-col-4">
+                        <input type="hidden" name="mec[sk-options][daily_view][display_categories]" value="0" />
+                        <input type="checkbox" name="mec[sk-options][daily_view][display_categories]" id="mec_skin_daily_view_display_categories" value="1" <?php if(isset($sk_options_daily_view['display_categories']) and trim($sk_options_daily_view['display_categories'])) echo 'checked="checked"'; ?> />
+                        <label for="mec_skin_daily_view_display_categories"></label>
+                    </div>
+                </div>
+                <!-- End Display Categories -->
                 <p class="description"><?php _e('For showing next/previous month navigation.', 'modern-events-calendar-lite'); ?></p>
+                <?php echo $this->booking_button_field('daily_view', (isset($sk_options_daily_view['booking_button']) ? $sk_options_daily_view['booking_button'] : 0)); ?>
                 <?php echo $this->sed_method_field('daily_view', (isset($sk_options_daily_view['sed_method']) ? $sk_options_daily_view['sed_method'] : 0), (isset($sk_options_daily_view['image_popup']) ? $sk_options_daily_view['image_popup'] : 0)); ?>
                 <?php do_action('mec_skin_options_daily_view_end', $sk_options_daily_view); ?>
             </div>
-            
+
             <!-- Weekly View -->
             <div class="mec-skin-options-container mec-util-hidden" id="mec_weekly_view_skin_options_container">
                 <?php $sk_options_weekly_view = isset($sk_options['weekly_view']) ? $sk_options['weekly_view'] : array(); ?>
@@ -1120,6 +1178,8 @@ $events = $this->main->get_events();
                     <select class="mec-col-4 wn-mec-select" name="mec[sk-options][weekly_view][start_date_type]" id="mec_skin_weekly_view_start_date_type" onchange="if(this.value == 'date') jQuery('#mec_skin_weekly_view_start_date_container').show(); else jQuery('#mec_skin_weekly_view_start_date_container').hide();">
                         <option value="start_current_week" <?php if(isset($sk_options_weekly_view['start_date_type']) and $sk_options_weekly_view['start_date_type'] == 'start_current_week') echo 'selected="selected"'; ?>><?php _e('Current Week', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_next_week" <?php if(isset($sk_options_weekly_view['start_date_type']) and $sk_options_weekly_view['start_date_type'] == 'start_next_week') echo 'selected="selected"'; ?>><?php _e('Next Week', 'modern-events-calendar-lite'); ?></option>
+                        <option value="start_last_week" <?php if(isset($sk_options_weekly_view['start_date_type']) and $sk_options_weekly_view['start_date_type'] == 'start_last_week') echo 'selected="selected"'; ?>><?php _e('Last Week', 'modern-events-calendar-lite'); ?></option>
+                        <option value="start_last_month" <?php if(isset($sk_options_weekly_view['start_date_type']) and $sk_options_weekly_view['start_date_type'] == 'start_last_month') echo 'selected="selected"'; ?>><?php _e('Start of Last Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_current_month" <?php if(isset($sk_options_weekly_view['start_date_type']) and $sk_options_weekly_view['start_date_type'] == 'start_current_month') echo 'selected="selected"'; ?>><?php _e('Start of Current Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_next_month" <?php if(isset($sk_options_weekly_view['start_date_type']) and $sk_options_weekly_view['start_date_type'] == 'start_next_month') echo 'selected="selected"'; ?>><?php _e('Start of Next Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="date" <?php if(isset($sk_options_weekly_view['start_date_type']) and $sk_options_weekly_view['start_date_type'] == 'date') echo 'selected="selected"'; ?>><?php _e('On a certain date', 'modern-events-calendar-lite'); ?></option>
@@ -1168,6 +1228,18 @@ $events = $this->main->get_events();
                     </div>
                 </div>
                 <!-- End Display Reason for Cancellation -->
+                <!-- Start Display Categories -->
+                <div class="mec-form-row mec-switcher" id="mec_skin_weekly_view_display_categories_wp">
+                    <div class="mec-col-4">
+                        <label for="mec_skin_weekly_view_display_categories"><?php _e('Display Categories', 'modern-events-calendar-lite'); ?></label>
+                    </div>
+                    <div class="mec-col-4">
+                        <input type="hidden" name="mec[sk-options][weekly_view][display_categories]" value="0" />
+                        <input type="checkbox" name="mec[sk-options][weekly_view][display_categories]" id="mec_skin_weekly_view_display_categories" value="1" <?php if(isset($sk_options_weekly_view['display_categories']) and trim($sk_options_weekly_view['display_categories'])) echo 'checked="checked"'; ?> />
+                        <label for="mec_skin_weekly_view_display_categories"></label>
+                    </div>
+                </div>
+                <!-- End Display Categories -->
                 <div class="mec-form-row mec-switcher">
 					<div class="mec-col-4">
 						<label><?php _e('Next/Previous Buttons', 'modern-events-calendar-lite'); ?></label>
@@ -1179,6 +1251,7 @@ $events = $this->main->get_events();
 					</div>
                 </div>
                 <p class="description"><?php _e('For showing next/previous month navigation.', 'modern-events-calendar-lite'); ?></p>
+                <?php echo $this->booking_button_field('weekly_view', (isset($sk_options_weekly_view['booking_button']) ? $sk_options_weekly_view['booking_button'] : 0)); ?>
                 <?php echo $this->sed_method_field('weekly_view', (isset($sk_options_weekly_view['sed_method']) ? $sk_options_weekly_view['sed_method'] : 0), (isset($sk_options_weekly_view['image_popup']) ? $sk_options_weekly_view['image_popup'] : 0)); ?>
                 <?php do_action('mec_skin_options_weekly_view_end', $sk_options_weekly_view); ?>
             </div>
@@ -1197,7 +1270,7 @@ $events = $this->main->get_events();
                         <option value="modern" <?php if(isset($sk_options_timetable['style']) and $sk_options_timetable['style'] == 'modern') echo 'selected="selected"'; ?>><?php _e('Modern', 'modern-events-calendar-lite'); ?></option>
                         <option value="clean" <?php if(isset($sk_options_timetable['style']) and $sk_options_timetable['style'] == 'clean') echo 'selected="selected"'; ?>><?php _e('Clean', 'modern-events-calendar-lite'); ?></option>
                         <!-- <option value="classic" <?php if(isset($sk_options_timetable['style']) and $sk_options_timetable['style'] == 'classic') echo 'selected="selected"'; ?>><?php _e('Classic', 'modern-events-calendar-lite'); ?></option> -->
-                        <?php do_action('mec_timetable_fluent' , $sk_options_timetable['style'] ); ?>
+                        <?php do_action('mec_timetable_fluent', $sk_options_timetable['style'] ); ?>
                     </select>
                 </div>
                 <div class="mec-form-row">
@@ -1205,6 +1278,8 @@ $events = $this->main->get_events();
                     <select class="mec-col-4 wn-mec-select" name="mec[sk-options][timetable][start_date_type]" id="mec_skin_timetable_start_date_type" onchange="if(this.value == 'date') jQuery('#mec_skin_timetable_start_date_container').show(); else jQuery('#mec_skin_timetable_start_date_container').hide();">
                         <option value="start_current_week" <?php if(isset($sk_options_timetable['start_date_type']) and $sk_options_timetable['start_date_type'] == 'start_current_week') echo 'selected="selected"'; ?>><?php _e('Current Week', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_next_week" <?php if(isset($sk_options_timetable['start_date_type']) and $sk_options_timetable['start_date_type'] == 'start_next_week') echo 'selected="selected"'; ?>><?php _e('Next Week', 'modern-events-calendar-lite'); ?></option>
+                        <option value="start_last_week" <?php if(isset($sk_options_timetable['start_date_type']) and $sk_options_timetable['start_date_type'] == 'start_last_week') echo 'selected="selected"'; ?>><?php _e('Last Week', 'modern-events-calendar-lite'); ?></option>
+                        <option value="start_last_month" <?php if(isset($sk_options_timetable['start_date_type']) and $sk_options_timetable['start_date_type'] == 'start_last_month') echo 'selected="selected"'; ?>><?php _e('Start of Last Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_current_month" <?php if(isset($sk_options_timetable['start_date_type']) and $sk_options_timetable['start_date_type'] == 'start_current_month') echo 'selected="selected"'; ?>><?php _e('Start of Current Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_next_month" <?php if(isset($sk_options_timetable['start_date_type']) and $sk_options_timetable['start_date_type'] == 'start_next_month') echo 'selected="selected"'; ?>><?php _e('Start of Next Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="date" <?php if(isset($sk_options_timetable['start_date_type']) and $sk_options_timetable['start_date_type'] == 'date') echo 'selected="selected"'; ?>><?php _e('On a certain date', 'modern-events-calendar-lite'); ?></option>
@@ -1270,7 +1345,7 @@ $events = $this->main->get_events();
                             <option value="22" <?php if(isset($sk_options_timetable['end_time']) and $sk_options_timetable['end_time'] == '22') echo 'selected="selected"'; ?>><?php _e('22:00', 'modern-events-calendar-lite'); ?></option>
                             <option value="23" <?php if(isset($sk_options_timetable['end_time']) and $sk_options_timetable['end_time'] == '23') echo 'selected="selected"'; ?>><?php _e('23:00', 'modern-events-calendar-lite'); ?></option>
                             <option value="24" <?php if(isset($sk_options_timetable['end_time']) and $sk_options_timetable['end_time'] == '24') echo 'selected="selected"'; ?>><?php _e('24:00', 'modern-events-calendar-lite'); ?></option>
-                        </select>                                        
+                        </select>
                     </div>
                 </div>
                 <!-- Start LocalTime -->
@@ -1323,6 +1398,7 @@ $events = $this->main->get_events();
                     <p class="description"><?php _e('For showing next/previous month navigation.', 'modern-events-calendar-lite'); ?></p>
                 </div>
                 <div class="mec-timetable-sed-methode-container">
+                    <?php echo $this->booking_button_field('timetable', (isset($sk_options_timetable['booking_button']) ? $sk_options_timetable['booking_button'] : 0)); ?>
                     <?php echo $this->sed_method_field('timetable', (isset($sk_options_timetable['sed_method']) ? $sk_options_timetable['sed_method'] : 0), (isset($sk_options_timetable['image_popup']) ? $sk_options_timetable['image_popup'] : 0)); ?>
                 </div>
                 <?php do_action('mec_skin_options_timetable_end', $sk_options_timetable); ?>
@@ -1331,7 +1407,7 @@ $events = $this->main->get_events();
             <!-- Masonry View -->
             <div class="mec-skin-options-container mec-util-hidden" id="mec_masonry_skin_options_container">
                 <?php if(!$this->main->getPRO()): ?>
-                <div class="info-msg"><?php echo sprintf(__("%s is required to use synchronization feature.", 'modern-events-calendar-lite'), '<a href="'.$this->main->get_pro_link().'" target="_blank">'.__('Pro version of Modern Events Calendar', 'modern-events-calendar-lite').'</a>'); ?></div>
+                <div class="info-msg"><?php echo sprintf(__("%s is required to use this skin.", 'modern-events-calendar-lite'), '<a href="'.$this->main->get_pro_link().'" target="_blank">'.__('Pro version of Modern Events Calendar', 'modern-events-calendar-lite').'</a>'); ?></div>
                 <?php endif; ?>
 
                 <?php $sk_options_masonry = isset($sk_options['masonry']) ? $sk_options['masonry'] : array(); ?>
@@ -1341,6 +1417,8 @@ $events = $this->main->get_events();
                     <select class="mec-col-4 wn-mec-select" name="mec[sk-options][masonry][start_date_type]" id="mec_skin_masonry_start_date_type" onchange="if(this.value === 'date') jQuery('#mec_skin_masonry_start_date_container').show(); else jQuery('#mec_skin_masonry_start_date_container').hide();">
                         <option value="today" <?php if(isset($sk_options_masonry['start_date_type']) and $sk_options_masonry['start_date_type'] == 'today') echo 'selected="selected"'; ?>><?php _e('Today', 'modern-events-calendar-lite'); ?></option>
                         <option value="tomorrow" <?php if(isset($sk_options_masonry['start_date_type']) and $sk_options_masonry['start_date_type'] == 'tomorrow') echo 'selected="selected"'; ?>><?php _e('Tomorrow', 'modern-events-calendar-lite'); ?></option>
+                        <option value="yesterday" <?php if(isset($sk_options_masonry['start_date_type']) and $sk_options_masonry['start_date_type'] == 'yesterday') echo 'selected="selected"'; ?>><?php _e('Yesterday', 'modern-events-calendar-lite'); ?></option>
+                        <option value="start_last_month" <?php if(isset($sk_options_masonry['start_date_type']) and $sk_options_masonry['start_date_type'] == 'start_last_month') echo 'selected="selected"'; ?>><?php _e('Start of Last Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_current_month" <?php if(isset($sk_options_masonry['start_date_type']) and $sk_options_masonry['start_date_type'] == 'start_current_month') echo 'selected="selected"'; ?>><?php _e('Start of Current Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_next_month" <?php if(isset($sk_options_masonry['start_date_type']) and $sk_options_masonry['start_date_type'] == 'start_next_month') echo 'selected="selected"'; ?>><?php _e('Start of Next Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="date" <?php if(isset($sk_options_masonry['start_date_type']) and $sk_options_masonry['start_date_type'] == 'date') echo 'selected="selected"'; ?>><?php _e('On a certain date', 'modern-events-calendar-lite'); ?></option>
@@ -1372,7 +1450,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default values are j and F', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/masonry-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row">
                     <label class="mec-col-4" for="mec_skin_masonry_limit"><?php _e('Limit', 'modern-events-calendar-lite'); ?></label>
@@ -1424,6 +1502,17 @@ $events = $this->main->get_events();
                     </div>
                 </div>
                 <!-- End Display Reason for Cancellation -->
+                <!-- Start Display Categories -->
+                <div class="mec-form-row mec-switcher" id="mec_skin_masonry_display_categories_wp">
+                    <div class="mec-col-4">
+                        <label for="mec_skin_masonry_display_categories"><?php _e('Display Categories', 'modern-events-calendar-lite'); ?></label>
+                    </div>
+                    <div class="mec-col-4">
+                        <input type="hidden" name="mec[sk-options][masonry][display_categories]" value="0" />
+                        <input type="checkbox" name="mec[sk-options][masonry][display_categories]" id="mec_skin_masonry_display_categories" value="1" <?php if(isset($sk_options_masonry['display_categories']) and trim($sk_options_masonry['display_categories'])) echo 'checked="checked"'; ?> />
+                        <label for="mec_skin_masonry_display_categories"></label>
+                    </div>
+                </div>
                 <div class="mec-form-row mec-switcher">
                     <div class="mec-col-4">
                         <label><?php _e('Fit to row', 'modern-events-calendar-lite'); ?></label>
@@ -1456,10 +1545,11 @@ $events = $this->main->get_events();
                         <label for="mec_skin_masonry_load_more_button"></label>
                     </div>
                 </div>
+                <?php echo $this->booking_button_field('masonry', (isset($sk_options_masonry['booking_button']) ? $sk_options_masonry['booking_button'] : 0)); ?>
                 <?php echo $this->sed_method_field('masonry', (isset($sk_options_masonry['sed_method']) ? $sk_options_masonry['sed_method'] : 0), (isset($sk_options_masonry['image_popup']) ? $sk_options_masonry['image_popup'] : 0)); ?>
                 <?php do_action('mec_skin_options_masonry_end', $sk_options_masonry); ?>
             </div>
-            
+
             <!-- Cover -->
             <div class="mec-skin-options-container mec-util-hidden" id="mec_cover_skin_options_container">
                 <?php $sk_options_cover = isset($sk_options['cover']) ? $sk_options['cover'] : array(); ?>
@@ -1483,7 +1573,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default values are d, M and Y', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/cover-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row mec-skin-cover-date-format-container <?php if(isset($sk_options_cover['style']) and $sk_options_cover['style'] != 'classic') echo 'mec-util-hidden'; ?>" id="mec_skin_cover_date_format_classic_container">
                     <label class="mec-col-4" for="mec_skin_cover_date_format_classic1"><?php _e('Date Formats', 'modern-events-calendar-lite'); ?></label>
@@ -1495,7 +1585,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default values are "F d" and l', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/cover-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row mec-skin-cover-date-format-container <?php if(isset($sk_options_cover['style']) and $sk_options_cover['style'] != 'modern') echo 'mec-util-hidden'; ?>" id="mec_skin_cover_date_format_modern_container">
                     <label class="mec-col-4" for="mec_skin_cover_date_format_modern1"><?php _e('Date Formats', 'modern-events-calendar-lite'); ?></label>
@@ -1506,7 +1596,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default value is "l, F d Y"', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/cover-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row">
                     <label class="mec-col-4" for="mec_skin_cover_event_id"><?php _e('Event', 'modern-events-calendar-lite'); ?></label>
@@ -1554,7 +1644,7 @@ $events = $this->main->get_events();
                 <!-- End Display Reason for Cancellation -->
                 <?php do_action('mec_skin_options_cover_end', $sk_options_cover); ?>
             </div>
-            
+
             <!-- CountDown -->
             <div class="mec-skin-options-container mec-util-hidden" id="mec_countdown_skin_options_container">
                 <?php $sk_options_countdown = isset($sk_options['countdown']) ? $sk_options['countdown'] : array(); ?>
@@ -1564,7 +1654,7 @@ $events = $this->main->get_events();
 						<option value="style1" <?php if(isset($sk_options_countdown['style']) and $sk_options_countdown['style'] == 'style1') echo 'selected="selected"'; ?>><?php _e('Style 1', 'modern-events-calendar-lite'); ?></option>
                         <option value="style2" <?php if(isset($sk_options_countdown['style']) and $sk_options_countdown['style'] == 'style2') echo 'selected="selected"'; ?>><?php _e('Style 2', 'modern-events-calendar-lite'); ?></option>
                         <option value="style3" <?php if(isset($sk_options_countdown['style']) and $sk_options_countdown['style'] == 'style3') echo 'selected="selected"'; ?>><?php _e('Style 3', 'modern-events-calendar-lite'); ?></option>
-                        <?php do_action('mec_countdown_fluent' , $sk_options_countdown['style'] ); ?>
+                        <?php do_action('mec_countdown_fluent', $sk_options_countdown['style'] ); ?>
                     </select>
                 </div>
                 <div class="mec-form-row mec-skin-countdown-date-format-container <?php if(isset($sk_options_countdown['style']) and $sk_options_countdown['style'] != 'clean') echo 'mec-util-hidden'; ?>" id="mec_skin_countdown_date_format_style1_container">
@@ -1576,7 +1666,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default value is "j F Y"', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/countdown-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row mec-skin-countdown-date-format-container <?php if(isset($sk_options_countdown['style']) and $sk_options_countdown['style'] != 'style2') echo 'mec-util-hidden'; ?>" id="mec_skin_countdown_date_format_style2_container">
                     <label class="mec-col-4" for="mec_skin_countdown_date_format_style21"><?php _e('Date Formats', 'modern-events-calendar-lite'); ?></label>
@@ -1587,7 +1677,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default value is "j F Y"', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/countdown-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row mec-skin-countdown-date-format-container <?php if(isset($sk_options_countdown['style']) and $sk_options_countdown['style'] != 'style3') echo 'mec-util-hidden'; ?>" id="mec_skin_countdown_date_format_style3_container">
                     <label class="mec-col-4" for="mec_skin_countdown_date_format_style31"><?php _e('Date Formats', 'modern-events-calendar-lite'); ?></label>
@@ -1600,7 +1690,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default values are j, F and Y', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/countdown-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row">
                     <label class="mec-col-4" for="mec_skin_countdown_event_id"><?php _e('Event', 'modern-events-calendar-lite'); ?></label>
@@ -1733,7 +1823,7 @@ $events = $this->main->get_events();
                         <option value="type2" <?php if(isset($sk_options_carousel['style']) and $sk_options_carousel['style'] == 'type2') echo 'selected="selected"'; ?>><?php _e('Type 2', 'modern-events-calendar-lite'); ?></option>
                         <option value="type3" <?php if(isset($sk_options_carousel['style']) and $sk_options_carousel['style'] == 'type3') echo 'selected="selected"'; ?>><?php _e('Type 3', 'modern-events-calendar-lite'); ?></option>
                         <option value="type4" <?php if(isset($sk_options_carousel['style']) and $sk_options_carousel['style'] == 'type4') echo 'selected="selected"'; ?>><?php _e('Type 4', 'modern-events-calendar-lite'); ?></option>
-                        <?php do_action('mec_carousel_fluent' , $sk_options_carousel['style'] ); ?>
+                        <?php do_action('mec_carousel_fluent', $sk_options_carousel['style'] ); ?>
                     </select>
                 </div>
                 <div class="mec-form-row">
@@ -1741,6 +1831,8 @@ $events = $this->main->get_events();
                     <select class="mec-col-4 wn-mec-select" name="mec[sk-options][carousel][start_date_type]" id="mec_skin_carousel_start_date_type" onchange="if(this.value == 'date') jQuery('#mec_skin_carousel_start_date_container').show(); else jQuery('#mec_skin_carousel_start_date_container').hide();">
                         <option value="today" <?php if(isset($sk_options_carousel['start_date_type']) and $sk_options_carousel['start_date_type'] == 'today') echo 'selected="selected"'; ?>><?php _e('Today', 'modern-events-calendar-lite'); ?></option>
                         <option value="tomorrow" <?php if(isset($sk_options_carousel['start_date_type']) and $sk_options_carousel['start_date_type'] == 'tomorrow') echo 'selected="selected"'; ?>><?php _e('Tomorrow', 'modern-events-calendar-lite'); ?></option>
+                        <option value="yesterday" <?php if(isset($sk_options_carousel['start_date_type']) and $sk_options_carousel['start_date_type'] == 'yesterday') echo 'selected="selected"'; ?>><?php _e('Yesterday', 'modern-events-calendar-lite'); ?></option>
+                        <option value="start_last_month" <?php if(isset($sk_options_carousel['start_date_type']) and $sk_options_carousel['start_date_type'] == 'start_last_month') echo 'selected="selected"'; ?>><?php _e('Start of Last Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_current_month" <?php if(isset($sk_options_carousel['start_date_type']) and $sk_options_carousel['start_date_type'] == 'start_current_month') echo 'selected="selected"'; ?>><?php _e('Start of Current Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_next_month" <?php if(isset($sk_options_carousel['start_date_type']) and $sk_options_carousel['start_date_type'] == 'start_next_month') echo 'selected="selected"'; ?>><?php _e('Start of Next Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="date" <?php if(isset($sk_options_carousel['start_date_type']) and $sk_options_carousel['start_date_type'] == 'date') echo 'selected="selected"'; ?>><?php _e('On a certain date', 'modern-events-calendar-lite'); ?></option>
@@ -1760,7 +1852,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default values are d, F and Y', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/carousel-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row mec-skin-carousel-date-format-container <?php if(isset($sk_options_carousel['style']) and $sk_options_carousel['style'] != 'type2') echo 'mec-util-hidden'; ?>" id="mec_skin_carousel_date_format_type2_container">
                     <label class="mec-col-4" for="mec_skin_carousel_type2_date_format1"><?php _e('Date Formats', 'modern-events-calendar-lite'); ?></label>
@@ -1771,7 +1863,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default value is "M d, Y"', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/carousel-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row mec-skin-carousel-date-format-container <?php if(isset($sk_options_carousel['style']) and $sk_options_carousel['style'] != 'type3') echo 'mec-util-hidden'; ?>" id="mec_skin_carousel_date_format_type3_container">
                     <label class="mec-col-4" for="mec_skin_carousel_type3_date_format1"><?php _e('Date Formats', 'modern-events-calendar-lite'); ?></label>
@@ -1782,7 +1874,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default value is "M d, Y"', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/carousel-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row">
                     <label class="mec-col-4" for="mec_skin_carousel_count"><?php _e('Count in row', 'modern-events-calendar-lite'); ?></label>
@@ -1801,6 +1893,7 @@ $events = $this->main->get_events();
                     <label class="mec-col-4" for="mec_skin_carousel_autoplay"><?php _e('Auto Play Time', 'modern-events-calendar-lite'); ?></label>
                     <input class="mec-col-4" type="number" name="mec[sk-options][carousel][autoplay]" id="mec_skin_carousel_autoplay" placeholder="<?php _e('eg. 3000 default is 3 second', 'modern-events-calendar-lite'); ?>" value="<?php if(isset($sk_options_carousel['autoplay']) && $sk_options_carousel['autoplay'] != '' ) echo $sk_options_carousel['autoplay']; ?>" />
                 </div>
+                <?php echo $this->booking_button_field('carousel', (isset($sk_options_carousel['booking_button']) ? $sk_options_carousel['booking_button'] : 0)); ?>
                 <div class="mec-sed-methode-container">
                     <?php echo $this->sed_method_field('carousel', (isset($sk_options_carousel['sed_method']) ? $sk_options_carousel['sed_method'] : 0), (isset($sk_options_carousel['image_popup']) ? $sk_options_carousel['image_popup'] : 0)); ?>
                 </div>
@@ -1824,6 +1917,18 @@ $events = $this->main->get_events();
                     </div>
                 </div>
                 <!-- End LocalTime -->
+                <!-- Start Include Events Times -->
+                <div class="mec-form-row mec-switcher mec-include-events-times">
+                    <div class="mec-col-4">
+                        <label for="mec_skin_carousel_include_events_times"><?php _e('Include Events Times', 'modern-events-calendar-lite'); ?></label>
+                    </div>
+                    <div class="mec-col-4">
+                        <input type="hidden" name="mec[sk-options][carousel][include_events_times]" value="0" />
+                        <input type="checkbox" name="mec[sk-options][carousel][include_events_times]" id="mec_skin_carousel_include_events_times" value="1" <?php if(isset($sk_options_carousel['include_events_times']) and trim($sk_options_carousel['include_events_times'])) echo 'checked="checked"'; ?> />
+                        <label for="mec_skin_carousel_include_events_times"></label>
+                    </div>
+                </div>
+                <!-- End Include Events Times -->
                 <!-- Start Display Label -->
                 <div class="mec-form-row mec-switcher mec-include-events-local-times" id="mec_skin_carousel_display_normal_label">
 					<div class="mec-col-4">
@@ -1850,7 +1955,7 @@ $events = $this->main->get_events();
                 <!-- End Display Reason for Cancellation -->
                 <?php do_action('mec_skin_options_carousel_end', $sk_options_carousel); ?>
             </div>
-            
+
             <!-- Slider View -->
             <div class="mec-skin-options-container mec-util-hidden" id="mec_slider_skin_options_container">
                 <?php $sk_options_slider = isset($sk_options['slider']) ? $sk_options['slider'] : array(); ?>
@@ -1862,7 +1967,7 @@ $events = $this->main->get_events();
                         <option value="t3" <?php if(isset($sk_options_slider['style']) and $sk_options_slider['style'] == 't3') echo 'selected="selected"'; ?>><?php _e('Type 3', 'modern-events-calendar-lite'); ?></option>
                         <option value="t4" <?php if(isset($sk_options_slider['style']) and $sk_options_slider['style'] == 't4') echo 'selected="selected"'; ?>><?php _e('Type 4', 'modern-events-calendar-lite'); ?></option>
                         <option value="t5" <?php if(isset($sk_options_slider['style']) and $sk_options_slider['style'] == 't5') echo 'selected="selected"'; ?>><?php _e('Type 5', 'modern-events-calendar-lite'); ?></option>
-                        <?php do_action('mec_slider_fluent' , $sk_options_slider['style'] ); ?>
+                        <?php do_action('mec_slider_fluent', $sk_options_slider['style'] ); ?>
                     </select>
                 </div>
                 <div class="mec-form-row">
@@ -1870,6 +1975,8 @@ $events = $this->main->get_events();
                     <select class="mec-col-4 wn-mec-select" name="mec[sk-options][slider][start_date_type]" id="mec_skin_slider_start_date_type" onchange="if(this.value == 'date') jQuery('#mec_skin_slider_start_date_container').show(); else jQuery('#mec_skin_slider_start_date_container').hide();">
                         <option value="today" <?php if(isset($sk_options_slider['start_date_type']) and $sk_options_slider['start_date_type'] == 'today') echo 'selected="selected"'; ?>><?php _e('Today', 'modern-events-calendar-lite'); ?></option>
                         <option value="tomorrow" <?php if(isset($sk_options_slider['start_date_type']) and $sk_options_slider['start_date_type'] == 'tomorrow') echo 'selected="selected"'; ?>><?php _e('Tomorrow', 'modern-events-calendar-lite'); ?></option>
+                        <option value="yesterday" <?php if(isset($sk_options_slider['start_date_type']) and $sk_options_slider['start_date_type'] == 'yesterday') echo 'selected="selected"'; ?>><?php _e('Yesterday', 'modern-events-calendar-lite'); ?></option>
+                        <option value="start_last_month" <?php if(isset($sk_options_slider['start_date_type']) and $sk_options_slider['start_date_type'] == 'start_last_month') echo 'selected="selected"'; ?>><?php _e('Start of Last Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_current_month" <?php if(isset($sk_options_slider['start_date_type']) and $sk_options_slider['start_date_type'] == 'start_current_month') echo 'selected="selected"'; ?>><?php _e('Start of Current Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_next_month" <?php if(isset($sk_options_slider['start_date_type']) and $sk_options_slider['start_date_type'] == 'start_next_month') echo 'selected="selected"'; ?>><?php _e('Start of Next Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="date" <?php if(isset($sk_options_slider['start_date_type']) and $sk_options_slider['start_date_type'] == 'date') echo 'selected="selected"'; ?>><?php _e('On a certain date', 'modern-events-calendar-lite'); ?></option>
@@ -1877,7 +1984,7 @@ $events = $this->main->get_events();
                     <div class="mec-col-4 <?php if(!isset($sk_options_slider['start_date_type']) or (isset($sk_options_slider['start_date_type']) and $sk_options_slider['start_date_type'] != 'date')) echo 'mec-util-hidden'; ?>" id="mec_skin_slider_start_date_container">
                         <input class="mec_date_picker" type="text" name="mec[sk-options][slider][start_date]" id="mec_skin_slider_start_date" placeholder="<?php echo sprintf(__('eg. %s', 'modern-events-calendar-lite'), date('Y-n-d')); ?>" value="<?php if(isset($sk_options_slider['start_date'])) echo $sk_options_slider['start_date']; ?>" />
                     </div>
-                </div>                
+                </div>
                 <div class="mec-form-row mec-skin-slider-date-format-container <?php if(isset($sk_options_slider['style']) and $sk_options_slider['style'] != 't1') echo 'mec-util-hidden'; ?>" id="mec_skin_slider_date_format_t1_container">
                     <label class="mec-col-4" for="mec_skin_slider_type1_date_format1"><?php _e('Date Formats', 'modern-events-calendar-lite'); ?></label>
                     <input type="text" class="mec-col-2" name="mec[sk-options][slider][type1_date_format1]" id="mec_skin_slider_type1_date_format1" value="<?php echo ((isset($sk_options_slider['type1_date_format1']) and trim($sk_options_slider['type1_date_format1']) != '') ? $sk_options_slider['type1_date_format1'] : 'd'); ?>" />
@@ -1889,7 +1996,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default values are d, F and l', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/slider-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row mec-skin-slider-date-format-container <?php if(isset($sk_options_slider['style']) and $sk_options_slider['style'] != 't2') echo 'mec-util-hidden'; ?>" id="mec_skin_slider_date_format_t2_container">
                     <label class="mec-col-4" for="mec_skin_slider_type2_date_format1"><?php _e('Date Formats', 'modern-events-calendar-lite'); ?></label>
@@ -1902,7 +2009,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default values are d, F and l', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/slider-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row mec-skin-slider-date-format-container <?php if(isset($sk_options_slider['style']) and $sk_options_slider['style'] != 't3') echo 'mec-util-hidden'; ?>" id="mec_skin_slider_date_format_t3_container">
                     <label class="mec-col-4" for="mec_skin_slider_type3_date_format1"><?php _e('Date Formats', 'modern-events-calendar-lite'); ?></label>
@@ -1915,7 +2022,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default values are d, F and l', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/slider-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row mec-skin-slider-date-format-container <?php if(isset($sk_options_slider['style']) and $sk_options_slider['style'] != 't4') echo 'mec-util-hidden'; ?>" id="mec_skin_slider_date_format_t4_container">
                     <label class="mec-col-4" for="mec_skin_slider_type4_date_format1"><?php _e('Date Formats', 'modern-events-calendar-lite'); ?></label>
@@ -1928,8 +2035,8 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default values are d, F and l', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/slider-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
-                </div>                
+                    </span>
+                </div>
                 <div class="mec-form-row mec-skin-slider-date-format-container <?php if(isset($sk_options_slider['style']) and $sk_options_slider['style'] != 't5') echo 'mec-util-hidden'; ?>" id="mec_skin_slider_date_format_t5_container">
                     <label class="mec-col-4" for="mec_skin_slider_type5_date_format1"><?php _e('Date Formats', 'modern-events-calendar-lite'); ?></label>
                     <input type="text" class="mec-col-2" name="mec[sk-options][slider][type5_date_format1]" id="mec_skin_slider_type5_date_format1" value="<?php echo ((isset($sk_options_slider['type5_date_format1']) and trim($sk_options_slider['type5_date_format1']) != '') ? $sk_options_slider['type5_date_format1'] : 'd'); ?>" />
@@ -1941,7 +2048,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default values are d, F and l', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/slider-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row">
                     <label class="mec-col-4" for="mec_skin_slider_limit"><?php _e('Limit', 'modern-events-calendar-lite'); ?></label>
@@ -1999,6 +2106,8 @@ $events = $this->main->get_events();
                     <select class="mec-col-4 wn-mec-select" name="mec[sk-options][timeline][start_date_type]" id="mec_skin_timeline_start_date_type" onchange="if(this.value == 'date') jQuery('#mec_skin_timeline_start_date_container').show(); else jQuery('#mec_skin_timeline_start_date_container').hide();">
                         <option value="today" <?php if(isset($sk_options_timeline['start_date_type']) and $sk_options_timeline['start_date_type'] == 'today') echo 'selected="selected"'; ?>><?php _e('Today', 'modern-events-calendar-lite'); ?></option>
                         <option value="tomorrow" <?php if(isset($sk_options_timeline['start_date_type']) and $sk_options_timeline['start_date_type'] == 'tomorrow') echo 'selected="selected"'; ?>><?php _e('Tomorrow', 'modern-events-calendar-lite'); ?></option>
+                        <option value="yesterday" <?php if(isset($sk_options_timeline['start_date_type']) and $sk_options_timeline['start_date_type'] == 'yesterday') echo 'selected="selected"'; ?>><?php _e('Yesterday', 'modern-events-calendar-lite'); ?></option>
+                        <option value="start_last_month" <?php if(isset($sk_options_timeline['start_date_type']) and $sk_options_timeline['start_date_type'] == 'start_last_month') echo 'selected="selected"'; ?>><?php _e('Start of Last Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_current_month" <?php if(isset($sk_options_timeline['start_date_type']) and $sk_options_timeline['start_date_type'] == 'start_current_month') echo 'selected="selected"'; ?>><?php _e('Start of Current Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_next_month" <?php if(isset($sk_options_timeline['start_date_type']) and $sk_options_timeline['start_date_type'] == 'start_next_month') echo 'selected="selected"'; ?>><?php _e('Start of Next Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="date" <?php if(isset($sk_options_timeline['start_date_type']) and $sk_options_timeline['start_date_type'] == 'date') echo 'selected="selected"'; ?>><?php _e('On a certain date', 'modern-events-calendar-lite'); ?></option>
@@ -2029,7 +2138,7 @@ $events = $this->main->get_events();
                             <div class="content"><p><?php esc_attr_e('Default value is "d F Y', 'modern-events-calendar-lite'); ?><a href="https://webnus.net/dox/modern-events-calendar/timeline-view-skin/" target="_blank"><?php _e('Read More', 'modern-events-calendar-lite'); ?></a></p></div>
                         </div>
                         <i title="" class="dashicons-before dashicons-editor-help"></i>
-                    </span>	                                        
+                    </span>
                 </div>
                 <div class="mec-form-row">
                     <label class="mec-col-4" for="mec_skin_timeline_limit"><?php _e('Limit', 'modern-events-calendar-lite'); ?></label>
@@ -2071,6 +2180,18 @@ $events = $this->main->get_events();
                     </div>
                 </div>
                 <!-- End Display Reason for Cancellation -->
+                <!-- Start Display Categories -->
+                <div class="mec-form-row mec-switcher" id="mec_skin_timeline_display_categories_wp">
+                    <div class="mec-col-4">
+                        <label for="mec_skin_timeline_display_categories"><?php _e('Display Categories', 'modern-events-calendar-lite'); ?></label>
+                    </div>
+                    <div class="mec-col-4">
+                        <input type="hidden" name="mec[sk-options][timeline][display_categories]" value="0" />
+                        <input type="checkbox" name="mec[sk-options][timeline][display_categories]" id="mec_skin_timeline_display_categories" value="1" <?php if(isset($sk_options_timeline['display_categories']) and trim($sk_options_timeline['display_categories'])) echo 'checked="checked"'; ?> />
+                        <label for="mec_skin_timeline_display_categories"></label>
+                    </div>
+                </div>
+                <!-- End Display Categories -->
                 <div class="mec-form-row mec-switcher">
                     <div class="mec-col-4">
                         <label for="mec_skin_timeline_load_more_button"><?php _e('Load More Button', 'modern-events-calendar-lite'); ?></label>
@@ -2091,6 +2212,7 @@ $events = $this->main->get_events();
                         <label for="mec_skin_timeline_month_divider"></label>
                     </div>
                 </div>
+                <?php echo $this->booking_button_field('timeline', (isset($sk_options_timeline['booking_button']) ? $sk_options_timeline['booking_button'] : 0)); ?>
                 <?php echo $this->sed_method_field('timeline', (isset($sk_options_timeline['sed_method']) ? $sk_options_timeline['sed_method'] : 0), (isset($sk_options_timeline['image_popup']) ? $sk_options_timeline['image_popup'] : 0)); ?>
             </div>
 
@@ -2103,6 +2225,7 @@ $events = $this->main->get_events();
                     <select class="mec-col-4 wn-mec-select" name="mec[sk-options][tile][start_date_type]" id="mec_skin_tile_start_date_type" onchange="if(this.value == 'date') jQuery('#mec_skin_tile_start_date_container').show(); else jQuery('#mec_skin_tile_start_date_container').hide();">
                         <option value="start_current_month" <?php if(isset($sk_options_tile['start_date_type']) and $sk_options_tile['start_date_type'] == 'start_current_month') echo 'selected="selected"'; ?>><?php _e('Start of Current Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="start_next_month" <?php if(isset($sk_options_tile['start_date_type']) and $sk_options_tile['start_date_type'] == 'start_next_month') echo 'selected="selected"'; ?>><?php _e('Start of Next Month', 'modern-events-calendar-lite'); ?></option>
+                        <option value="start_last_month" <?php if(isset($sk_options_tile['start_date_type']) and $sk_options_tile['start_date_type'] == 'start_last_month') echo 'selected="selected"'; ?>><?php _e('Start of Last Month', 'modern-events-calendar-lite'); ?></option>
                         <option value="date" <?php if(isset($sk_options_tile['start_date_type']) and $sk_options_tile['start_date_type'] == 'date') echo 'selected="selected"'; ?>><?php _e('On a certain date', 'modern-events-calendar-lite'); ?></option>
                     </select>
                     <div class="mec-col-4 <?php if(!isset($sk_options_tile['start_date_type']) or (isset($sk_options_tile['start_date_type']) and $sk_options_tile['start_date_type'] != 'date')) echo 'mec-util-hidden'; ?>" id="mec_skin_tile_start_date_container">
@@ -2153,6 +2276,18 @@ $events = $this->main->get_events();
                     </div>
                 </div>
                 <!-- End Display Reason for Cancellation -->
+                <!-- Start Display Categories -->
+                <div class="mec-form-row mec-switcher" id="mec_skin_tile_display_categories_wp">
+                    <div class="mec-col-4">
+                        <label for="mec_skin_tile_display_categories"><?php _e('Display Categories', 'modern-events-calendar-lite'); ?></label>
+                    </div>
+                    <div class="mec-col-4">
+                        <input type="hidden" name="mec[sk-options][tile][display_categories]" value="0" />
+                        <input type="checkbox" name="mec[sk-options][tile][display_categories]" id="mec_skin_tile_display_categories" value="1" <?php if(isset($sk_options_tile['display_categories']) and trim($sk_options_tile['display_categories'])) echo 'checked="checked"'; ?> />
+                        <label for="mec_skin_tile_display_categories"></label>
+                    </div>
+                </div>
+                <!-- End Display Categories -->
                 <div class="mec-form-row mec-switcher">
                     <div class="mec-col-4">
                         <label><?php _e('Next/Previous Buttons', 'modern-events-calendar-lite'); ?></label>
@@ -2180,6 +2315,7 @@ $events = $this->main->get_events();
                         </div>
                     </div>
                 </div>
+                <?php echo $this->booking_button_field('tile', (isset($sk_options_tile['booking_button']) ? $sk_options_tile['booking_button'] : 0)); ?>
                 <?php echo $this->sed_method_field('tile', (isset($sk_options_tile['sed_method']) ? $sk_options_tile['sed_method'] : 0), (isset($sk_options_tile['image_popup']) ? $sk_options_tile['image_popup'] : 0)); ?>
             </div>
 
@@ -2198,129 +2334,131 @@ $events = $this->main->get_events();
             $this.text('');
             $this.append('<span class="wn-mec-text">'+$name+'</span>');
         });
-        jQuery('.mec-custom-nice-select li[data-value="list"]').prepend('<div class="wn-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/list.svg" /></div>');
-        jQuery('.mec-custom-nice-select li[data-value="grid"]').prepend('<div class="wn-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/grid.svg" /></div>');
-        jQuery('.mec-custom-nice-select li[data-value="agenda"]').prepend('<div class="wn-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/agenda.svg" /></div>');
-        jQuery('.mec-custom-nice-select li[data-value="full_calendar"]').prepend('<div class="wn-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/full_calendar.svg" /></div>');
-        jQuery('.mec-custom-nice-select li[data-value="yearly_view"]').prepend('<div class="wn-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/yearly.svg" /></div>');
-        jQuery('.mec-custom-nice-select li[data-value="monthly_view"]').prepend('<div class="wn-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/monthly.svg" /></div>');
-        jQuery('.mec-custom-nice-select li[data-value="daily_view"]').prepend('<div class="wn-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/daily.svg" /></div>');
-        jQuery('.mec-custom-nice-select li[data-value="weekly_view"]').prepend('<div class="wn-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/weekly.svg" /></div>');
-        jQuery('.mec-custom-nice-select li[data-value="timetable"]').prepend('<div class="wn-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/timetable.svg" /></div>');
-        jQuery('.mec-custom-nice-select li[data-value="masonry"]').prepend('<div class="wn-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/masonry.svg" /></div>');
-        jQuery('.mec-custom-nice-select li[data-value="map"]').prepend('<div class="wn-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/map.svg" /></div>');
-        jQuery('.mec-custom-nice-select li[data-value="cover"]').prepend('<div class="wn-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/cover.svg" /></div>');
-        jQuery('.mec-custom-nice-select li[data-value="countdown"]').prepend('<div class="wn-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/countdown.svg" /></div>');
-        jQuery('.mec-custom-nice-select li[data-value="available_spot"]').prepend('<div class="wn-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/available_spot.svg" /></div>');
-        jQuery('.mec-custom-nice-select li[data-value="carousel"]').prepend('<div class="wn-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/carousel.svg" /></div>');
-        jQuery('.mec-custom-nice-select li[data-value="slider"]').prepend('<div class="wn-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/slider.svg" /></div>');
-        jQuery('.mec-custom-nice-select li[data-value="timeline"]').prepend('<div class="wn-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/timeline.svg" /></div>');
-        jQuery('.mec-custom-nice-select li[data-value="tile"]').prepend('<div class="wn-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/tile.svg" /></div>');
-        jQuery('.mec-custom-nice-select li[data-value="custom"]').prepend('<div class="wn-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/shortcode-designer.svg" /></div>');
+        jQuery('.mec-custom-nice-select li[data-value="list"]').prepend('<div class="wn-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/list.svg'; ?>" /></div>');
+        jQuery('.mec-custom-nice-select li[data-value="grid"]').prepend('<div class="wn-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/grid.svg'; ?>" /></div>');
+        jQuery('.mec-custom-nice-select li[data-value="agenda"]').prepend('<div class="wn-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/agenda.svg'; ?>" /></div>');
+        jQuery('.mec-custom-nice-select li[data-value="full_calendar"]').prepend('<div class="wn-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/full_calendar.svg'; ?>" /></div>');
+        jQuery('.mec-custom-nice-select li[data-value="yearly_view"]').prepend('<div class="wn-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/yearly.svg'; ?>" /></div>');
+        jQuery('.mec-custom-nice-select li[data-value="monthly_view"]').prepend('<div class="wn-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/monthly.svg'; ?>" /></div>');
+        jQuery('.mec-custom-nice-select li[data-value="daily_view"]').prepend('<div class="wn-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/daily.svg'; ?>" /></div>');
+        jQuery('.mec-custom-nice-select li[data-value="weekly_view"]').prepend('<div class="wn-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/weekly.svg'; ?>" /></div>');
+        jQuery('.mec-custom-nice-select li[data-value="timetable"]').prepend('<div class="wn-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/timetable.svg'; ?>" /></div>');
+        jQuery('.mec-custom-nice-select li[data-value="masonry"]').prepend('<div class="wn-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/masonry.svg'; ?>" /></div>');
+        jQuery('.mec-custom-nice-select li[data-value="map"]').prepend('<div class="wn-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/map.svg'; ?>" /></div>');
+        jQuery('.mec-custom-nice-select li[data-value="cover"]').prepend('<div class="wn-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/cover.svg'; ?>" /></div>');
+        jQuery('.mec-custom-nice-select li[data-value="countdown"]').prepend('<div class="wn-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/countdown.svg'; ?>" /></div>');
+        jQuery('.mec-custom-nice-select li[data-value="available_spot"]').prepend('<div class="wn-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/available_spot.svg'; ?>" /></div>');
+        jQuery('.mec-custom-nice-select li[data-value="carousel"]').prepend('<div class="wn-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/carousel.svg'; ?>" /></div>');
+        jQuery('.mec-custom-nice-select li[data-value="slider"]').prepend('<div class="wn-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/slider.svg'; ?>" /></div>');
+        jQuery('.mec-custom-nice-select li[data-value="timeline"]').prepend('<div class="wn-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/timeline.svg'; ?>" /></div>');
+        jQuery('.mec-custom-nice-select li[data-value="tile"]').prepend('<div class="wn-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/tile.svg'; ?>" /></div>');
+        jQuery('.mec-custom-nice-select li[data-value="custom"]').prepend('<div class="wn-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/shortcode-designer.svg'; ?>" /></div>');
 
         /** List View Skins */
-        jQuery('#mec_list_skin_options_container .mec-form-row .nice-select .list li[data-value="classic"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/list/list-classic.png" /></span>');
-        jQuery('#mec_list_skin_options_container .mec-form-row .nice-select .list li[data-value="minimal"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/list/list-minimal.png" /></span>');
-        jQuery('#mec_list_skin_options_container .mec-form-row .nice-select .list li[data-value="modern"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/list/list-modern.png" /></span>');
-        jQuery('#mec_list_skin_options_container .mec-form-row .nice-select .list li[data-value="standard"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/list/list-standard.png" /></span>');
-        jQuery('#mec_list_skin_options_container .mec-form-row .nice-select .list li[data-value="accordion"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/list/list-accordion.png" /></span>');
-        jQuery('#mec_list_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/fluent/fluent-list-view.png" /></span>');
+        jQuery('#mec_list_skin_options_container .mec-form-row .nice-select .list li[data-value="classic"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/list/list-classic.png'; ?>" /></span>');
+        jQuery('#mec_list_skin_options_container .mec-form-row .nice-select .list li[data-value="minimal"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/list/list-minimal.png'; ?>" /></span>');
+        jQuery('#mec_list_skin_options_container .mec-form-row .nice-select .list li[data-value="modern"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/list/list-modern.png'; ?>" /></span>');
+        jQuery('#mec_list_skin_options_container .mec-form-row .nice-select .list li[data-value="standard"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/list/list-standard.png'; ?>" /></span>');
+        jQuery('#mec_list_skin_options_container .mec-form-row .nice-select .list li[data-value="accordion"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/list/list-accordion.png'; ?>" /></span>');
+        jQuery('#mec_list_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/fluent/fluent-list-view.png'; ?>" /></span>');
 
-        /** Grid View Skins */ 
-        jQuery('#mec_grid_skin_options_container .mec-form-row .nice-select .list li[data-value="classic"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/grid/grid-classic.png" /></span>');
-        jQuery('#mec_grid_skin_options_container .mec-form-row .nice-select .list li[data-value="clean"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/grid/grid-clean.png" /></span>');
-        jQuery('#mec_grid_skin_options_container .mec-form-row .nice-select .list li[data-value="minimal"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/grid/grid-minimal.png" /></span>');
-        jQuery('#mec_grid_skin_options_container .mec-form-row .nice-select .list li[data-value="modern"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/grid/grid-modern.png" /></span>');
-        jQuery('#mec_grid_skin_options_container .mec-form-row .nice-select .list li[data-value="simple"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/grid/grid-simple.png" /></span>');
-        jQuery('#mec_grid_skin_options_container .mec-form-row .nice-select .list li[data-value="colorful"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/grid/grid-colorful.png" /></span>');
-        jQuery('#mec_grid_skin_options_container .mec-form-row .nice-select .list li[data-value="novel"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/grid/grid-novel.png" /></span>');
-        jQuery('#mec_grid_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/fluent/fluent-grid-view.png" /></span>');
+        /** Grid View Skins */
+        jQuery('#mec_grid_skin_options_container .mec-form-row .nice-select .list li[data-value="classic"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/grid/grid-classic.png'; ?>" /></span>');
+        jQuery('#mec_grid_skin_options_container .mec-form-row .nice-select .list li[data-value="clean"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/grid/grid-clean.png'; ?>" /></span>');
+        jQuery('#mec_grid_skin_options_container .mec-form-row .nice-select .list li[data-value="minimal"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/grid/grid-minimal.png'; ?>" /></span>');
+        jQuery('#mec_grid_skin_options_container .mec-form-row .nice-select .list li[data-value="modern"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/grid/grid-modern.png'; ?>" /></span>');
+        jQuery('#mec_grid_skin_options_container .mec-form-row .nice-select .list li[data-value="simple"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/grid/grid-simple.png'; ?>" /></span>');
+        jQuery('#mec_grid_skin_options_container .mec-form-row .nice-select .list li[data-value="colorful"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/grid/grid-colorful.png'; ?>" /></span>');
+        jQuery('#mec_grid_skin_options_container .mec-form-row .nice-select .list li[data-value="novel"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/grid/grid-novel.png'; ?>" /></span>');
+        jQuery('#mec_grid_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/fluent/fluent-grid-view.png'; ?>" /></span>');
 
         /** Agenda View Skins */
-        jQuery('#mec_agenda_skin_options_container .mec-form-row .nice-select .list li[data-value="clean"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/agenda/agenda-clean.png" /></span>');
-        jQuery('#mec_agenda_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/fluent/fluent-agenda-view.png" /></span>');
+        jQuery('#mec_agenda_skin_options_container .mec-form-row .nice-select .list li[data-value="clean"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/agenda/agenda-clean.png'; ?>" /></span>');
+        jQuery('#mec_agenda_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/fluent/fluent-agenda-view.png'; ?>" /></span>');
 
         /** FullCalendar View Skins */
-        jQuery('#mec_full_calendar_skin_options_container .mec-form-row .nice-select .list li[data-value="list"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/full-calendar/full-calendar-list.png" /></span>');
-        jQuery('#mec_full_calendar_skin_options_container .mec-form-row .nice-select .list li[data-value="daily"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/full-calendar/full-calendar-daily.png" /></span>');
-        jQuery('#mec_full_calendar_skin_options_container .mec-form-row .nice-select .list li[data-value="weekly"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/full-calendar/full-calendar-weekly.png" /></span>');
-        jQuery('#mec_full_calendar_skin_options_container .mec-form-row .nice-select .list li[data-value="monthly"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/full-calendar/full-calendar-monthly.png" /></span>');
-        jQuery('#mec_full_calendar_skin_options_container .mec-form-row .nice-select .list li[data-value="yearly"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/full-calendar/full-calendar-yearly.png" /></span>');
-        jQuery('#mec_full_calendar_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/fluent/fluent-full-calendar-view.png" /></span>');
+        jQuery('#mec_full_calendar_skin_options_container .mec-form-row .nice-select .list li[data-value="list"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/full-calendar/full-calendar-list.png'; ?>" /></span>');
+        jQuery('#mec_full_calendar_skin_options_container .mec-form-row .nice-select .list li[data-value="grid"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/grid/grid-modern.png'; ?>" /></span>');
+        jQuery('#mec_full_calendar_skin_options_container .mec-form-row .nice-select .list li[data-value="tile"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/tile/tile-classic.png'; ?>" /></span>');
+        jQuery('#mec_full_calendar_skin_options_container .mec-form-row .nice-select .list li[data-value="daily"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/full-calendar/full-calendar-daily.png'; ?>" /></span>');
+        jQuery('#mec_full_calendar_skin_options_container .mec-form-row .nice-select .list li[data-value="weekly"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/full-calendar/full-calendar-weekly.png'; ?>" /></span>');
+        jQuery('#mec_full_calendar_skin_options_container .mec-form-row .nice-select .list li[data-value="monthly"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/full-calendar/full-calendar-monthly.png'; ?>" /></span>');
+        jQuery('#mec_full_calendar_skin_options_container .mec-form-row .nice-select .list li[data-value="yearly"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/full-calendar/full-calendar-yearly.png'; ?>" /></span>');
+        jQuery('#mec_full_calendar_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/fluent/fluent-full-calendar-view.png'; ?>" /></span>');
 
         /** FullCalendar View Skins > Monthly Style */
-        jQuery('#mec_full_calendar_skin_options_container .mec-form-row .nice-select .list li[data-value="classic"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/full-calendar/full-calendar-monthly.png" /></span>');
-        jQuery('#mec_full_calendar_skin_options_container .mec-form-row .nice-select .list li[data-value="clean"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/monthly/monthly-clean.png" /></span>');
-        jQuery('#mec_full_calendar_skin_options_container .mec-form-row .nice-select .list li[data-value="novel"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/monthly/monthly-novel.png" /></span>');
-        jQuery('#mec_full_calendar_skin_options_container .mec-form-row .nice-select .list li[data-value="simple"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/monthly/monthly-simple.png" /></span>');
+        jQuery('#mec_full_calendar_skin_options_container .mec-form-row .nice-select .list li[data-value="classic"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/full-calendar/full-calendar-monthly.png'; ?>" /></span>');
+        jQuery('#mec_full_calendar_skin_options_container .mec-form-row .nice-select .list li[data-value="clean"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/monthly/monthly-clean.png'; ?>" /></span>');
+        jQuery('#mec_full_calendar_skin_options_container .mec-form-row .nice-select .list li[data-value="novel"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/monthly/monthly-novel.png'; ?>" /></span>');
+        jQuery('#mec_full_calendar_skin_options_container .mec-form-row .nice-select .list li[data-value="simple"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/monthly/monthly-simple.png'; ?>" /></span>');
 
         /** Yearly View Skins */
-        jQuery('#mec_yearly_view_skin_options_container .mec-form-row .nice-select .list li[data-value="modern"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/yearly/yearly-modern.png" /></span>');
-        jQuery('#mec_yearly_view_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/fluent/fluent-yearly-view.png" /></span>');
+        jQuery('#mec_yearly_view_skin_options_container .mec-form-row .nice-select .list li[data-value="modern"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/yearly/yearly-modern.png'; ?>" /></span>');
+        jQuery('#mec_yearly_view_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/fluent/fluent-yearly-view.png'; ?>" /></span>');
 
         /** Monthly View Skins */
-        jQuery('#mec_monthly_view_skin_options_container .mec-form-row .nice-select .list li[data-value="classic"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/monthly/monthly-classic.png" /></span>');
-        jQuery('#mec_monthly_view_skin_options_container .mec-form-row .nice-select .list li[data-value="clean"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/monthly/monthly-clean.png" /></span>');
-        jQuery('#mec_monthly_view_skin_options_container .mec-form-row .nice-select .list li[data-value="modern"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/monthly/monthly-modern.png" /></span>');
-        jQuery('#mec_monthly_view_skin_options_container .mec-form-row .nice-select .list li[data-value="novel"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/monthly/monthly-novel.png" /></span>');
-        jQuery('#mec_monthly_view_skin_options_container .mec-form-row .nice-select .list li[data-value="simple"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/monthly/monthly-simple.png" /></span>');
-        jQuery('#mec_monthly_view_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/fluent/fluent-monthly-view.png" /></span>');
+        jQuery('#mec_monthly_view_skin_options_container .mec-form-row .nice-select .list li[data-value="classic"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/monthly/monthly-classic.png'; ?>" /></span>');
+        jQuery('#mec_monthly_view_skin_options_container .mec-form-row .nice-select .list li[data-value="clean"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/monthly/monthly-clean.png'; ?>" /></span>');
+        jQuery('#mec_monthly_view_skin_options_container .mec-form-row .nice-select .list li[data-value="modern"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/monthly/monthly-modern.png'; ?>" /></span>');
+        jQuery('#mec_monthly_view_skin_options_container .mec-form-row .nice-select .list li[data-value="novel"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/monthly/monthly-novel.png'; ?>" /></span>');
+        jQuery('#mec_monthly_view_skin_options_container .mec-form-row .nice-select .list li[data-value="simple"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/monthly/monthly-simple.png'; ?>" /></span>');
+        jQuery('#mec_monthly_view_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/fluent/fluent-monthly-view.png'; ?>" /></span>');
 
         /** Time Table View Skins */
-        jQuery('#mec_timetable_skin_options_container .mec-form-row .nice-select .list li[data-value="modern"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/time-table/time-table-modern.png" /></span>');
-        jQuery('#mec_timetable_skin_options_container .mec-form-row .nice-select .list li[data-value="clean"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/time-table/time-table-clean.png" /></span>');
-        jQuery('#mec_timetable_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/fluent/fluent-time-table-view.png" /></span>');
+        jQuery('#mec_timetable_skin_options_container .mec-form-row .nice-select .list li[data-value="modern"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/time-table/time-table-modern.png'; ?>" /></span>');
+        jQuery('#mec_timetable_skin_options_container .mec-form-row .nice-select .list li[data-value="clean"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/time-table/time-table-clean.png'; ?>" /></span>');
+        jQuery('#mec_timetable_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/fluent/fluent-time-table-view.png'; ?>" /></span>');
 
         /** Cover View Skins */
-        jQuery('#mec_cover_skin_options_container .mec-form-row .nice-select .list li[data-value="classic"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/cover/cover-classic.png" /></span>');
-        jQuery('#mec_cover_skin_options_container .mec-form-row .nice-select .list li[data-value="clean"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/cover/cover-clean.png" /></span>');
-        jQuery('#mec_cover_skin_options_container .mec-form-row .nice-select .list li[data-value="modern"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/cover/cover-modern.png" /></span>');
-        jQuery('#mec_cover_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent-type1"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/fluent/fluent-cover-view-type1.png" /></span>');
-        jQuery('#mec_cover_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent-type2"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/fluent/fluent-cover-view-type2.png" /></span>');
-        jQuery('#mec_cover_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent-type3"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/fluent/fluent-cover-view-type3.png" /></span>');
-        jQuery('#mec_cover_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent-type4"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/fluent/fluent-cover-view-type4.png" /></span>');
+        jQuery('#mec_cover_skin_options_container .mec-form-row .nice-select .list li[data-value="classic"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/cover/cover-classic.png'; ?>" /></span>');
+        jQuery('#mec_cover_skin_options_container .mec-form-row .nice-select .list li[data-value="clean"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/cover/cover-clean.png'; ?>" /></span>');
+        jQuery('#mec_cover_skin_options_container .mec-form-row .nice-select .list li[data-value="modern"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/cover/cover-modern.png'; ?>" /></span>');
+        jQuery('#mec_cover_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent-type1"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/fluent/fluent-cover-view-type1.png'; ?>" /></span>');
+        jQuery('#mec_cover_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent-type2"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/fluent/fluent-cover-view-type2.png'; ?>" /></span>');
+        jQuery('#mec_cover_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent-type3"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/fluent/fluent-cover-view-type3.png'; ?>" /></span>');
+        jQuery('#mec_cover_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent-type4"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/fluent/fluent-cover-view-type4.png'; ?>" /></span>');
 
         /** Countdown View Skins */
-        jQuery('#mec_countdown_skin_options_container .mec-form-row .nice-select .list li[data-value="style1"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/countdown/countdown-type-1.png" /></span>');
-        jQuery('#mec_countdown_skin_options_container .mec-form-row .nice-select .list li[data-value="style2"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/countdown/countdown-type-2.png" /></span>');
-        jQuery('#mec_countdown_skin_options_container .mec-form-row .nice-select .list li[data-value="style3"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/countdown/countdown-type-3.png" /></span>');
-        jQuery('#mec_countdown_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/fluent/fluent-countdown-view.png" /></span>');
+        jQuery('#mec_countdown_skin_options_container .mec-form-row .nice-select .list li[data-value="style1"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/countdown/countdown-type-1.png'; ?>" /></span>');
+        jQuery('#mec_countdown_skin_options_container .mec-form-row .nice-select .list li[data-value="style2"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/countdown/countdown-type-2.png'; ?>" /></span>');
+        jQuery('#mec_countdown_skin_options_container .mec-form-row .nice-select .list li[data-value="style3"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/countdown/countdown-type-3.png'; ?>" /></span>');
+        jQuery('#mec_countdown_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/fluent/fluent-countdown-view.png'; ?>" /></span>');
 
         /** Carousel View Skins */
-        jQuery('#mec_carousel_skin_options_container .mec-form-row .nice-select .list li[data-value="type1"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/carousel/carousel-type-1.png" /></span>');
-        jQuery('#mec_carousel_skin_options_container .mec-form-row .nice-select .list li[data-value="type2"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/carousel/carousel-type-2.png" /></span>');
-        jQuery('#mec_carousel_skin_options_container .mec-form-row .nice-select .list li[data-value="type3"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/carousel/carousel-type-3.png" /></span>');
-        jQuery('#mec_carousel_skin_options_container .mec-form-row .nice-select .list li[data-value="type4"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/carousel/carousel-type-4.png" /></span>');
-        jQuery('#mec_carousel_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/fluent/fluent-carousel-view.png" /></span>');
+        jQuery('#mec_carousel_skin_options_container .mec-form-row .nice-select .list li[data-value="type1"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/carousel/carousel-type-1.png'; ?>" /></span>');
+        jQuery('#mec_carousel_skin_options_container .mec-form-row .nice-select .list li[data-value="type2"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/carousel/carousel-type-2.png'; ?>" /></span>');
+        jQuery('#mec_carousel_skin_options_container .mec-form-row .nice-select .list li[data-value="type3"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/carousel/carousel-type-3.png'; ?>" /></span>');
+        jQuery('#mec_carousel_skin_options_container .mec-form-row .nice-select .list li[data-value="type4"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/carousel/carousel-type-4.png'; ?>" /></span>');
+        jQuery('#mec_carousel_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/fluent/fluent-carousel-view.png'; ?>" /></span>');
 
         /** Slider View Skins */
-        jQuery('#mec_slider_skin_options_container .mec-form-row .nice-select .list li[data-value="t1"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/slider/slider-type-1.png" /></span>');
-        jQuery('#mec_slider_skin_options_container .mec-form-row .nice-select .list li[data-value="t2"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/slider/slider-type-2.png" /></span>');
-        jQuery('#mec_slider_skin_options_container .mec-form-row .nice-select .list li[data-value="t3"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/slider/slider-type-3.png" /></span>');
-        jQuery('#mec_slider_skin_options_container .mec-form-row .nice-select .list li[data-value="t4"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/slider/slider-type-4.png" /></span>');
-        jQuery('#mec_slider_skin_options_container .mec-form-row .nice-select .list li[data-value="t5"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/slider/slider-type-5.png" /></span>');
-        jQuery('#mec_slider_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/fluent/fluent-slider-view.png" /></span>');
+        jQuery('#mec_slider_skin_options_container .mec-form-row .nice-select .list li[data-value="t1"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/slider/slider-type-1.png'; ?>" /></span>');
+        jQuery('#mec_slider_skin_options_container .mec-form-row .nice-select .list li[data-value="t2"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/slider/slider-type-2.png'; ?>" /></span>');
+        jQuery('#mec_slider_skin_options_container .mec-form-row .nice-select .list li[data-value="t3"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/slider/slider-type-3.png'; ?>" /></span>');
+        jQuery('#mec_slider_skin_options_container .mec-form-row .nice-select .list li[data-value="t4"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/slider/slider-type-4.png'; ?>" /></span>');
+        jQuery('#mec_slider_skin_options_container .mec-form-row .nice-select .list li[data-value="t5"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/slider/slider-type-5.png'; ?>" /></span>');
+        jQuery('#mec_slider_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/fluent/fluent-slider-view.png'; ?>" /></span>');
 
         /** Daily View Skins */
-        jQuery('#mec_daily_view_skin_options_container .mec-form-row .nice-select .list li[data-value="classic"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/daily/daily-classic.png" /></span>');
-        jQuery('#mec_daily_view_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/fluent/fluent-daily-view.png" /></span>');
+        jQuery('#mec_daily_view_skin_options_container .mec-form-row .nice-select .list li[data-value="classic"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/daily/daily-classic.png'; ?>" /></span>');
+        jQuery('#mec_daily_view_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/fluent/fluent-daily-view.png'; ?>" /></span>');
 
         /** Weekly View Skins */
-        jQuery('#mec_weekly_view_skin_options_container .mec-form-row .nice-select .list li[data-value="classic"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/weekly/weekly-classic.png" /></span>');
-        jQuery('#mec_weekly_view_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/fluent/fluent-weekly-view.png" /></span>');
+        jQuery('#mec_weekly_view_skin_options_container .mec-form-row .nice-select .list li[data-value="classic"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/weekly/weekly-classic.png'; ?>" /></span>');
+        jQuery('#mec_weekly_view_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/fluent/fluent-weekly-view.png'; ?>" /></span>');
 
         /** Masonry View Skins */
-        jQuery('#mec_masonry_skin_options_container .mec-form-row .nice-select .list li[data-value="classic"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/masonry/masonry-classic.png" /></span>');
-        jQuery('#mec_masonry_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/fluent/fluent-masonry-view.png" /></span>');
+        jQuery('#mec_masonry_skin_options_container .mec-form-row .nice-select .list li[data-value="classic"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/masonry/masonry-classic.png'; ?>" /></span>');
+        jQuery('#mec_masonry_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/fluent/fluent-masonry-view.png'; ?>" /></span>');
 
-        /** Tile View Skins */ 
-        jQuery('#mec_tile_skin_options_container .mec-form-row .nice-select .list li[data-value="classic"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/tile/tile-classic.png" /></span>');
-        jQuery('#mec_tile_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/fluent/fluent-tile-view.png" /></span>');
+        /** Tile View Skins */
+        jQuery('#mec_tile_skin_options_container .mec-form-row .nice-select .list li[data-value="classic"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/tile/tile-classic.png'; ?>" /></span>');
+        jQuery('#mec_tile_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/fluent/fluent-tile-view.png'; ?>" /></span>');
 
         /** Available Spot View Skins */
-        jQuery('#mec_available_spot_skin_options_container .mec-form-row .nice-select .list li[data-value="classic"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/available-spot/available-spot-classic.png" /></span>');
-        jQuery('#mec_available_spot_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent-type1"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/fluent/fluent-available-spot-view-type1.png" /></span>');
-        jQuery('#mec_available_spot_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent-type2"]').append('<span class="wn-hover-img-sh"><img src="https://webnus.net/modern-events-calendar/wp-content/skins/fluent/fluent-available-spot-view-type2.png" /></span>');
+        jQuery('#mec_available_spot_skin_options_container .mec-form-row .nice-select .list li[data-value="classic"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/available-spot/available-spot-classic.png'; ?>" /></span>');
+        jQuery('#mec_available_spot_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent-type1"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/fluent/fluent-available-spot-view-type1.png'; ?>" /></span>');
+        jQuery('#mec_available_spot_skin_options_container .mec-form-row .nice-select .list li[data-value="fluent-type2"]').append('<span class="wn-hover-img-sh"><img src="<?php echo plugin_dir_url(__FILE__ ) . '../../../../assets/img/skins/fluent/fluent-available-spot-view-type2.png'; ?>" /></span>');
 
 
     });

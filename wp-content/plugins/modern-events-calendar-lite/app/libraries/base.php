@@ -208,4 +208,26 @@ abstract class MEC_base extends MEC
         MEC::import('app.libraries.cache');
         return MEC_cache::getInstance();
     }
+
+    /**
+     * Returns WC instance
+     * @final
+     * @author Webnus <info@webnus.biz>
+     * @return MEC_wc instance
+     */
+    final public function getWC()
+    {
+        return MEC::getInstance('app.libraries.wc');
+    }
+
+    /**
+     * Returns User instance
+     * @final
+     * @author Webnus <info@webnus.biz>
+     * @return MEC_user instance
+     */
+    final public function getUser()
+    {
+        return MEC::getInstance('app.libraries.user');
+    }
 }

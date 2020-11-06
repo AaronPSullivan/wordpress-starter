@@ -2,9 +2,10 @@ const path = require('path');
 
 module.exports = {
   entry: {
-    leadin: './src/app.js',
-    gutenberg: './src/gutenberg/gutenberg.js',
-    feedback: './src/feedback/feedback.js',
+    leadin: './src/entries/app.js',
+    gutenberg: './src/entries/gutenberg.js',
+    elementor: './src/entries/elementor.js',
+    feedback: './src/entries/feedback.js',
   },
   output: {
     filename: '[name].js',

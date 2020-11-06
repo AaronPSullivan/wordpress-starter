@@ -1,3 +1,7 @@
+import $ from 'jquery';
+
+import { leadinQueryParamsKeys } from '../constants/leadinConfig';
+
 export function leadinClearQueryParam() {
   let currentWindowLocation = window.location.toString();
   if (currentWindowLocation.indexOf('?') > 0) {
@@ -20,4 +24,20 @@ export function getQueryParam(key) {
     }
   }
   return null;
+}
+
+export function filterLeadinQueryParams(searchString) {
+  if (!searchString) return '';
+
+  const pairs = searchString.slice(1).split('&');
+
+  const filteredSearch = pairs.reduce((paramsMap, pair) => {
+    const [key, value] = pair.split('=');
+    if (key && leadinQueryParamsKeys.indexOf(key) === -1) {
+      paramsMap[key] = value;
+    }
+    return paramsMap;
+  }, {});
+
+  return $.param(filteredSearch);
 }

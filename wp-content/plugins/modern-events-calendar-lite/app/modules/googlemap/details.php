@@ -2,6 +2,8 @@
 /** no direct access **/
 defined('MECEXEC') or die();
 
+/** @var MEC_Main $this */
+
 // PRO Version is required
 if(!$this->getPRO()) return;
 
@@ -59,14 +61,14 @@ $map_data->atts = array(
     'location_center_long'=>null,
     'use_orig_map' => true
 );
+
 $map_data->events =  $this->get_rendered_events(array('post__in'=>array($event->ID)));
 $map_data->render = $render;
 $map_data->geolocation = '0';
 $map_data->sf_status = null;
 
-$current_event = [$map_data->events[$event->ID]];
-$events = apply_filters('mec_location_load_additional', $current_event, $additional_location_ids, $event_locations);
-$map_data->events = $events;
+$current_event = (isset($map_data->events[$event->ID]) ? array($map_data->events[$event->ID]) : array());
+$map_data->events = apply_filters('mec_location_load_additional', $current_event, $additional_location_ids, $event_locations);
 
 // Initialize MEC Google Maps jQuery plugin
 $javascript = '<script type="text/javascript">
@@ -105,7 +107,7 @@ function mec_init_gmap'.$uniqueid.'()
     p'.$uniqueid.'.init();
 }
 </script>';
-$javascript = apply_filters( 'mec_map_load_script',$javascript, $map_data,$settings );
+$javascript = apply_filters('mec_map_load_script', $javascript, $map_data, $settings);
 
 if(!function_exists('is_plugin_active')) include_once(ABSPATH . 'wp-admin/includes/plugin.php');
 
@@ -115,7 +117,7 @@ elseif (is_plugin_active( 'mec-single-builder/mec-single-builder.php')) echo $ja
 else $factory->params('footer', $javascript);
 ?>
 <div class="mec-googlemap-details" id="mec_map_canvas<?php echo $uniqueid; ?>" style="height: 500px;">
-    <?php do_action( 'mec_map_inner_element_tools' ,$settings); ?>
+    <?php do_action('mec_map_inner_element_tools', $settings); ?>
 </div>
 <?php do_action('mec_map_before_direction'); ?>
 <?php if($get_direction): ?>

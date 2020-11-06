@@ -4,11 +4,10 @@ defined('MECEXEC') or die();
 
 $booking_options = get_post_meta($event->data->ID, 'mec_booking', true);
 if(!is_array($booking_options)) $booking_options = array();
-$display_reason = get_post_meta($event->data->ID, 'mec_display_cancellation_reason_in_single_page', true);
 ?>
 <div class="mec-wrap <?php echo $event_colorskin; ?> clearfix <?php echo $this->html_class; ?> mec-modal-wrap" id="mec_skin_<?php echo $this->uniqueid; ?>">
     <article class="mec-single-event mec-single-modern mec-single-modal">
-        <?php echo $this->main->display_cancellation_reason($event->data->ID, $display_reason); ?>
+        <?php echo $this->main->display_cancellation_reason($event, $this->display_cancellation_reason); ?>
         <h1 class="mec-single-title"><?php echo get_the_title($event->data->ID); ?></h1>
         <div class="mec-single-event-bar">
             <?php
@@ -89,7 +88,7 @@ $display_reason = get_post_meta($event->data->ID, 'mec_display_cancellation_reas
 
         <div class="col-md-4">
             
-            <div class="mec-event-meta mec-color-before mec-frontbox <?php echo ((!$this->main->can_show_booking_module($event) and in_array($event->data->meta['mec_organizer_id'], array('0', '1'))) ? 'mec-util-hidden' : '') ; ?>">
+            <div class="mec-event-meta mec-color-before mec-frontbox <?php echo ((!$this->main->can_show_booking_module($event) and in_array($event->data->meta['mec_organizer_id'], array('0', '1')) and (!trim($event->data->meta['mec_more_info']) or (trim($event->data->meta['mec_more_info']) and $event->data->meta['mec_more_info'] == 'http://'))) ? 'mec-util-hidden' : ''); ?>">
                 <?php
                 // Event Organizer
                 if(isset($event->data->organizers[$event->data->meta['mec_organizer_id']]) && !empty($event->data->organizers[$event->data->meta['mec_organizer_id']]))
@@ -157,6 +156,8 @@ $display_reason = get_post_meta($event->data->ID, 'mec_display_cancellation_reas
             <?php echo $this->main->module('local-time.details', array('event'=>$event)); ?>
             
             <div class="mec-event-meta mec-color-before mec-frontbox">
+
+                <?php do_action('mec_single_virtual_badge', $event->data->ID ); ?>
                 
                 <?php
                 // Event Location
@@ -243,8 +244,13 @@ $display_reason = get_post_meta($event->data->ID, 'mec_display_cancellation_reas
         <div class="col-md-8">
 
             <div class="mec-event-content">
-                <div class="mec-single-event-description mec-events-content"><?php echo $this->main->get_post_content($event->data->ID); ?></div>
+                <div class="mec-single-event-description mec-events-content"><?php echo $this->main->get_post_content($event); ?></div>
             </div>
+
+            <?php do_action('mec_single_after_content', $event ); ?>
+
+            <!-- Custom Data Fields -->
+            <?php $this->display_data_fields($event); ?>
 
             <!-- Links Module -->
             <?php echo $this->main->module('links.details', array('event'=>$event)); ?>
@@ -268,8 +274,8 @@ $display_reason = get_post_meta($event->data->ID, 'mec_display_cancellation_reas
             <?php $this->display_hourly_schedules_widget($event); ?>
 
             <!-- Booking Module -->
-            <?php if($this->main->is_sold($event, (trim($occurrence) ? $occurrence : $event->date['start']['date'])) and count($event->dates) <= 1): ?>
-            <div class="mec-sold-tickets warning-msg"><?php _e('Sold out!', 'wpl'); ?></div>
+            <?php if($this->main->is_sold($event) and count($event->dates) <= 1): ?>
+            <div id="mec-events-meta-group-booking-<?php echo $this->uniqueid; ?>"class="mec-sold-tickets warning-msg"><?php _e('Sold out!', 'modern-events-calendar-lite'); do_action( 'mec_booking_sold_out',$event, null,null,array($event->date) );?> </div>
             <?php elseif($this->main->can_show_booking_module($event)): ?>
             <div id="mec-events-meta-group-booking-<?php echo $this->uniqueid; ?>" class="mec-events-meta-group mec-events-meta-group-booking">
                 <?php
@@ -288,6 +294,7 @@ $display_reason = get_post_meta($event->data->ID, 'mec_display_cancellation_reas
             <div class="mec-events-meta-group mec-events-meta-group-tags">
                 <?php the_tags(__('Tags: ', 'modern-events-calendar-lite'), ', ', '<br />'); ?>
             </div>
+
         </div>
     </article>
 </div>

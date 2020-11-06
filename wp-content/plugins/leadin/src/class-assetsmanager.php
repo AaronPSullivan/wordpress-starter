@@ -2,6 +2,7 @@
 
 namespace Leadin;
 
+use Leadin\LeadinFilters;
 use Leadin\LeadinOptions;
 use Leadin\admin\AdminConstants;
 
@@ -16,35 +17,55 @@ class AssetsManager {
 	const FEEDBACK_JS   = 'leadin-feedback';
 	const TRACKING_CODE = 'leadin-script-loader-js';
 	const GUTENBERG     = 'leadin-gutenberg';
+	const ELEMENTOR     = 'leadin-elementor';
+
+	const LEADIN_CONFIG = 'leadinConfig';
+	const LEADIN_I18N   = 'leadinI18n';
 
 	/**
-	 * Register and enqueue the assets needed in the admin section.
+	 * Register and localize all assets.
 	 */
-	public static function enqueue_admin_assets() {
+	public static function register_assets() {
 		wp_register_style( self::ADMIN_CSS, LEADIN_PATH . '/assets/style/leadin.css', array(), LEADIN_PLUGIN_VERSION );
 		wp_register_script( self::ADMIN_JS, LEADIN_JS_BASE_PATH . '/leadin.js', array( 'jquery' ), LEADIN_PLUGIN_VERSION, true );
-		wp_localize_script( self::ADMIN_JS, 'leadinConfig', AdminConstants::get_leadin_config() );
-		wp_localize_script( self::ADMIN_JS, 'leadinI18n', AdminConstants::get_leadin_i18n() );
-		wp_enqueue_style( self::ADMIN_CSS );
-		wp_enqueue_script( self::ADMIN_JS );
+		wp_localize_script( self::ADMIN_JS, self::LEADIN_CONFIG, AdminConstants::get_leadin_config() );
+		wp_localize_script( self::ADMIN_JS, self::LEADIN_I18N, AdminConstants::get_leadin_i18n() );
+		wp_register_script( self::FEEDBACK_JS, LEADIN_JS_BASE_PATH . '/feedback.js', array( 'jquery', 'thickbox' ), LEADIN_PLUGIN_VERSION, true );
+		wp_localize_script( self::FEEDBACK_JS, self::LEADIN_CONFIG, AdminConstants::get_background_leadin_config() );
+		wp_register_script( self::ELEMENTOR, LEADIN_JS_BASE_PATH . '/elementor.js', array( 'jquery' ), LEADIN_PLUGIN_VERSION, true );
+		wp_localize_script( self::ELEMENTOR, self::LEADIN_CONFIG, AdminConstants::get_background_leadin_config() );
+		wp_register_style( self::FEEDBACK_CSS, LEADIN_PATH . '/assets/style/leadin-feedback.css', array(), LEADIN_PLUGIN_VERSION );
+		wp_register_style( self::BRIDGE_CSS, LEADIN_PATH . '/assets/style/leadin-bridge.css?', array(), LEADIN_PLUGIN_VERSION );
 	}
 
 	/**
-	 * Register and enqueue the assets needed to render the deactivation feedback form.
+	 * Enqueue the assets needed in the admin section.
+	 */
+	public static function enqueue_admin_assets() {
+		wp_enqueue_style( self::ADMIN_CSS );
+	}
+
+	/**
+	 * Enqueue the assets needed for the Elementor block to work.
+	 */
+	public static function enqueue_elementor_assets() {
+		wp_enqueue_script( self::ELEMENTOR );
+	}
+
+	/**
+	 * Enqueue the assets needed to render the deactivation feedback form.
 	 */
 	public static function enqueue_feedback_assets() {
-		wp_register_script( self::FEEDBACK_JS, LEADIN_JS_BASE_PATH . '/feedback.js', array( 'jquery', 'thickbox' ), LEADIN_PLUGIN_VERSION, true );
-		wp_register_style( self::FEEDBACK_CSS, LEADIN_PATH . '/assets/style/leadin-feedback.css', array(), LEADIN_PLUGIN_VERSION );
 		wp_enqueue_style( self::FEEDBACK_CSS );
 		wp_enqueue_script( self::FEEDBACK_JS );
 	}
 
 	/**
-	 * Register and enqueue the assets needed to correctly render the plugin's iframe.
+	 * Enqueue the assets needed to correctly render the plugin's iframe.
 	 */
 	public static function enqueue_bridge_assets() {
-		wp_register_style( self::BRIDGE_CSS, LEADIN_PATH . '/assets/style/leadin-bridge.css?', array(), LEADIN_PLUGIN_VERSION );
 		wp_enqueue_style( self::BRIDGE_CSS );
+		wp_enqueue_script( self::ADMIN_JS );
 	}
 
 	/**
@@ -54,9 +75,9 @@ class AssetsManager {
 	 * @param Object $leadin_wordpress_info Object used to pass to the script loader.
 	 */
 	public static function enqueue_script_loader( $leadin_wordpress_info ) {
-		$embed_domain = constant( 'LEADIN_SCRIPT_LOADER_DOMAIN' );
+		$embed_domain = LeadinFilters::get_leadin_script_loader_domain();
 		$portal_id    = LeadinOptions::get_portal_id();
-		$embed_url    = "//$embed_domain/$portal_id.js?integration=WordPress";
+		$embed_url    = "https://$embed_domain/$portal_id.js?integration=WordPress";
 		wp_register_script( self::TRACKING_CODE, $embed_url, array( 'jquery' ), null, true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 		wp_localize_script( self::TRACKING_CODE, 'leadin_wordpress', $leadin_wordpress_info );
 		wp_enqueue_script( self::TRACKING_CODE );
@@ -66,7 +87,8 @@ class AssetsManager {
 	 * Register and localize the Gutenberg scripts.
 	 */
 	public static function localize_gutenberg() {
-		wp_register_script( self::GUTENBERG, LEADIN_JS_BASE_PATH . '/gutenberg.js', array( 'wp-blocks', 'wp-element', self::ADMIN_JS ), LEADIN_PLUGIN_VERSION, true );
-		wp_localize_script( self::GUTENBERG, 'leadinI18n', AdminConstants::get_leadin_i18n() );
+		wp_register_script( self::GUTENBERG, LEADIN_JS_BASE_PATH . '/gutenberg.js', array( 'wp-blocks', 'wp-element' ), LEADIN_PLUGIN_VERSION, true );
+		wp_localize_script( self::GUTENBERG, self::LEADIN_CONFIG, AdminConstants::get_background_leadin_config() );
+		wp_localize_script( self::GUTENBERG, self::LEADIN_I18N, AdminConstants::get_leadin_i18n() );
 	}
 }

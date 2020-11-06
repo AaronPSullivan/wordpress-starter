@@ -45,7 +45,6 @@ class MEC_feature_speakers extends MEC_base
 
         $this->factory->action('wp_ajax_speaker_adding', array($this, 'fes_speaker_adding'));
         $this->factory->action('wp_ajax_nopriv_speaker_adding', array($this, 'fes_speaker_adding'));
-
         $this->factory->action('current_screen', array($this, 'show_notics'));
 
         $this->factory->filter('manage_edit-mec_speaker_columns', array($this, 'filter_columns'));
@@ -100,6 +99,7 @@ class MEC_feature_speakers extends MEC_base
         $job_title = get_metadata('term', $term->term_id, 'job_title', true);
         $tel = get_metadata('term', $term->term_id, 'tel', true);
         $email = get_metadata('term', $term->term_id, 'email', true);
+        $website = get_metadata('term', $term->term_id, 'website', true);
         $facebook = get_metadata('term', $term->term_id, 'facebook', true);
         $instagram = get_metadata('term', $term->term_id, 'instagram', true);
         $linkedin = get_metadata('term', $term->term_id, 'linkedin', true);
@@ -128,6 +128,14 @@ class MEC_feature_speakers extends MEC_base
             </th>
             <td>
                 <input type="text"  placeholder="<?php esc_attr_e('Insert speaker email address.', 'modern-events-calendar-lite'); ?>" name="email" id="mec_email" value="<?php echo $email; ?>" />
+            </td>
+        </tr>
+        <tr class="form-field">
+            <th scope="row">
+                <label for="mec_website"><?php _e('Website', 'modern-events-calendar-lite'); ?></label>
+            </th>
+            <td>
+                <input type="text" placeholder="<?php esc_attr_e('Insert URL of Website', 'modern-events-calendar-lite'); ?>" name="website" id="mec_website" value="<?php echo $website; ?>" />
             </td>
         </tr>
         <tr class="form-field">
@@ -173,7 +181,7 @@ class MEC_feature_speakers extends MEC_base
                 <button type="button" class="mec_remove_image_button button <?php echo (!trim($thumbnail) ? 'mec-util-hidden' : ''); ?>"><?php echo __('Remove image', 'modern-events-calendar-lite'); ?></button>
             </td>
         </tr>
-        <?php do_action( 'mec_edit_speaker_extra_fields' , $term ); ?>
+        <?php do_action('mec_edit_speaker_extra_fields', $term); ?>
     <?php
     }
     
@@ -195,6 +203,10 @@ class MEC_feature_speakers extends MEC_base
         <div class="form-field">
             <label for="mec_email"><?php _e('Email', 'modern-events-calendar-lite'); ?></label>
             <input type="text" name="email" placeholder="<?php esc_attr_e('Insert speaker email address.', 'modern-events-calendar-lite'); ?>" id="mec_email" value="" />
+        </div>
+        <div class="form-field">
+            <label for="mec_website"><?php _e('Website', 'modern-events-calendar-lite'); ?></label>
+            <input type="text" name="website" placeholder="<?php esc_attr_e('Insert URL of Website', 'modern-events-calendar-lite'); ?>" id="mec_website" value="" />
         </div>
         <div class="form-field">
             <label for="mec_facebook"><?php _e('Facebook Page', 'modern-events-calendar-lite'); ?></label>
@@ -219,7 +231,7 @@ class MEC_feature_speakers extends MEC_base
             <button type="button" class="mec_upload_image_button button" id="mec_thumbnail_button"><?php echo __('Upload/Add image', 'modern-events-calendar-lite'); ?></button>
             <button type="button" class="mec_remove_image_button button mec-util-hidden"><?php echo __('Remove image', 'modern-events-calendar-lite'); ?></button>
         </div>
-        <?php do_action( 'mec_add_speaker_extra_fields' ); ?>
+        <?php do_action('mec_add_speaker_extra_fields'); ?>
     <?php
     }
     
@@ -233,6 +245,7 @@ class MEC_feature_speakers extends MEC_base
         $job_title  = isset($_POST['job_title']) ? sanitize_text_field($_POST['job_title']) : '';
         $tel        = isset($_POST['tel']) ? sanitize_text_field($_POST['tel']) : '';
         $email      = isset($_POST['email']) ? sanitize_text_field($_POST['email']) : '';
+        $website   = (isset($_POST['website']) and trim($_POST['website'])) ? (strpos($_POST['website'], 'http') === false ? 'http://'.sanitize_text_field($_POST['website']) : sanitize_text_field($_POST['website'])) : '';
         $facebook   = (isset($_POST['facebook']) and trim($_POST['facebook'])) ? (strpos($_POST['facebook'], 'http') === false ? 'http://'.sanitize_text_field($_POST['facebook']) : sanitize_text_field($_POST['facebook'])) : '';
         $twitter    = (isset($_POST['twitter']) and trim($_POST['twitter'])) ? (strpos($_POST['twitter'], 'http') === false ? 'http://'.sanitize_text_field($_POST['twitter']) : sanitize_text_field($_POST['twitter'])) : '';
         $instagram  = (isset($_POST['instagram']) and trim($_POST['instagram'])) ? (strpos($_POST['instagram'], 'http') === false ? 'http://'.sanitize_text_field($_POST['instagram']) : sanitize_text_field($_POST['instagram'])) : '';
@@ -242,6 +255,7 @@ class MEC_feature_speakers extends MEC_base
         update_term_meta($term_id, 'job_title', $job_title);
         update_term_meta($term_id, 'tel', $tel);
         update_term_meta($term_id, 'email', $email);
+        update_term_meta($term_id, 'website', $website);
         update_term_meta($term_id, 'facebook', $facebook);
         update_term_meta($term_id, 'twitter', $twitter);
         update_term_meta($term_id, 'instagram', $instagram);
@@ -249,7 +263,7 @@ class MEC_feature_speakers extends MEC_base
         update_term_meta($term_id, 'thumbnail', $thumbnail);
 
 
-        do_action( 'mec_save_speaker_extra_fields' , $term_id );
+        do_action('mec_save_speaker_extra_fields', $term_id);
     }
     
     /**
@@ -307,7 +321,7 @@ class MEC_feature_speakers extends MEC_base
                 break;
         }
 
-        return apply_filters('speaker_filter_column_content', $content , $column_name, $term_id);
+        return apply_filters('speaker_filter_column_content', $content, $column_name, $term_id);
     }
 
     /**
@@ -365,26 +379,26 @@ class MEC_feature_speakers extends MEC_base
             add_action('admin_footer', function ()
             {
                 echo "<script>
-                            var xhrObject = window.XMLHttpRequest;
-                             function ajaxXHR()
-                             {
-                                 var xmlHttp = new xhrObject();
-                                 xmlHttp.addEventListener('readystatechange', function (xhr)
-                                 {
-                                     if(xmlHttp.readyState == 4 && xmlHttp.status == 200)
-                                     {
-                                         if(xhr.currentTarget.responseText.indexOf('tr') != -1)
-                                         {
-                                             jQuery('.form-wrap').find('.warning-msg').remove();
-                                             jQuery('.form-wrap').append('<div class=\"warning-msg\"><p>" . __('Note: You can use the speakers in your event edit/add page > hourly schedule section and speaker widget section!', 'modern-events-calendar-lite') . "</p></div>');
-                                         }
-                                     }
-                                 });
-            
-                                 return xmlHttp;
-                             }
-                             window.XMLHttpRequest = ajaxXHR;
-                         </script>";
+                    var xhrObject = window.XMLHttpRequest;
+                    function ajaxXHR()
+                    {
+                        var xmlHttp = new xhrObject();
+                        xmlHttp.addEventListener('readystatechange', function (xhr)
+                        {
+                            if(xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                            {
+                                if(xhr.currentTarget.responseText.indexOf('tr') != -1)
+                                {
+                                    jQuery('.form-wrap').find('.warning-msg').remove();
+                                    jQuery('.form-wrap').append('<div class=\"warning-msg\"><p>" . __('Note: You can use the speakers in your event edit/add page > hourly schedule section and speaker widget section!', 'modern-events-calendar-lite') . "</p></div>');
+                                }
+                            }
+                        });
+                        
+                        return xmlHttp;
+                    }
+                    window.XMLHttpRequest = ajaxXHR;
+                </script>";
             });
         }
     }

@@ -31,7 +31,7 @@ if(count($this->events))
             icon: "'.apply_filters('mec_marker_icon', $this->main->asset('img/m-04.png')).'",
             styles: '.((isset($settings['google_maps_style']) and trim($settings['google_maps_style']) != '') ? $this->main->get_googlemap_style($settings['google_maps_style']) : "''").',
             markers: '.json_encode($events_data).',
-            HTML5geolocation: '.$this->geolocation.',
+            geolocation: '.$this->geolocation.',
             geolocation_focus: '.$this->geolocation_focus.',
             clustering_images: "'.$this->main->asset('img/cluster1/m').'",
             getDirection: 0,
@@ -44,7 +44,7 @@ if(count($this->events))
     });
     </script>';
 
-    $javascript = apply_filters('mec_map_load_script', $javascript, $this,$settings);
+    $javascript = apply_filters('mec_map_load_script', $javascript, $this, $settings);
 
     // Include javascript code into the page
     if($this->main->is_ajax()) echo $javascript;
@@ -56,18 +56,18 @@ do_action('mec_map_skin_head');
 ?>
 <?php if($settings['view_mode'] == 'normal') : ?>
 <div class="mec-wrap mec-skin-map-container <?php echo $this->html_class; ?>" id="mec_skin_<?php echo $this->id; ?>">
-    
+
     <?php if($this->sf_status) echo $this->sf_search_form(); ?>
-    <?php do_action('mec_map_skin_before_form',$settings); ?>
-    
+    <?php do_action('mec_map_skin_before_form', $settings); ?>
+
     <?php if(count($this->events)): ?>
     <div class="mec-googlemap-skin" id="mec_map_canvas<?php echo $this->id; ?>" style="height: 500px;">
-        <?php do_action( 'mec_map_inner_element_tools' ,$settings); ?>
+        <?php do_action('mec_map_inner_element_tools', $settings); ?>
     </div>
     <?php else: ?>
     <p class="mec-error"><?php _e('No events found!', 'modern-events-calendar-lite'); ?></p>
     <?php endif; ?>
-    
+
 </div>
 <?php else: ?>
 <div class="mec-wrap">
@@ -82,7 +82,7 @@ do_action('mec_map_skin_head');
         <div class="col-sm-7">
             <?php if(count($this->events)): ?>
                 <div class="mec-googlemap-skin" id="mec_map_canvas<?php echo $this->id; ?>" style="height: 600px;">
-                    <?php do_action( 'mec_map_inner_element_tools' ,$settings); ?>
+                    <?php do_action('mec_map_inner_element_tools', $settings); ?>
                 </div>
             <?php else: ?>
                 <p class="mec-error"><?php _e('No events found!', 'modern-events-calendar-lite'); ?></p>

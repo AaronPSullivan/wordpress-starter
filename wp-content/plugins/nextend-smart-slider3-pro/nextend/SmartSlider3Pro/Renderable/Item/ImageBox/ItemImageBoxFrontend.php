@@ -31,7 +31,7 @@ class ItemImageBoxFrontend extends AbstractItemFrontend {
         $layout = $this->data->get('layout');
 
         $attr = array(
-            'class'             => 'n2-ss-item-imagebox-container n2-ss-item-content n2-ow-all ' . $style,
+            'class'             => 'n2-ss-item-imagebox-container n2-ss-item-content n2-ow-all ' . $style . ($this->data->get('fullwidth', 1) ? ' n2-ss-fullwidth' : ''),
             'data-layout'       => $layout,
             'data-csstextalign' => $this->data->get('inneralign')
         );

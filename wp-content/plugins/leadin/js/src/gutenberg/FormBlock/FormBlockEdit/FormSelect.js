@@ -32,7 +32,7 @@ export default function FormSelect({ formId, handleChange }) {
     <LoadingBlock />
   ) : (
     <GutenbergWrapper>
-      <p>
+      <p data-test-id="leadin-form-select">
         <b>{i18n.selectExistingForm}</b>
       </p>
       <UISelect

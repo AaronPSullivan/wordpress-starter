@@ -65,6 +65,7 @@ class MEC_skin_timetable extends MEC_skins
 
         // The style
         $this->style = isset($this->skin_options['style']) ? $this->skin_options['style'] : 'modern';
+        if($this->style == 'fluent' and !is_plugin_active('mec-fluent-layouts/mec-fluent-layouts.php')) $this->style = 'modern';
         
         // Next/Previous Month
         $this->next_previous_button = isset($this->skin_options['next_previous_button']) ? $this->skin_options['next_previous_button'] : true;
@@ -72,6 +73,9 @@ class MEC_skin_timetable extends MEC_skins
         // HTML class
         $this->html_class = '';
         if(isset($this->atts['html-class']) and trim($this->atts['html-class']) != '') $this->html_class = $this->atts['html-class'];
+
+        // Booking Button
+        $this->booking_button = isset($this->skin_options['booking_button']) ? (int) $this->skin_options['booking_button'] : 0;
         
         // SED Method
         $this->sed_method = isset($this->skin_options['sed_method']) ? $this->skin_options['sed_method'] : '0';
@@ -173,11 +177,20 @@ class MEC_skin_timetable extends MEC_skins
      */
     public function search()
     {
-        $start = $this->start_date;
-        $end = $this->maximum_date ? $this->maximum_date : date('Y-m-t', strtotime($this->start_date));
+        if($this->style == 'clean' || $this->style == 'classic' || $this->style == 'fluent')
+        {
+            $start = $this->start_date;
+            $end = $this->maximum_date ? $this->maximum_date : date('Y-m-t', strtotime($this->start_date));
+        }
+        else
+        {
+            $start = $this->main->array_key_first($this->week_of_days);
+            $end = $this->maximum_date ? $this->maximum_date : $this->main->array_key_last($this->week_of_days);
+        }
 
         // Date Events
         $dates = $this->period($start, $end);
+
         if($this->style == 'clean' || $this->style == 'classic' || $this->style == 'fluent')
         {
             $s = $start;
@@ -251,7 +264,7 @@ class MEC_skin_timetable extends MEC_skins
                             'end'=>array('date'=>$this->main->get_end_date($date, $rendered))
                         );
 
-                        $d[] = $this->render->after_render($data, $i);
+                        $d[] = $this->render->after_render($data, $this, $i);
                     }
                 }
 
@@ -292,6 +305,8 @@ class MEC_skin_timetable extends MEC_skins
             else $date = date('Y-m-d', strtotime('Last '.$weekdays[0]));
         }
         elseif(isset($this->skin_options['start_date_type']) and $this->skin_options['start_date_type'] == 'start_next_week') $date = date('Y-m-d', strtotime('Next '.$weekdays[0]));
+        elseif(isset($this->skin_options['start_date_type']) and $this->skin_options['start_date_type'] == 'start_last_week') $date = date('Y-m-d', strtotime('Last '.$weekdays[0]));
+        elseif(isset($this->skin_options['start_date_type']) and $this->skin_options['start_date_type'] == 'start_last_month') $date = date('Y-m-d', strtotime('first day of last month'));
         elseif(isset($this->skin_options['start_date_type']) and $this->skin_options['start_date_type'] == 'start_current_month') $date = date('Y-m-d', strtotime('first day of this month'));
         elseif(isset($this->skin_options['start_date_type']) and $this->skin_options['start_date_type'] == 'start_next_month') $date = date('Y-m-d', strtotime('first day of next month'));
         elseif(isset($this->skin_options['start_date_type']) and $this->skin_options['start_date_type'] == 'date') $date = date('Y-m-d', strtotime($this->skin_options['start_date']));
@@ -363,6 +378,7 @@ class MEC_skin_timetable extends MEC_skins
         if(!isset($this->weeks[$this->week])) $this->week = $this->week-1;
         
         $this->today = $this->weeks[$this->week][0];
+        $this->active_date = $this->today;
         
         // Return the events
         $this->atts['return_items'] = true;

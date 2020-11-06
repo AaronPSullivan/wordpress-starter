@@ -69,6 +69,7 @@ class MEC_skin_countdown extends MEC_skins
         
         // The style
         $this->style = isset($this->skin_options['style']) ? $this->skin_options['style'] : 'style1';
+        if($this->style == 'fluent' and !is_plugin_active('mec-fluent-layouts/mec-fluent-layouts.php')) $this->style = 'style1';
 
         // reason_for_cancellation
         $this->reason_for_cancellation = isset($this->skin_options['reason_for_cancellation']) ? $this->skin_options['reason_for_cancellation'] : false;
@@ -91,6 +92,7 @@ class MEC_skin_countdown extends MEC_skins
         
         // Event ID
         $this->event_id = isset($this->skin_options['event_id']) ? $this->skin_options['event_id'] : '-1';
+        if(!get_post($this->event_id)) $this->event_id = '-1';
     }
     
     /**
@@ -117,7 +119,7 @@ class MEC_skin_countdown extends MEC_skins
             $data->dates = $this->render->dates($this->event_id, $rendered, $this->maximum_dates);
             $data->date = isset($data->dates[0]) ? $data->dates[0] : array();
 
-            $events[] = $this->render->after_render($data);
+            $events[] = $this->render->after_render($data, $this);
         }
         
         return $events;

@@ -63,6 +63,10 @@ class MEC_feature_update extends MEC_base
         if(version_compare($version, '4.9.0', '<')) $this->version490();
         if(version_compare($version, '5.0.5', '<')) $this->version505();
         if(version_compare($version, '5.5.1', '<')) $this->version551();
+        if(version_compare($version, '5.7.1', '<')) $this->version571();
+        if(version_compare($version, '5.10.0', '<')) $this->version5100();
+        if(version_compare($version, '5.11.0', '<')) $this->version5110();
+        if(version_compare($version, '5.12.6', '<')) $this->version5126();
 
         // Update to latest version to prevent running the code twice
         update_option('mec_version', $this->main->get_version());
@@ -180,8 +184,8 @@ class MEC_feature_update extends MEC_base
           `post_id` int(10) NOT NULL,
           `dstart` date NOT NULL,
           `dend` date NOT NULL,
-          `type` enum('include','exclude') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'include'
-        ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
+          `type` enum('include','exclude') COLLATE [:COLLATE:] NOT NULL DEFAULT 'include'
+        ) DEFAULT CHARSET=[:CHARSET:] COLLATE=[:COLLATE:];");
 
         $this->db->q("ALTER TABLE `#__mec_dates` ADD PRIMARY KEY (`id`), ADD KEY `post_id` (`post_id`), ADD KEY `type` (`type`);");
         $this->db->q("ALTER TABLE `#__mec_dates` MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;");
@@ -338,12 +342,13 @@ class MEC_feature_update extends MEC_base
             $start_time_int = (int) get_post_meta($event_id, 'mec_start_day_seconds', true);
             $end_time_int = (int) get_post_meta($event_id, 'mec_end_day_seconds', true);
 
-            $start_time = $this->main->get_time($start_time_int);
-            $end_time = $this->main->get_time($end_time_int);
+            $start_time = gmdate('H:i:s', $start_time_int);
+            $end_time = gmdate('H:i:s', $end_time_int);
 
             $mec_date = get_post_meta($booking->ID, 'mec_date', true);
-            list($start_date, $end_date) = explode(':', $mec_date);
+            if(is_array($mec_date) and isset($mec_date['start']) and isset($mec_date['start']['date'])) $mec_date = $mec_date['start']['date'].':'.$mec_date['end']['date'];
 
+            list($start_date, $end_date) = explode(':', $mec_date);
             if(is_numeric($start_date) or is_numeric($end_date)) continue;
 
             $start_datetime = $start_date.' '.$start_time;
@@ -361,6 +366,91 @@ class MEC_feature_update extends MEC_base
                 'post_date' => $post_date,
                 'post_date_gmt' => $gmt_date,
             ));
+        }
+    }
+
+    public function version571()
+    {
+        // Get current MEC options
+        $current = get_option('mec_options', array());
+        if(is_string($current) and trim($current) == '') $current = array();
+
+        if(!isset($current['notifications']['booking_reminder'])) return;
+        if(isset($current['notifications']['booking_reminder']['hours'])) return;
+
+        // Change Days to Hours
+        $days = explode(',', trim($current['notifications']['booking_reminder']['days'], ', '));
+
+        $hours = '';
+        foreach($days as $day)
+        {
+            $hours .= ($day * 24).',';
+        }
+
+        $current['notifications']['booking_reminder']['hours'] = trim($hours, ', ');
+        unset($current['notifications']['booking_reminder']['days']);
+
+        // Update it only if options already exists.
+        if(get_option('mec_options') !== false)
+        {
+            // Save new options
+            update_option('mec_options', $current);
+        }
+    }
+
+    public function version5100()
+    {
+        $this->db->q("CREATE TABLE IF NOT EXISTS `#__mec_occurrences` (
+          `id` int(10) UNSIGNED NOT NULL,
+          `post_id` int(10) UNSIGNED NOT NULL,
+          `occurrence` int(10) UNSIGNED NOT NULL,
+          `params` text COLLATE [:COLLATE:]
+        ) DEFAULT CHARSET=[:CHARSET:] COLLATE=[:COLLATE:];");
+
+        $this->db->q("ALTER TABLE `#__mec_occurrences` ADD PRIMARY KEY (`id`), ADD KEY `post_id` (`post_id`), ADD KEY `occurrence` (`occurrence`);");
+        $this->db->q("ALTER TABLE `#__mec_occurrences` MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;");
+    }
+
+    public function version5110()
+    {
+        $this->db->q("CREATE TABLE IF NOT EXISTS `#__mec_users` (
+          `id` int(10) NOT NULL,
+          `first_name` varchar(255) NOT NULL,
+          `last_name` varchar(255) NOT NULL,
+          `email` varchar(127) NOT NULL,
+          `reg` TEXT NULL DEFAULT NULL,
+          `created_at` datetime DEFAULT NULL,
+          `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ) DEFAULT CHARSET=[:CHARSET:] COLLATE=[:COLLATE:];");
+
+        $this->db->q("ALTER TABLE `#__mec_users` ADD PRIMARY KEY (`id`);");
+        $this->db->q("ALTER TABLE `#__mec_users` MODIFY `id` int NOT NULL AUTO_INCREMENT;");
+        $this->db->q("ALTER TABLE `#__mec_users` AUTO_INCREMENT=1000000;");
+        $this->db->q("ALTER TABLE `#__mec_users` ADD UNIQUE KEY `email` (`email`);");
+    }
+
+    public function version5126()
+    {
+        $all = $this->db->select("SELECT * FROM `#__mec_users`", 'loadAssocList');
+        $zeros = $this->db->select("SELECT * FROM `#__mec_users` WHERE `id`='0'", 'loadAssocList');
+
+        if(is_array($all) and !count($all))
+        {
+            $this->db->q("DROP TABLE `#__mec_users`");
+            $this->version5110();
+        }
+        elseif(is_array($zeros) and count($zeros))
+        {
+            $this->db->q("TRUNCATE `#__mec_users`");
+            $this->db->q("ALTER TABLE `#__mec_users` CHANGE `email` `email` VARCHAR(127) NOT NULL;");
+            $this->db->q("ALTER TABLE `#__mec_users` ADD PRIMARY KEY (`id`);");
+            $this->db->q("ALTER TABLE `#__mec_users` MODIFY `id` int NOT NULL AUTO_INCREMENT;");
+            $this->db->q("ALTER TABLE `#__mec_users` AUTO_INCREMENT=1000000;");
+            $this->db->q("ALTER TABLE `#__mec_users` ADD UNIQUE KEY `email` (`email`);");
+        }
+        else
+        {
+            $this->db->q("ALTER TABLE `#__mec_users` CHANGE `email` `email` VARCHAR(127) NOT NULL;");
         }
     }
 }

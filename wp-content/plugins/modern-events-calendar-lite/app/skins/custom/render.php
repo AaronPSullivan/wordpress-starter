@@ -126,7 +126,7 @@ if($this->style == 'colorful')
                             <?php endif;
                             
 
-                            $events[$date][] = $this->render->after_render($data, $i);
+                            $events[$date][] = $this->render->after_render($data, $this, $i);
                             update_option( 'mec_sd_time_option', $data->date['start']['date'], true);
                             update_option( 'mec_sdn_time_option', $data->date['end']['date'], true);
                             update_option( 'mec_st_time_option', $data->data->time['start'], true);
@@ -216,7 +216,7 @@ if(isset($map_eventss) and !empty($map_eventss))
     $map_data->sf_status = null;
     $map_data->main = $this->main;
     
-    $map_javascript = apply_filters( 'mec_map_load_script',$map_javascript, $map_data,$settings );
+    $map_javascript = apply_filters('mec_map_load_script', $map_javascript, $map_data, $settings);
 
     // Include javascript code into the page
     if($this->main->is_ajax()) echo $map_javascript;

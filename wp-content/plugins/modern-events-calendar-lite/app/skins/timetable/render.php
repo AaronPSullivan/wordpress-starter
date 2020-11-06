@@ -16,15 +16,15 @@ else $set_dark = '';
 ?>
 <?php if($this->style == 'modern'): ?>
 <div class="mec-timetable-day-events mec-clear mec-weekly-view-dates-events <?php echo $set_dark; ?>">
-    <?php foreach($this->events as $date=>$events): $week = $this->week_of_days[$date]; ?>
+    <?php foreach($this->events as $date=>$events): $week = (isset($this->week_of_days[$date]) ? $this->week_of_days[$date] : 0); ?>
     <?php
-        if(!isset($has_events[$week]))
+        if(!isset($has_events[$week]) and isset($this->weeks[$week]))
         {
             foreach($this->weeks[$week] as $weekday) if(isset($this->events[$weekday]) and count($this->events[$weekday])) $has_events[$week] = true;
         }
     ?>
     <?php if(count($events)): ?>
-    <div class="mec-timetable-events-list <?php echo ($date == $this->active_date ? '' : 'mec-util-hidden'); ?> mec-weekly-view-date-events mec-calendar-day-events mec-clear mec-weekly-view-week-<?php echo $this->id; ?>-<?php echo date('Ym', strtotime($date)).$week; ?>" id="mec_weekly_view_date_events<?php echo $this->id; ?>_<?php echo date('Ymd', strtotime($date)); ?>" data-week-number="<?php echo $week; ?>">
+    <div class="mec-timetable-events-list <?php echo ($date == $this->active_date ? '' : 'mec-util-hidden'); ?> mec-weekly-view-date-events mec-calendar-day-events mec-clear mec-weekly-view-week-<?php echo $this->id; ?>-<?php echo date('Ym', strtotime($date)).$week; ?> mec_weekly_view_date_events<?php echo $this->id; ?>_<?php echo date('Ymd', strtotime($date)); ?>" id="mec_weekly_view_date_events<?php echo $this->id; ?>_<?php echo date('Ymd', strtotime($date)); ?>" data-week-number="<?php echo $week; ?>">
         <?php foreach($events as $event): ?>
             <?php
                 $location = isset($event->data->locations[$event->data->meta['mec_location_id']]) ? $event->data->locations[$event->data->meta['mec_location_id']] : array();
@@ -37,7 +37,7 @@ else $set_dark = '';
                 $label_style = '';
                 if(!empty($event->data->labels))
                 {
-                    foreach( $event->data->labels as $label)
+                    foreach($event->data->labels as $label)
                     {
                         if(!isset($label['style']) or (isset($label['style']) and !trim($label['style']))) continue;
                         if($label['style'] == 'mec-label-featured') $label_style = esc_html__('Featured', 'modern-events-calendar-lite');
@@ -56,8 +56,8 @@ else $set_dark = '';
                     <?php endif; ?>
                 </span>
                 <span class="mec-timetable-event-span mec-timetable-event-title">
-                    <a class="mec-color-hover" data-event-id="<?php echo $event->data->ID; ?>" href="<?php echo $this->main->get_event_date_permalink($event, $event->date['start']['date']); ?>"><?php echo $event->data->title; ?></a><?php echo $this->main->get_flags($event).$event_color.$this->main->get_normal_labels($event, $display_label).$this->main->display_cancellation_reason($event->data->ID, $reason_for_cancellation); ?>
-                    <?php if (!empty($label_style)) echo '<span class="mec-fc-style">'.$label_style.'</span>'; ?>
+                    <?php echo $this->display_link($event); ?><?php echo $this->main->get_flags($event).$event_color.$this->main->get_normal_labels($event, $display_label).$this->main->display_cancellation_reason($event, $reason_for_cancellation); ?>
+                    <?php if(!empty($label_style)) echo '<span class="mec-fc-style">'.$label_style.'</span>'; ?>
                     <?php if($this->localtime) echo $this->main->module('local-time.type3', array('event'=>$event)); ?>
                 </span>
                 
@@ -74,12 +74,12 @@ else $set_dark = '';
                     <?php endif; ?>
                 </span>
             </article>
-            <?php do_action('mec_timetable_view_content' , $event , $this , $date , $label_style); ?>
+            <?php do_action('mec_timetable_view_content', $event, $this, $date, $label_style); ?>
         <?php endforeach; ?>
     </div>
     
     <?php elseif(!isset($has_events[$week])): $has_events[$week] = 'printed'; ?>
-    <div class="mec-timetable-events-list mec-weekly-view-date-events mec-util-hidden mec-calendar-day-events mec-clear mec-weekly-view-week-<?php echo $this->id; ?>-<?php echo date('Ym', strtotime($date)).$week; ?>" id="mec_weekly_view_date_events<?php echo $this->id; ?>_<?php echo date('Ymd', strtotime($date)); ?>" data-week-number="<?php echo $week; ?>">
+    <div class="mec-timetable-events-list mec-weekly-view-date-events mec-util-hidden mec-calendar-day-events mec-clear mec-weekly-view-week-<?php echo $this->id; ?>-<?php echo date('Ym', strtotime($date)).$week; ?> mec_weekly_view_date_events<?php echo $this->id; ?>_<?php echo date('Ymd', strtotime($date)); ?>" id="mec_weekly_view_date_events<?php echo $this->id; ?>_<?php echo date('Ymd', strtotime($date)); ?>" data-week-number="<?php echo $week; ?>">
         <article class="mec-event-article"><h4 class="mec-event-title"><?php _e('No Events', 'modern-events-calendar-lite'); ?></h4><div class="mec-event-detail"></div></article>
     </div>
     <?php endif; ?>
@@ -116,7 +116,7 @@ else $set_dark = '';
             <?php echo $event_color; ?>
             <div class="mec-timetable-t2-content">
                 <h4 class="mec-event-title">
-                    <a class="mec-color-hover" data-event-id="<?php echo $event->data->ID; ?>" href="<?php echo $this->main->get_event_date_permalink($event, $event->date['start']['date']); ?>"><?php echo $event->data->title; ?></a>
+                    <?php echo $this->display_link($event); ?>
                     <?php echo $this->main->get_flags($event); if(!empty($label_style)) echo '<span class="mec-fc-style">'.$label_style.'</span>'; ?>
                 </h4>
                 <div class="mec-event-time">
@@ -138,6 +138,7 @@ else $set_dark = '';
                     <?php endif; ?>
                 </div>
                 <?php if($this->localtime) echo $this->main->module('local-time.type1', array('event'=>$event)); ?>
+                <?php echo $this->booking_button($event); ?>
             </div>
         </article>
         <?php endforeach; ?>
@@ -160,17 +161,10 @@ else $set_dark = '';
                 <tr class="mec-timetable-row-wrap mec-timetable-row-<?php echo $i; ?>" height="110">
                     <td style="vertical-align:middle;text-align: center;"><?php echo $i; ?>:00</td>
                     <?php foreach($this->events as $date=>$events): ?>
-                        <?php if ( !empty ( $events ) ) : ?>
+                        <?php if(!empty($events)): ?>
                         <td colspan="1" style="vertical-align:top;text-align: center;">
                             <?php foreach($events as $event): ?>
-                                <?php 
-                                if ( $event->data->meta['mec_date']['start']['hour'] == $i ) 
-                                {
-                                ?>
-                                <a class="mec-color-hover" style="background: #<?php echo $event->data->meta['mec_color']; ?>" data-event-id="<?php echo $event->data->ID; ?>" href="<?php echo $this->main->get_event_date_permalink($event, $event->date['start']['date']); ?>"><?php echo $event->data->title; ?></a>
-                                <?php
-                                }  
-                                ?>
+                                <?php if($event->data->meta['mec_date']['start']['hour'] == $i) echo $this->display_link($event, NULL, NULL, 'style="background: #'.$event->data->meta['mec_color'].'"'); ?>
                             <?php endforeach; ?>
                         </td>
                         <?php else: ?>

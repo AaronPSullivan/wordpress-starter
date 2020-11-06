@@ -5,6 +5,10 @@
     overflow: hidden;
   }
 
+    .n2-ss-item-imagebox-container.n2-ss-fullwidth{
+      display: flex;
+    }
+
   .n2-ss-item-imagebox-container .n2-ss-item-imagebox-image a,
   .n2-ss-item-imagebox-container .n2-ss-item-imagebox-content > a {
     display: block;

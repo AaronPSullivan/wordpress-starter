@@ -17,16 +17,16 @@ if(!isset($settings['bp_attendees_module']) or (isset($settings['bp_attendees_mo
 if(!function_exists('bp_activity_add')) return;
 
 $date = $event->date;
-$start_date = (isset($date['start']) and isset($date['start']['date'])) ? $date['start']['date'] : date('Y-m-d');
+$timestamp = (isset($date['start']) and isset($date['start']['timestamp'])) ? $date['start']['timestamp'] : current_time('timestamp');
 
-$limit = isset($settings['bp_attendees_module_limit']) ? $settings['bp_attendees_module_limit'] : 20;
-$bookings = $this->get_bookings($event->data->ID, $start_date, $limit);
+$limit = isset($settings['bp_attendees_module_limit']) ? $settings['bp_attendees_module_limit'] : 30;
+$bookings = $this->get_bookings($event->data->ID, $timestamp, $limit);
 
 // Book Library
 $book = $this->getBook();
 
 // Start Date belongs to future but booking module cannot show so return without any output
-if(!$this->can_show_booking_module($event) and strtotime($start_date) > time()) return;
+if(!$this->can_show_booking_module($event) and $timestamp > time()) return;
 
 $attendees = array();
 foreach($bookings as $booking)
@@ -34,6 +34,9 @@ foreach($bookings as $booking)
     if(!isset($attendees[$booking->post_author])) $attendees[$booking->post_author] = array();
     $attendees[$booking->post_author][] = $booking->ID;
 }
+
+// MEC User
+$u = $this->getUser();
 ?>
 <div class="mec-attendees-list-details mec-frontbox" id="mec_attendees_list_details">
     <h3 class="mec-attendees-list mec-frontbox-title"><?php _e('Event Attendees', 'modern-events-calendar-lite'); ?></h3>
@@ -50,10 +53,10 @@ foreach($bookings as $booking)
             </div>
             <?php
                 $link = bp_core_get_userlink($attendee_id, false, true);
-                $user = get_userdata($attendee_id);
+                $user = $u->get($attendee_id);
 
-                $name = trim($user->first_name.' '.$user->last_name);
-                if(!$name) $name = $user->display_name;
+                $name = $user->display_name;
+                if(!$name or is_email($name)) $name = trim($user->first_name.' '.$user->last_name);
 
                 $total_attendees = 0;
                 foreach($attendee_bookings as $booking_id) $total_attendees += $book->get_total_attendees($booking_id);
@@ -88,7 +91,7 @@ foreach($bookings as $booking)
                     <div class="mec-attendees-item clearfix">
                         <?php
                             echo '<div class="mec-attendee-avatar-sec">'. get_avatar($mec_attendee['email'], '50') .'</div>';
-                            echo '<div class="mec-attendee-profile-name-sec">'. $mec_attendee['name'] .'</div>';
+                            echo '<div class="mec-attendee-profile-name-sec">'. (!is_email($mec_attendee['name']) ? $mec_attendee['name'] : 'N/A') .'</div>';
                             echo '<span class="mec-attendee-profile-ticket-sec">'. sprintf(_n('%s ticket', '%s tickets', $mec_attendee['count'], 'modern-events-calendar-lite'), $mec_attendee['count']) . '</span>';
                         ?>
                     </div>

@@ -69,19 +69,19 @@ class EventsManagerEvents extends AbstractGenerator {
             'tipLink'        => 'https://smartslider.helpscoutdocs.com/article/1893-wordpress-events-manager-generator#configuration-9'
         ));
 
-        new OnOff($dates, 'custom_start_time', n2_('All day event') .' - '. n2_('Start time text'), 0, array(
+        new OnOff($dates, 'custom_start_time', n2_('All day event') . ' - ' . n2_('Start time text'), 0, array(
             'relatedFieldsOn' => array(
                 'generatorstart_time'
             )
         ));
         new Text($dates, 'start_time', n2_('Start time text'), '', array('post' => 'break'));
-        new OnOff($dates, 'custom_end_date', n2_('All day event') .' - '. n2_('End date text'), 0, array(
+        new OnOff($dates, 'custom_end_date', n2_('All day event') . ' - ' . n2_('End date text'), 0, array(
             'relatedFieldsOn' => array(
                 'generatorend_date'
             )
         ));
         new Text($dates, 'end_date', n2_('End date text'), '', array('post' => 'break'));
-        new OnOff($dates, 'custom_end_time', n2_('All day event') .' - '. n2_('End time text'), 0, array(
+        new OnOff($dates, 'custom_end_time', n2_('All day event') . ' - ' . n2_('End time text'), 0, array(
             'relatedFieldsOn' => array(
                 'generatorend_time'
             )
@@ -274,27 +274,27 @@ class EventsManagerEvents extends AbstractGenerator {
 
         $this->order = Common::parse($this->data->get('order', 'event_start_date|*|asc'));
         if ($this->order[0] != 'default') {
-            if( $this->order[0] == 'event_start_date' || $this->order[0] == 'event_end_date' || $this->order[0] == 'event_rsvp_date'){
-                $meta_key = "_".$this->order[0];
-                $args += array(
+            if ($this->order[0] == 'event_start_date' || $this->order[0] == 'event_end_date' || $this->order[0] == 'event_rsvp_date') {
+                $meta_key = "_" . $this->order[0];
+                $args     += array(
                     'ignore_custom_sort' => true,
                     'orderby'            => 'meta_value',
                     'meta_key'           => $meta_key,
                     'order'              => $this->order[1]
                 );
-            } else if ($this->order[0] == 'post_title' || $this->order[0] == 'ID'){
+            } else if ($this->order[0] == 'post_title' || $this->order[0] == 'ID') {
                 $args += array(
                     'ignore_custom_sort' => true,
                     'orderby'            => $this->order[0],
                     'order'              => $this->order[1]
                 );
-            } else if ($this->order[0] == 'event_date_created'){
+            } else if ($this->order[0] == 'event_date_created') {
                 $args += array(
                     'ignore_custom_sort' => true,
                     'orderby'            => 'post_date',
                     'order'              => $this->order[1]
                 );
-            } else if ($this->order[0] == 'event_date_modified'){
+            } else if ($this->order[0] == 'event_date_modified') {
                 $args += array(
                     'ignore_custom_sort' => true,
                     'orderby'            => 'post_modified',
@@ -310,7 +310,7 @@ class EventsManagerEvents extends AbstractGenerator {
             $original_blog = get_current_blog_id();
             $posts         = array();
             $blog_list     = get_blog_list(0, 'all');
-            foreach ($blog_list AS $blog) {
+            foreach ($blog_list as $blog) {
                 switch_to_blog($blog['blog_id']);
                 $current_blog = $blog['blog_id'];
                 $newposts     = get_posts($args);
@@ -393,6 +393,7 @@ class EventsManagerEvents extends AbstractGenerator {
             $data[$i]['location_name']      = $EM_Location->location_name;
             $data[$i]['location_address']   = $EM_Location->location_address;
             $data[$i]['location_town']      = $EM_Location->location_town;
+            $data[$i]['location_image']     = ResourceTranslator::urlToResource(wp_get_attachment_url(get_post_thumbnail_id($EM_Location->post_id)));
             $data[$i]['location_state']     = $EM_Location->location_state;
             $data[$i]['location_postcode']  = $EM_Location->location_postcode;
             $data[$i]['location_region']    = $EM_Location->location_region;
@@ -425,19 +426,26 @@ class EventsManagerEvents extends AbstractGenerator {
 
             $post_meta = get_post_meta($post->ID);
             if (count($post_meta) && is_array($post_meta) && !empty($post_meta)) {
-                foreach ($post_meta AS $key => $value) {
+                foreach ($post_meta as $key => $value) {
                     if (count($value) && is_array($value) && !empty($value)) {
-                        foreach ($value AS $v) {
+                        foreach ($value as $v) {
                             if (!empty($v) && !is_array($v) && !is_object($v)) {
-                                $key            = str_replace(array(
+                                $key = str_replace(array(
                                     '_',
-                                    '-'
+                                    '-',
+                                    ' '
                                 ), array(
+                                    '',
                                     '',
                                     ''
                                 ), $key);
-                                $key            = 'meta' . $key;
-                                $data[$i][$key] = $v;
+                                $key = $this->removeSpecChars($key);
+                                $key = 'meta' . $key;
+                                if (!isset($data[$i][$key])) {
+                                    $data[$i][$key] = $v;
+                                } else {
+                                    $data[$i]['meta' . $key] = $v;
+                                }
                             }
                         }
                     }
@@ -445,7 +453,7 @@ class EventsManagerEvents extends AbstractGenerator {
             }
 
             if (!empty($dateVariables)) {
-                foreach ($dateVariables AS $dateVariable) {
+                foreach ($dateVariables as $dateVariable) {
                     if (isset($data[$i][$dateVariable])) {
                         $data[$i][$dateVariable . '_date'] = date_i18n(get_option('date_format'), strtotime($data[$i][$dateVariable]));
                         $data[$i][$dateVariable . '_time'] = date_i18n(get_option('time_format'), strtotime($data[$i][$dateVariable]));
@@ -472,5 +480,9 @@ class EventsManagerEvents extends AbstractGenerator {
         } else {
             return strtotime($b->$order) - strtotime($a->$order);
         }
+    }
+
+    public function removeSpecChars($str) {
+        return preg_replace('/[^A-Za-z0-9\-]/', '', $str);
     }
 }

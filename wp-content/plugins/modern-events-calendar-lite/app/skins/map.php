@@ -125,6 +125,8 @@ class MEC_skin_map extends MEC_skins
         
         if(isset($this->skin_options['start_date_type']) and $this->skin_options['start_date_type'] == 'today') $date = current_time('Y-m-d');
         elseif(isset($this->skin_options['start_date_type']) and $this->skin_options['start_date_type'] == 'tomorrow') $date = date('Y-m-d', strtotime('Tomorrow'));
+        elseif(isset($this->skin_options['start_date_type']) and $this->skin_options['start_date_type'] == 'yesterday') $date = date('Y-m-d', strtotime('Yesterday'));
+        elseif(isset($this->skin_options['start_date_type']) and $this->skin_options['start_date_type'] == 'start_last_month') $date = date('Y-m-d', strtotime('first day of last month'));
         elseif(isset($this->skin_options['start_date_type']) and $this->skin_options['start_date_type'] == 'start_current_month') $date = date('Y-m-d', strtotime('first day of this month'));
         elseif(isset($this->skin_options['start_date_type']) and $this->skin_options['start_date_type'] == 'start_next_month') $date = date('Y-m-d', strtotime('first day of next month'));
         elseif(isset($this->skin_options['start_date_type']) and $this->skin_options['start_date_type'] == 'date') $date = date('Y-m-d', strtotime($this->skin_options['start_date']));
@@ -165,9 +167,9 @@ class MEC_skin_map extends MEC_skins
                 $data = new stdClass();
                 $data->ID = $event_id;
                 $data->data = $rendered;
-                $data->dates = $this->render->dates($event_id, $rendered, 1);
+                $data->dates = $this->render->dates($event_id, $rendered, 1, date('Y-m-d', strtotime('Yesterday')));
                 $data->date = isset($data->dates[0]) ? $data->dates[0] : array();
-                
+
                 // Proceed to next event if it's expired
                 if((isset($this->atts['show_past_events']) and !$this->atts['show_past_events']) and strtotime($data->date['start']['date']) < strtotime($this->start_date)) continue;
 
@@ -176,7 +178,7 @@ class MEC_skin_map extends MEC_skins
 
                 // Add the event into the to be sorted array
                 if(!isset($sorted[$event_start_time])) $sorted[$event_start_time] = array();
-                $sorted[$event_start_time][] = $this->render->after_render($data);
+                $sorted[$event_start_time][] = $this->render->after_render($data, $this);
             }
 
             ksort($sorted, SORT_NUMERIC);

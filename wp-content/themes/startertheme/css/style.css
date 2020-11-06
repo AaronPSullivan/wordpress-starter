@@ -6924,36 +6924,113 @@ center > iframe + p {
   padding: 0;
 }
 
-/**************************************************
- * SOME STYLES SHARED BETWEEN LAYOUTS
- **************************************************/
-.alm-reveal {
-  /*include make-container();
-      padding: 0 0;
-      display: flex;
-       align-items: center !important;
-      position: relative;
-      flex-wrap: wrap;
-      &:nth-child(n+2) {
-          // not first
+.alignfull, .alignwide {
+  margin-left: calc(-100vw / 2 + 100% / 2) !important;
+  margin-right: calc(-100vw / 2 + 100% / 2) !important;
+  max-width: 100vw !important;
+  width: 100vw !important;
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-block-start: 0;
+  margin-block-end: 0;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+@media (min-width: 768px) {
+  .alignfull, .alignwide {
+    padding-right: 0;
+    padding-left: 0;
+  }
+}
 
-      }
-     padding-top: $spacer*3;
-          margin-top: $spacer;
-          border-top: $size__border-sm solid $color__gray--lightest;
-          &::before {
-              display: block;
-              background-color: white;
-              color: $color__gray--lightest;
-              content: 'MORE';
-              position: absolute;
-              top: 0;
-              padding: 0 .5em;
-              left: 50%;
-              font-size: .8em;
-              @include translate(-50%,-55%);
-          }
-  */
+.alignfull, .alignwide, .wp-block-group {
+  padding: 2em 0 1.5em;
+}
+.alignfull .wp-block-group, .alignwide .wp-block-group, .wp-block-group .wp-block-group {
+  padding: 0;
+}
+@media (min-width: 576px) {
+  .alignfull, .alignwide, .wp-block-group {
+    padding: 3em 0 2em;
+  }
+}
+
+.alignfull, .alignwide {
+  padding: 2em 10px 1.5em;
+}
+@media (min-width: 576px) {
+  .alignfull, .alignwide {
+    padding: 3em 0 2em;
+  }
+}
+
+.alignwide .wp-block-group__inner-container {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+  margin: 0 auto;
+}
+@media (min-width: 576px) {
+  .alignwide .wp-block-group__inner-container {
+    max-width: 540px;
+  }
+}
+@media (min-width: 768px) {
+  .alignwide .wp-block-group__inner-container {
+    max-width: 720px;
+  }
+}
+@media (min-width: 992px) {
+  .alignwide .wp-block-group__inner-container {
+    max-width: 960px;
+  }
+}
+@media (min-width: 1200px) {
+  .alignwide .wp-block-group__inner-container {
+    max-width: 1140px;
+  }
+}
+.alignwide.p-1, .alignwide.p-2, .alignwide.p-3, .alignwide.p-4 {
+  padding-right: 7px !important;
+  padding-left: 7px !important;
+}
+@media (min-width: 576px) {
+  .alignwide.p-1, .alignwide.p-2, .alignwide.p-3, .alignwide.p-4 {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+  }
+}
+
+.alignfull.dark, .alignfull.blue, .alignwide.dark, .alignwide.blue {
+  color: white;
+}
+.alignfull.dark .entry td, .alignfull.blue .entry td, .alignwide.dark .entry td, .alignwide.blue .entry td {
+  border: 1px solid white;
+}
+.alignfull.dark .table-2-column th, .alignfull.blue .table-2-column th, .alignwide.dark .table-2-column th, .alignwide.blue .table-2-column th {
+  border-bottom: none;
+}
+.alignfull.dark blockquote, .alignfull.blue blockquote, .alignwide.dark blockquote, .alignwide.blue blockquote {
+  color: white;
+}
+.alignfull.dark h1, .alignfull.dark h2, .alignfull.dark h3, .alignfull.dark h4, .alignfull.dark h5, .alignfull.dark h6, .alignfull.dark h7, .alignfull.blue h1, .alignfull.blue h2, .alignfull.blue h3, .alignfull.blue h4, .alignfull.blue h5, .alignfull.blue h6, .alignfull.blue h7, .alignwide.dark h1, .alignwide.dark h2, .alignwide.dark h3, .alignwide.dark h4, .alignwide.dark h5, .alignwide.dark h6, .alignwide.dark h7, .alignwide.blue h1, .alignwide.blue h2, .alignwide.blue h3, .alignwide.blue h4, .alignwide.blue h5, .alignwide.blue h6, .alignwide.blue h7 {
+  color: white;
+}
+.alignfull.blue, .alignfull.dark, .alignwide.blue, .alignwide.dark {
+  background-color: #043579;
+}
+.alignfull.blue h1, .alignfull.blue h2, .alignfull.blue h3, .alignfull.blue h4, .alignfull.blue h5, .alignfull.blue h6, .alignfull.blue a, .alignfull.blue p, .alignfull.dark h1, .alignfull.dark h2, .alignfull.dark h3, .alignfull.dark h4, .alignfull.dark h5, .alignfull.dark h6, .alignfull.dark a, .alignfull.dark p, .alignwide.blue h1, .alignwide.blue h2, .alignwide.blue h3, .alignwide.blue h4, .alignwide.blue h5, .alignwide.blue h6, .alignwide.blue a, .alignwide.blue p, .alignwide.dark h1, .alignwide.dark h2, .alignwide.dark h3, .alignwide.dark h4, .alignwide.dark h5, .alignwide.dark h6, .alignwide.dark a, .alignwide.dark p {
+  color: white;
+}
+.alignfull.blue button, .alignfull.blue input[type=button], .alignfull.blue input[type=reset], .alignfull.blue input[type=submit], .alignfull.blue .wp-block-button__link, .alignfull.blue a.button, .alignfull.dark button, .alignfull.dark input[type=button], .alignfull.dark input[type=reset], .alignfull.dark input[type=submit], .alignfull.dark .wp-block-button__link, .alignfull.dark a.button, .alignwide.blue button, .alignwide.blue input[type=button], .alignwide.blue input[type=reset], .alignwide.blue input[type=submit], .alignwide.blue .wp-block-button__link, .alignwide.blue a.button, .alignwide.dark button, .alignwide.dark input[type=button], .alignwide.dark input[type=reset], .alignwide.dark input[type=submit], .alignwide.dark .wp-block-button__link, .alignwide.dark a.button {
+  background-color: #064fb4;
+}
+.alignfull.blue button:hover, .alignfull.blue button:active, .alignfull.blue button:focus, .alignfull.blue input[type=button]:hover, .alignfull.blue input[type=button]:active, .alignfull.blue input[type=button]:focus, .alignfull.blue input[type=reset]:hover, .alignfull.blue input[type=reset]:active, .alignfull.blue input[type=reset]:focus, .alignfull.blue input[type=submit]:hover, .alignfull.blue input[type=submit]:active, .alignfull.blue input[type=submit]:focus, .alignfull.blue .wp-block-button__link:hover, .alignfull.blue .wp-block-button__link:active, .alignfull.blue .wp-block-button__link:focus, .alignfull.blue a.button:hover, .alignfull.blue a.button:active, .alignfull.blue a.button:focus, .alignfull.dark button:hover, .alignfull.dark button:active, .alignfull.dark button:focus, .alignfull.dark input[type=button]:hover, .alignfull.dark input[type=button]:active, .alignfull.dark input[type=button]:focus, .alignfull.dark input[type=reset]:hover, .alignfull.dark input[type=reset]:active, .alignfull.dark input[type=reset]:focus, .alignfull.dark input[type=submit]:hover, .alignfull.dark input[type=submit]:active, .alignfull.dark input[type=submit]:focus, .alignfull.dark .wp-block-button__link:hover, .alignfull.dark .wp-block-button__link:active, .alignfull.dark .wp-block-button__link:focus, .alignfull.dark a.button:hover, .alignfull.dark a.button:active, .alignfull.dark a.button:focus, .alignwide.blue button:hover, .alignwide.blue button:active, .alignwide.blue button:focus, .alignwide.blue input[type=button]:hover, .alignwide.blue input[type=button]:active, .alignwide.blue input[type=button]:focus, .alignwide.blue input[type=reset]:hover, .alignwide.blue input[type=reset]:active, .alignwide.blue input[type=reset]:focus, .alignwide.blue input[type=submit]:hover, .alignwide.blue input[type=submit]:active, .alignwide.blue input[type=submit]:focus, .alignwide.blue .wp-block-button__link:hover, .alignwide.blue .wp-block-button__link:active, .alignwide.blue .wp-block-button__link:focus, .alignwide.blue a.button:hover, .alignwide.blue a.button:active, .alignwide.blue a.button:focus, .alignwide.dark button:hover, .alignwide.dark button:active, .alignwide.dark button:focus, .alignwide.dark input[type=button]:hover, .alignwide.dark input[type=button]:active, .alignwide.dark input[type=button]:focus, .alignwide.dark input[type=reset]:hover, .alignwide.dark input[type=reset]:active, .alignwide.dark input[type=reset]:focus, .alignwide.dark input[type=submit]:hover, .alignwide.dark input[type=submit]:active, .alignwide.dark input[type=submit]:focus, .alignwide.dark .wp-block-button__link:hover, .alignwide.dark .wp-block-button__link:active, .alignwide.dark .wp-block-button__link:focus, .alignwide.dark a.button:hover, .alignwide.dark a.button:active, .alignwide.dark a.button:focus {
+  background-color: #021b3e;
 }
 
 .archive .entry-footer {

@@ -78,6 +78,7 @@ class MEC_skin_available_spot extends MEC_skins
 
         // Event ID
         $this->event_id = isset($this->skin_options['event_id']) ? $this->skin_options['event_id'] : '-1';
+        if(!get_post($this->event_id)) $this->event_id = '-1';
 
         do_action('mec-available-spot-initialize-end', $this);
     }
@@ -106,7 +107,7 @@ class MEC_skin_available_spot extends MEC_skins
             $data->dates = $this->render->dates($this->event_id, $rendered, $this->maximum_dates);
             $data->date = isset($data->dates[0]) ? $data->dates[0] : array();
 
-            $events[] = $this->render->after_render($data);
+            $events[] = $this->render->after_render($data, $this);
         }
 
         return $events;

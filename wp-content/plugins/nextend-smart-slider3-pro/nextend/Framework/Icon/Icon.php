@@ -2,6 +2,7 @@
 
 namespace Nextend\Framework\Icon;
 
+use Nextend\Framework\Asset\AssetManager;
 use Nextend\Framework\Asset\Css\Css;
 use Nextend\Framework\Asset\Js\Js;
 use Nextend\Framework\Filesystem\Filesystem;
@@ -21,7 +22,7 @@ class Icon {
         $path      = ResourceTranslator::toPath('$ss3-pro-frontend$/icons/');
         $iconPacks = Filesystem::folders($path);
 
-        foreach ($iconPacks AS $iconPack) {
+        foreach ($iconPacks as $iconPack) {
             $manifestPath = $path . $iconPack . '/manifest.json';
             if (Filesystem::fileexists($manifestPath)) {
                 self::$icons[$iconPack] = json_decode(Filesystem::readFile($manifestPath), true);
@@ -60,7 +61,9 @@ class Icon {
             return false;
         }
 
-        if (!isset($iconPack['isLoaded'])) {
+        if (!AssetManager::$stateStorage->get('icon-' . $iconPack['id'] . '-loaded', 0)) {
+            AssetManager::$stateStorage->set('icon-' . $iconPack['id'] . '-loaded', 1);
+
             if (Platform::isAdmin() || Settings::get('icon-' . $iconPack['id'], 1)) {
                 Css::addStaticGroup($iconPack['path'], $iconPack['id']);
             } else if (isset($iconPack['compatibility'])) {
@@ -71,7 +74,6 @@ class Icon {
                     $iconPack['prefix'] = 'fa-';
                 }
             }
-            $iconPack['isLoaded'] = true;
         }
 
         if ($iconPack['isLigature']) {
