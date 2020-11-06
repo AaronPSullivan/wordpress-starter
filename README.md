@@ -1,3 +1,3 @@
 # wordpress-starter
 
-# Test comment
+# Uses bootstrap 4, underscores and several default plugins
