@@ -1,3 +1,3 @@
 # wordpress-starter
 
-# Uses bootstrap 4, underscores and several default plugins
+Uses bootstrap 4, underscores and several default plugins
