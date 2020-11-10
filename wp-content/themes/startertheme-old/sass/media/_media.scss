@@ -1,0 +1,97 @@
+.page-content .wp-smiley,
+.entry-content .wp-smiley,
+.comment-content .wp-smiley {
+	border: none;
+	margin-bottom: 0;
+	margin-top: 0;
+	padding: 0;
+}
+
+/* Make sure embeds and iframes fit their containers. */
+embed,
+iframe,
+object {
+	max-width: 100%;
+}
+
+/* Make sure logo link wraps around logo image. */
+.custom-logo-link {
+	display: inline-block;
+}
+
+.wp-block-image {
+    //display: block;
+    position: relative;
+    padding-top: 1em;
+    //display: block;
+    display: block;
+    margin: auto;
+    img {
+        
+      //  border-top: $size__border-sm solid $color__main-2;
+    }
+    figcaption {
+        font-size: $font__size-captions;
+        text-align: left;
+        position: relative;
+        margin-bottom: 2em;
+        //margin-top: .2em;
+        color: $color__gray--light;
+        > .media-credit {
+            font-size: $font__size-credits;
+            display: block;
+            top: -2.3em;
+            padding: .4em 1em .6em;
+            background-color: white;
+            right: 0;
+            color: black;
+            opacity: .4;
+            @include transition(opacity .5s ease);
+            &:hover {
+                 opacity: .8;
+            }
+            a,
+            a:focus,
+            a:hover,
+            a:active {
+                //color: $color__gray--light;
+                 color: black;
+            }
+            
+        }
+    }
+    
+}
+
+.post-thumbnail-container {
+        
+     .media-credit {
+        display: none;
+    }
+}
+.post-thumbnail-container .post-thumbnail,
+.wp-block-image figcaption {
+     .media-credit {
+        
+        text-align: left;
+        position:absolute;
+        &::before {
+            //content: 'Photo: ';
+            display: inline;
+
+        }
+    }
+}
+.foogallery + p {
+    margin-top: 2em;
+}
+
+/*--------------------------------------------------------------
+## Captions
+--------------------------------------------------------------*/
+@import "captions";
+
+/*--------------------------------------------------------------
+## Galleries
+--------------------------------------------------------------*/
+@import "galleries";
