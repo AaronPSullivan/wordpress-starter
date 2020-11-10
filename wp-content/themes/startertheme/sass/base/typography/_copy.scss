@@ -12,6 +12,32 @@ i {
 blockquote {
 	margin: 0 1.5em;
 }
+blockquote.wp-block-quote {
+    //border-left: $size__border solid $color__text-blockquote;
+    //padding-left: add-unit($space-half, 'em');
+    padding-left: .5em;
+    padding-right: .5em;
+    font-weight: 500;
+    font-family: $font__accent;
+    color: $color__text-blockquote;
+}
+
+
+blockquote.wp-block-quote cite {
+    display: block;
+    font-weight: 300;
+    font-style: italic;
+    
+    color: $color__text-main;
+    
+    font-family: $font__main;
+    //margin: add-unit($space-quarter, 'em') 0 0;
+    margin: -.5em 0 1.5em ;
+    &::before {
+            content: '~ ';
+            display: inline-block;
+        }
+}
 
 address {
 	margin: 0 0 1.5em;
