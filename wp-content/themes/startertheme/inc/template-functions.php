@@ -19,7 +19,7 @@ function startertheme_body_classes( $classes ) {
 
 	// Adds a class of no-sidebar when there is no sidebar present.
 	if ( ! is_active_sidebar( 'sidebar-1' ) ) {
-		//$classes[] = 'no-sidebar';
+		$classes[] = 'no-sidebar';
 	}
 
 	return $classes;

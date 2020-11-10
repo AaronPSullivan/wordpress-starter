@@ -10,8 +10,7 @@
 get_header();
 ?>
 
-	<section id="primary" class="content-area">
-		<main id="main" class="site-main container">
+	<main id="primary" class="site-main">
 
 		<?php if ( have_posts() ) : ?>
 
@@ -23,43 +22,22 @@ get_header();
 					?>
 				</h1>
 			</header><!-- .page-header -->
-            
-            
-            <div class="container-fluid" id="search-posts-container">
-                <div class="row">
-                    <?php
-                            /* Start the Loop */
-                        while ( have_posts() ) :
-                            the_post();
 
-                            echo '<div class="col-12 col-lg-6 align-self-center">';
-                            get_template_part( 'template-parts/content', '' );
-                            echo '</div>';
-
-                        endwhile;
-                    
-                    
-                    
-                    
-                    ?>
-                
-                
-                </div>
-            </div>
 			<?php
-            
-            
-            
-            
-			
+			/* Start the Loop */
+			while ( have_posts() ) :
+				the_post();
+
+				/**
+				 * Run the loop for the search to output the results.
+				 * If you want to overload this in a child theme then include a file
+				 * called content-search.php and that will be used instead.
+				 */
+				get_template_part( 'template-parts/content', 'search' );
+
+			endwhile;
 
 			the_posts_navigation();
-           /* $default_posts_per_page = get_option( 'posts_per_page' );
-                       $short_c  = '[ajax_load_more post_type="post" posts_per_page="'.$default_posts_per_page.'" offset="'.$default_posts_per_page.'" ]';
-
-
-
-                        echo do_shortcode($short_c);*/
 
 		else :
 
@@ -68,9 +46,8 @@ get_header();
 		endif;
 		?>
 
-		</main><!-- #main -->
-	</section><!-- #primary -->
+	</main><!-- #main -->
 
 <?php
-//get_sidebar();
+get_sidebar();
 get_footer();
