@@ -11,6 +11,10 @@ if ( ! defined( '_S_VERSION' ) ) {
 	// Replace the version number of the theme on each release.
 	define( '_S_VERSION', '1.0.0' );
 }
+if ( ! defined( 'startertheme_VERSION' ) ) {
+	// Replace the version number of the theme on each release.
+	define( 'startertheme_VERSION', '1.0.1' );
+}
 
 if ( ! function_exists( 'startertheme_setup' ) ) :
 	/**
@@ -267,18 +271,18 @@ function startertheme_scripts() {
     /*
      * Add web fonts here
      */
-    wp_enqueue_style('startertheme-google-fonts', 'https://fonts.googleapis.com/css?family=Lato:300,400,400i,700|Roboto+Slab:500&display=swap' );
+    wp_enqueue_style('startertheme-google-fonts', 'https://fonts.googleapis.com/css?family=Lato:300,400,400i,700|Roboto+Slab:500&display=swap', array(), startertheme_VERSION );
      
     
     
     /*
      * Load jquery and bootstrap 
      */
-    wp_enqueue_style('startertheme-bootstrap4-css', 'https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css');
-    wp_enqueue_script( 'startertheme-jquery','https://code.jquery.com/jquery-3.5.1.min.js', array( 'jquery' ),'',true );
-    wp_enqueue_script( 'startertheme-jquery-easing','https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js', array( 'jquery' ),'',true );
-    wp_enqueue_script( 'startertheme-popper','https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js', array( 'jquery' ),'',true );
-    wp_enqueue_script( 'startertheme-bootstrap4-js','https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js', array( 'jquery' ),'',true );
+    wp_enqueue_style('startertheme-bootstrap4-css', 'https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css', array(), startertheme_VERSION );
+    wp_enqueue_script( 'startertheme-jquery','https://code.jquery.com/jquery-3.5.1.min.js', array( 'jquery' ), startertheme_VERSION,true );
+    wp_enqueue_script( 'startertheme-jquery-easing','https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js', array( 'jquery' ), startertheme_VERSION,true );
+    wp_enqueue_script( 'startertheme-popper','https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js', array( 'jquery' ), startertheme_VERSION,true );
+    wp_enqueue_script( 'startertheme-bootstrap4-js','https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js', array( 'jquery' ), startertheme_VERSION,true );
     
     
     
@@ -298,22 +302,22 @@ function startertheme_scripts() {
     
 	wp_enqueue_script( 'startertheme-navigation', get_template_directory_uri() . '/js/navigation.js', array(), _S_VERSION, true );
 
-    //wp_enqueue_script( 'startertheme-skip-link-focus-fix', get_template_directory_uri() . '/js/skip-link-focus-fix.js', array(), '20151215', true );
+    //wp_enqueue_script( 'startertheme-skip-link-focus-fix', get_template_directory_uri() . '/js/skip-link-focus-fix.js', array(), startertheme_VERSION, true );
     
       wp_enqueue_script( 'startertheme-skrollr', get_stylesheet_directory_uri() . '/js/skrollr.min.js', array(), '20160310', true );
-    //wp_enqueue_script( 'startertheme-masonary-js', get_template_directory_uri() . '/js/masonry.pkgd.min.js', array('jquery'), '20160310', true );
-    //wp_enqueue_script( 'startertheme-waypoints', get_template_directory_uri() . '/js/noframework.waypoints.min.js', array('jquery'), '20170103', true );
+    //wp_enqueue_script( 'startertheme-masonary-js', get_template_directory_uri() . '/js/masonry.pkgd.min.js', array('jquery'), startertheme_VERSION , true );
+    //wp_enqueue_script( 'startertheme-waypoints', get_template_directory_uri() . '/js/noframework.waypoints.min.js', array('jquery'), startertheme_VERSION, true );
     
     
       /* 
      * Load main stylesheet  
      */
-    wp_enqueue_style( 'startertheme-styles', get_template_directory_uri() . '/css/style.css' );
+    wp_enqueue_style( 'startertheme-styles', get_template_directory_uri() . '/css/style.css', array(), startertheme_VERSION );
     
     /* 
      * Load main JS
      */
-    wp_enqueue_script( 'startertheme-main-js', get_stylesheet_directory_uri() . '/js/main.js', array('jquery'), '', true );
+    wp_enqueue_script( 'startertheme-main-js', get_stylesheet_directory_uri() . '/js/main.js', array('jquery'), startertheme_VERSION, true );
     
     
     
