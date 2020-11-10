@@ -119,7 +119,51 @@ if ( ! function_exists( 'startertheme_post_thumbnail' ) ) :
 	 * Wraps the post thumbnail in an anchor element on index views, or a div
 	 * element when on single views.
 	 */
-	function startertheme_post_thumbnail() {
+    function startertheme_post_thumbnail($size = '', $force_link = false) {
+		if ( post_password_required() || is_attachment() || ! has_post_thumbnail() ) {
+			return;
+		}
+
+        
+        
+        $meta = wp_get_attachment_metadata(get_post_thumbnail_id());
+        //print_r(get_post_thumbnail_id());
+        
+        if ($force_link || !is_single()) : ?>
+            <a class="post-thumbnail" href="<?php the_permalink(); ?>" aria-hidden="true" tabindex="-1">
+        <?php endif;
+        
+      
+     
+        
+         $image_data = wp_get_attachment_image_src( get_post_thumbnail_id(), $size );
+        $height=$image_data[2];
+      
+        
+        if ( !is_single()) : 
+			the_post_thumbnail( $size, array(
+				'alt' => the_title_attribute( array(
+					'echo' => false,
+				) ),
+			) );
+        else: ?>
+			<div class="post-thumbnail">
+				<?php the_post_thumbnail($size); ?>
+			</div><!-- .post-thumbnail -->
+		<?php
+		endif; // End is_singular().
+        
+        
+        if ($force_link || !is_single()) : ?>
+			</a>
+		<?php
+        endif;
+	}
+    
+    /* start original _s function */
+    /* start original _s function */
+    /* start original _s function */
+	/*function startertheme_post_thumbnail() {
 		if ( post_password_required() || is_attachment() || ! has_post_thumbnail() ) {
 			return;
 		}
@@ -150,8 +194,21 @@ if ( ! function_exists( 'startertheme_post_thumbnail' ) ) :
 
 			<?php
 		endif; // End is_singular().
-	}
+    }*/
+    /* end original _s function */
+    /* end original _s function */
+    /* end original _s function */
 endif;
+
+
+if ( ! function_exists( 'startertheme_print_svg' ) ) :
+function startertheme_print_svg($file){
+    $iconfile = new DOMDocument();
+    $iconfile->load($file);
+    echo $iconfile->saveHTML($iconfile->getElementsByTagName('svg')[0]);
+}
+endif;
+
 
 if ( ! function_exists( 'wp_body_open' ) ) :
 	/**

@@ -1,26 +1,4 @@
-/*!
-Theme Name: startertheme
-Theme URI: http://underscores.me/
-Author: ECP
-Author URI: http://www.extracreditprojects.com/
-Description: A Starter Theme for WordPress
-Version: 1.0.0
-Tested up to: 5.4
-Requires PHP: 5.6
-License: GNU General Public License v2 or later
-License URI: LICENSE
-Text Domain: startertheme
-Tags: custom-background, custom-logo, custom-menu, featured-images, threaded-comments, translation-ready
-
-This theme, like WordPress, is licensed under the GPL.
-Use it to make something cool, have fun, and share what you've learned.
-
-startertheme is based on Underscores https://underscores.me/, (C) 2012-2020 Automattic, Inc.
-Underscores is distributed under the terms of the GNU GPL v2 or later.
-
-Normalizing styles have been helped along thanks to the fine work of
-Nicolas Gallagher and Jonathan Neal https://necolas.github.io/normalize.css/
-*/
+@use 'sass:map';
 
 /*--------------------------------------------------------------
 >>> TABLE OF CONTENTS:
@@ -28,6 +6,7 @@ Nicolas Gallagher and Jonathan Neal https://necolas.github.io/normalize.css/
 # Generic
 	- Normalize
 	- Box sizing
+# Bootstrap Grid
 # Base
 	- Typography
 	- Elements
@@ -64,6 +43,42 @@ Nicolas Gallagher and Jonathan Neal https://necolas.github.io/normalize.css/
 /* Box sizing
 --------------------------------------------- */
 @import "generic/box-sizing";
+
+
+/*--------------------------------------------------------------
+# Bootstrap Grid
+--------------------------------------------------------------*/
+
+
+/* set the overriding variables */
+$grid-breakpoints: (
+  // Extra small screen / phone
+  xs: 0,
+  // Small screen / phone
+  sm: 576px,
+  // Medium screen / tablet
+  md: 768px,
+  // Large screen / desktop
+  lg: 992px,
+  // Extra large screen / wide desktop
+  xl: 1200px,
+  // Extra Extra large screen / Extra wide desktop
+  xxl: 1800px
+);
+
+$container-max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 1140px,
+  xxl : 1141px //same as xl
+);
+
+
+/* override the !default vars with the values we set above */
+@import "bootstrap-4.4.1/bootstrap-grid.scss";
+//@import "bootstrap-4.4.1/utilities.scss";
+
 
 /*--------------------------------------------------------------
 # Base
