@@ -6,47 +6,41 @@
  *
  * @package startertheme
  */
- if( have_rows('startertheme-link__group', $adId) ): //how does this knwo what $adID is if this is before the block loads? 
 
-    while( have_rows('startertheme-link__group', $adId) ): the_row(); 
+/* get read_more text */
 
-        if (get_sub_field('startertheme-link__type') == 'url') {
-            $theUrl = get_sub_field('startertheme-link__url');
-        } else {
-            $theUrl = get_sub_field('startertheme-link__page');
-        }
-        $theTargetBlank = get_sub_field('startertheme-link__new-tab');
-    endwhile; 
-endif; 
+$read_more['txt'] = '<b>Read</b> More';
+if (function_exists('get_field')) {
+    $read_more['txt'] = get_field('excerpt-btn__text', get_the_ID());
+    //$read_more['icon'] = '<i class="fas fa-long-arrow-alt-right"></i>';
+    switch ($read_more['txt']) {
+        case 'more':
+            $read_more['txt'] = '<b>Read</b> More';
+            break;
+        case 'article':
+            $read_more['txt'] = '<b>Read</b> Article';
+            break;
+        case 'story':
+            $read_more['txt'] = '<b>Read</b> Story';
+            break;
+        case 'watch':
+            $read_more['txt'] = '<b>Watch</b> Spotlight';
+            //$read_more['icon'] = '<i class="fas fa-play-circle"></i>';
+            break;
+        case 'podcast':
+            $read_more['txt'] = '<b>Listen</b> to this Podcast';
 
-$read_more['txt'] = get_field('excerpt-btn__text', get_the_ID());
-$read_more['icon'] = '<i class="fas fa-long-arrow-alt-right"></i>';
-switch ($read_more['txt']) {
-    case 'more':
-        $read_more['txt'] = '<b>Read</b> More';
-        break;
-    case 'article':
-        $read_more['txt'] = '<b>Read</b> Article';
-        break;
-    case 'story':
-        $read_more['txt'] = '<b>Read</b> Story';
-        break;
-    case 'watch':
-        $read_more['txt'] = '<b>Watch</b> Spotlight';
-        $read_more['icon'] = '<i class="fas fa-play-circle"></i>';
-        break;
-    case 'podcast':
-        $read_more['txt'] = '<b>Listen</b> to this Podcast';
-        
-        $read_more['icon'] = '<i class="fas fa-podcast"></i>';
-        break;
-   
-    case 'other':
-        $read_more['txt'] = get_field('excerpt-btn__other');
-          break;
-    default:
-        // whatever should be default...
-        $read_more['txt'] = '<b>Read</b> More';
+            //$read_more['icon'] = '<i class="fas fa-podcast"></i>';
+            break;
+
+        case 'other':
+            $read_more['txt'] = get_field('excerpt-btn__other');
+              break;
+        default:
+            // whatever should be default...
+            $read_more['txt'] = '<b>Read</b> More';
+    }
+    
 }
 
 
@@ -120,7 +114,7 @@ switch ($read_more['txt']) {
                  <div class="clearfix startertheme-read-more-container">
                     <a href="<?php echo esc_url( get_permalink() );?>" class="startertheme-read-more"><?php 
                         
-                        _e( $read_more['txt'], 'startertheme' ); echo $read_more['icon']; 
+                        _e( $read_more['txt'], 'startertheme' ); //echo $read_more['icon']; 
                         ?>
                      </a>
                 </div>

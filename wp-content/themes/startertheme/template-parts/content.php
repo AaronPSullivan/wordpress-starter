@@ -7,7 +7,55 @@
  * @package startertheme
  */
 
+
+
+/* get read_more text */
+
+$read_more['txt'] = '<b>Read</b> More';
+if (function_exists('get_field')) {
+    $read_more['txt'] = get_field('excerpt-btn__text', get_the_ID());
+    //$read_more['icon'] = '<i class="fas fa-long-arrow-alt-right"></i>';
+    switch ($read_more['txt']) {
+        case 'more':
+            $read_more['txt'] = '<b>Read</b> More';
+            break;
+        case 'article':
+            $read_more['txt'] = '<b>Read</b> Article';
+            break;
+        case 'story':
+            $read_more['txt'] = '<b>Read</b> Story';
+            break;
+        case 'watch':
+            $read_more['txt'] = '<b>Watch</b> Spotlight';
+            //$read_more['icon'] = '<i class="fas fa-play-circle"></i>';
+            break;
+        case 'podcast':
+            $read_more['txt'] = '<b>Listen</b> to this Podcast';
+
+            //$read_more['icon'] = '<i class="fas fa-podcast"></i>';
+            break;
+
+        case 'other':
+            $read_more['txt'] = get_field('excerpt-btn__other');
+              break;
+        default:
+            // whatever should be default...
+            $read_more['txt'] = '<b>Read</b> More';
+    }
+    
+}
+
+
+
+
 ?>
+<?php if (is_single()): ?>
+
+<div class="clearfix"></div>
+
+<?php endif; ?>
+
+
 
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 	<header class="entry-header">

@@ -15,7 +15,10 @@
 get_header();
 ?>
 
-	<main id="primary" class="site-main">
+<!--test-->
+
+	<div id="primary" class="content-area test">
+		<main id="main" class="site-main">
 
 		<?php
 		if ( have_posts() ) :
@@ -41,7 +44,15 @@ get_header();
 
 			endwhile;
 
-			the_posts_navigation();
+			//the_posts_navigation();
+            
+            $default_posts_per_page = get_option( 'posts_per_page' );
+                       $short_c  = '[ajax_load_more post_type="post" posts_per_page="'.$default_posts_per_page.'" offset="'.$default_posts_per_page.'" ]';
+
+
+
+                        echo do_shortcode($short_c);
+            
 
 		else :
 
@@ -50,7 +61,8 @@ get_header();
 		endif;
 		?>
 
-	</main><!-- #main -->
+		</main><!-- #main -->
+	</div><!-- #primary -->
 
 <?php
 get_sidebar();
