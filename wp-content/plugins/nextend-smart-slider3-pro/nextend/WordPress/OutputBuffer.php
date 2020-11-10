@@ -15,39 +15,16 @@ class OutputBuffer {
     protected $extraObStart = 0;
 
     protected function init() {
-        /**
-         * Borlabs cache
-         * @url https://borlabs.io/download/
-         */
-        if (defined('BORLABS_CACHE_SLUG') && !is_admin()) {
-            add_action('template_redirect', array(
-                $this,
-                'outputStart'
-            ), -1 * $this->priority);
-            add_action('shutdown', array(
-                $this,
-                'closeOutputBuffers'
-            ), -1 * $this->priority);
 
-        } else {
-            add_action('init', array(
-                $this,
-                'outputStart'
-            ), $this->priority);
-            add_action('shutdown', array(
-                $this,
-                'closeOutputBuffers'
-            ), -1 * $this->priority);
+        add_action('init', array(
+            $this,
+            'onInit'
+        ), $this->priority);
 
-            add_action('pp_end_html', array(
-                $this,
-                'closeOutputBuffers'
-            ), -10000); // ProPhoto 6 theme: we must close the buffer before the cache
-            add_action('headway_html_close', array(
-                $this,
-                'closeOutputBuffers'
-            ), $this->priority); // Headway theme
-        }
+        add_action('shutdown', array(
+            $this,
+            'closeOutputBuffers'
+        ), -1 * $this->priority);
 
         /**
          * Fix for KeyCDN cache enabled
@@ -95,6 +72,54 @@ class OutputBuffer {
                 ));
             });
         }
+    }
+
+    /**
+     * Theme's functions.php loaded at this point.
+     */
+    public function onInit() {
+
+        /**
+         * Borlabs cache
+         * @url https://borlabs.io/download/
+         */
+        if (defined('BORLABS_CACHE_SLUG') && !is_admin()) {
+            add_action('template_redirect', array(
+                $this,
+                'outputStart'
+            ), -1 * $this->priority);
+
+            return;
+        }
+
+        if (defined('THEMIFY_VERSION')) {
+
+            add_filter('template_include', array(
+                $this,
+                'templateIncludeOutputStart'
+            ), 1); // Themify use priority: 0
+
+            return;
+        }
+
+        add_action('pp_end_html', array(
+            $this,
+            'closeOutputBuffers'
+        ), -10000); // ProPhoto 6 theme: we must close the buffer before the cache
+
+        add_action('headway_html_close', array(
+            $this,
+            'closeOutputBuffers'
+        ), $this->priority); // Headway theme
+
+        $this->outputStart();
+    }
+
+    public function templateIncludeOutputStart($template) {
+
+        $this->outputStart();
+
+        return $template;
     }
 
     public function outputStart() {

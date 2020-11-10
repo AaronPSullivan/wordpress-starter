@@ -52,6 +52,7 @@ class TabAnimation extends AbstractTab {
 
         $eventNames = array(
             'layerAnimationPlayIn',
+            'layerAnimationPlayLoop',
             'LayerClick',
             'LayerMouseEnter',
             'LayerMouseLeave',

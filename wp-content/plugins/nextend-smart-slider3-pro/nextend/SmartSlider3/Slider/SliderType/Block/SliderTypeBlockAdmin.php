@@ -2,6 +2,7 @@
 
 namespace Nextend\SmartSlider3\Slider\SliderType\Block;
 
+use Nextend\Framework\Asset\Js\Js;
 use Nextend\Framework\Form\Container\ContainerTable;
 use Nextend\Framework\Form\Element\Grouping;
 use Nextend\Framework\Form\Element\OnOff;
@@ -142,6 +143,8 @@ class SliderTypeBlockAdmin extends AbstractSliderTypeAdmin {
     }
 
     public function renderSlideFields($container) {
+        $dataToFields = array();
+
         $tableAnimation = new FieldsetLayerWindow($container, 'fields-slide-animation', n2_('Animation'));
 
         PostBackgroundAnimationManager::enqueue($container->getForm());
@@ -149,10 +152,15 @@ class SliderTypeBlockAdmin extends AbstractSliderTypeAdmin {
         $rowKenBurns = new Grouping($tableAnimation, 'slide-settings-animation-ken-burns');
         new PostBackgroundAnimation($rowKenBurns, 'kenburns-animation', n2_('Ken Burns effect'), '', array(
             'relatedFields' => array(
-                'slidekenburns-animation-speed',
-                'slidekenburns-animation-strength'
+                'layerkenburns-animation-speed',
+                'layerkenburns-animation-strength'
             )
         ));
+        $dataToFields[] = [
+            'name' => 'kenburns-animation',
+            'id'   => 'layerkenburns-animation',
+            'def'  => '50|*|50|*'
+        ];
 
         new Select($rowKenBurns, 'kenburns-animation-speed', n2_('Speed'), '', array(
             'options' => array(
@@ -164,6 +172,11 @@ class SliderTypeBlockAdmin extends AbstractSliderTypeAdmin {
                 'superFast' => n2_('Super fast' . ' 4x')
             )
         ));
+        $dataToFields[] = [
+            'name' => 'kenburns-animation-speed',
+            'id'   => 'layerkenburns-animation-speed',
+            'def'  => 'default'
+        ];
 
         new Select($rowKenBurns, 'kenburns-animation-strength', n2_('Strength'), '', array(
             'options' => array(
@@ -175,6 +188,13 @@ class SliderTypeBlockAdmin extends AbstractSliderTypeAdmin {
                 'superStrong' => n2_('Super strong') . ' 2x'
             )
         ));
+        $dataToFields[] = [
+            'name' => 'kenburns-animation-strength',
+            'id'   => 'layerkenburns-animation-strength',
+            'def'  => 'default'
+        ];
+
+        Js::addInline("N2R('SectionSlide', function(){ N2Classes.SectionSlide.addExternalDataToField(" . json_encode($dataToFields) . ");});");
     
 
     }

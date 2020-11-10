@@ -18,11 +18,11 @@ class ItemCounterFrontend extends AbstractItemFrontend {
     }
 
     private function getHtml() {
-        $owner = $this->layer->getOwner();
-
-        $value      = intval($this->data->get('value'));
+        $owner      = $this->layer->getOwner();
+        
+        $value      = intval($owner->fill($this->data->get('value')));
         $min        = min(0, $value);
-        $startvalue = max(intval($this->data->get('startvalue')), $min);
+        $startvalue = max(intval($owner->fill($this->data->get('startvalue'))), $min);
         $total      = max($startvalue, $value);
         $duration   = max(0, intval($this->data->get('animationduration')));
 

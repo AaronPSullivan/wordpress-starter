@@ -71,6 +71,8 @@ class ItemCounter extends AbstractItem {
         $data = parent::getFilled($slide, $data);
 
         $data->set('label', $slide->fill($data->get('label', '')));
+        $data->set('value', $slide->fill($data->get('value', '')));
+        $data->set('startvalue', $slide->fill($data->get('startvalue', '')));
 
         return $data;
     }

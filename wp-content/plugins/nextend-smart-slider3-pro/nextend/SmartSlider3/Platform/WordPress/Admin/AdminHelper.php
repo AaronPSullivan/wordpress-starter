@@ -6,6 +6,7 @@ namespace Nextend\SmartSlider3\Platform\WordPress\Admin;
 
 use Nextend\Framework\PageFlow;
 use Nextend\SmartSlider3\Application\ApplicationSmartSlider3;
+use Nextend\SmartSlider3\Application\Model\ModelLicense;
 use Nextend\SmartSlider3\Application\Model\ModelSliders;
 use Nextend\SmartSlider3\Platform\SmartSlider3Platform;
 use Nextend\SmartSlider3\Platform\WordPress\HelperTinyMCE;
@@ -16,8 +17,14 @@ class AdminHelper {
 
     public function __construct() {
 
-        add_action('admin_init', function(){
-            require_once dirname(__FILE__) . '/blackfriday.php';
+        add_action('admin_init', function () {
+            if (ModelLicense::getInstance()
+                            ->maybeActiveLazy()) {
+                require_once dirname(__FILE__) . '/pro/noticeu.php';
+            } else {
+                require_once dirname(__FILE__) . '/pro/noticena.php';
+            }
+        
         });
 
         add_action('init', array(
