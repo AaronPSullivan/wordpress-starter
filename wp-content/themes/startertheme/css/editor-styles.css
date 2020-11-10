@@ -1,0 +1,147 @@
+@charset "UTF-8";
+/*
+Theme Name: startertheme
+Description: Used to style the content editor in posts and pages.
+*/
+/*--------------------------------------------------------------
+>>> TABLE OF CONTENTS:
+----------------------------------------------------------------
+
+--------------------------------------------------------------*/
+/*--------------------------------------------------------------
+# Styles
+--------------------------------------------------------------*/
+.edit-post-visual-editor,
+.edit-post-visual-editor p,
+.blocks-rich-text__tinymce.mce-content-body {
+  font-family: "Lato", sans-serif;
+}
+
+.edit-post-visual-editor .editor-block-list__block-edit,
+.edit-post-visual-editor {
+  font-family: "Lato", sans-serif;
+}
+
+.editor-post-title__block .editor-post-title__input {
+  font-weight: 500;
+  font-family: "Roboto Slab", serif;
+  font-size: 2em;
+}
+
+.edit-post-visual-editor .editor-block-list__block h1.mce-content-body,
+.edit-post-visual-editor .editor-block-list__block h2.mce-content-body,
+.edit-post-visual-editor .editor-block-list__block h3.mce-content-body,
+.edit-post-visual-editor .editor-block-list__block h4.mce-content-body,
+.edit-post-visual-editor .editor-block-list__block h5.mce-content-body,
+.edit-post-visual-editor .editor-block-list__block h6.mce-content-body {
+  font-weight: 500;
+  font-family: "Roboto Slab", serif;
+}
+.edit-post-visual-editor .editor-block-list__block h1.mce-content-body {
+  font-size: 1.802em;
+  line-height: line-height(1.802, 1.5);
+}
+.edit-post-visual-editor .editor-block-list__block h2.mce-content-body {
+  font-size: 1.602em;
+  line-height: line-height(1.602, 1.5);
+}
+.edit-post-visual-editor .editor-block-list__block h3.mce-content-body {
+  font-size: 1.424em;
+  line-height: line-height(1.424, 1.25);
+}
+.edit-post-visual-editor .editor-block-list__block h4.mce-content-body {
+  font-size: 1.266em;
+  line-height: line-height(1.266, 1.25);
+}
+.edit-post-visual-editor .editor-block-list__block h5.mce-content-body {
+  font-size: 1.125em;
+  line-height: line-height(1.125, 1);
+}
+.edit-post-visual-editor .editor-block-list__block h6.mce-content-body {
+  font-size: 1em;
+  line-height: line-height(1, 1);
+}
+.edit-post-visual-editor .editor-block-list__block figure {
+  line-height: 0;
+  margin: 0.5em 0 0;
+}
+.edit-post-visual-editor .editor-block-list__block figure figcaption,
+.edit-post-visual-editor .editor-block-list__block figure img {
+  line-height: 1.5;
+}
+.edit-post-visual-editor .editor-block-list__block figcaption {
+  clear: both;
+  color: inherit;
+  font-size: 0.6em;
+  padding-top: 0.25em;
+  text-align: left;
+}
+.edit-post-visual-editor .editor-block-list__block blockquote.wp-block-quote {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  font-weight: 500;
+  font-family: "Roboto Slab", serif;
+  color: #68b735;
+}
+.edit-post-visual-editor .editor-block-list__block blockquote.wp-block-quote cite {
+  display: block;
+  font-weight: 300;
+  font-style: italic;
+  color: #262626;
+  font-family: "Lato", sans-serif;
+  margin: -0.5em 0 1.5em;
+}
+.edit-post-visual-editor .editor-block-list__block blockquote.wp-block-quote cite::before {
+  content: "~ ";
+  display: inline-block;
+}
+.edit-post-visual-editor .editor-block-list__block table {
+  border-spacing: 0;
+}
+.edit-post-visual-editor .editor-block-list__block td,
+.edit-post-visual-editor .editor-block-list__block th {
+  border: none;
+  border-bottom: 1px solid;
+}
+.edit-post-visual-editor .editor-block-list__block th {
+  border-bottom: 2px solid;
+  text-align: left;
+}
+.edit-post-visual-editor .editor-block-list__block table tr:last-of-type td {
+  border-bottom: none;
+}
+.edit-post-visual-editor .editor-block-list__block dt {
+  margin: 0.25em;
+}
+.edit-post-visual-editor .editor-block-list__block dd {
+  margin: 0 0 0 1em;
+}
+.edit-post-visual-editor .editor-block-list__block ul,
+.edit-post-visual-editor .editor-block-list__block ol {
+  padding-left: 1rem;
+  margin-left: 0;
+}
+.edit-post-visual-editor .editor-block-list__block ul > li {
+  list-style-type: none;
+  position: relative;
+}
+.edit-post-visual-editor .editor-block-list__block ul > li::before {
+  content: "·";
+  top: 0;
+  left: 0.5em;
+  position: absolute;
+}
+.block-editor-rich-text__editable a {
+  color: #043579;
+  -moz-transition: color 0.2s ease-in-out;
+  -o-transition: color 0.2s ease-in-out;
+  -ms-transition: color 0.2s ease-in-out;
+  -webkit-transition: color 0.2s ease-in-out;
+  transition: color 0.2s ease-in-out;
+}
+.block-editor-rich-text__editable a:hover, .block-editor-rich-text__editable a:active, .block-editor-rich-text__editable a:focus {
+  color: #68b735;
+  cursor: pointer;
+}
+
+/*# sourceMappingURL=editor-styles.css.map */
