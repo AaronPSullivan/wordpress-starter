@@ -1,0 +1,17 @@
+{
+    "name": "ecp/wordpress-starter",
+    "description": "A starter theme for WordPress based on _s",
+    "type": "project",
+    
+    "require": {
+        "php": ">=5.6.20",
+        "johnpbloch/wordpress-core-installer": "^1.0 || ^2.0",
+        "johnpbloch/wordpress-core": "dev-master"
+      },
+    "authors": [
+        {
+            "name": "aaron",
+            "email": "aaron@extracreditprojects.com"
+        }
+    ]
+}
