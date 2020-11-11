@@ -2,14 +2,27 @@
     "name": "ecp/wordpress-starter",
     "description": "A starter theme for WordPress based on _s",
     "type": "project",
-    
+    "repositories":[
+        {
+            "type":"composer",
+            "url":"https://wpackagist.org",
+            "only": ["wpackagist-plugin/*", "wpackagist-theme/*"]
+        }
+    ],
     "require": {
-        
+        "wpackagist-plugin/akismet":"dev-trunk",
+        "wpackagist-plugin/wordpress-seo":">=7.0.2",
+        "wpackagist-theme/hueman":"*"
       },
     "authors": [
         {
             "name": "aaron",
             "email": "aaron@extracreditprojects.com"
         }
-    ]
+    ],
+    "extra": {
+        "installer-paths": {
+            "wp-content/plugins/{$name}/": ["type:wordpress-plugin"]
+        }
+    }
 }
